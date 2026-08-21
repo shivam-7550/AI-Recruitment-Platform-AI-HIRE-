@@ -1,0 +1,90 @@
+.company-register-container {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #ffffff;
+}
+
+.company-register-card {
+  width: min(100%, 420px);
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  padding: 32px;
+
+  border-radius: 12px;
+
+  border: 1px solid #e5e5e5;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.company-register-card h1 {
+  text-align: center;
+
+  font-family: "Times New Roman", Times, serif;
+
+  color: #111111;
+
+  margin-bottom: 10px;
+}
+
+.company-subtitle {
+  text-align: center;
+
+  font-family: "Times New Roman", Times, serif;
+
+  color: #777777;
+
+  margin-bottom: 22px;
+}
+
+.company-login-link {
+  margin-top: 25px;
+
+  text-align: center;
+
+  color: #666666;
+}
+
+.company-login-link a {
+  margin-left: 5px;
+
+  color: #111111;
+
+  font-weight: 600;
+}
+
+.company-login-link a:hover {
+  text-decoration: underline;
+}
+
+.company-registration-switch {
+  margin-top: 12px;
+
+  text-align: center;
+
+  color: #666666;
+
+  font-size: 14px;
+}
+
+.company-registration-switch a {
+  color: #111111;
+
+  font-weight: 700;
+}
+
+@media (max-width: 500px) {
+  .company-register-card {
+    width: 90%;
+
+    padding: 30px 20px;
+  }
+}

@@ -1,0 +1,1066 @@
+/* =========================================================
+   CANDIDATE MESSAGES PAGE
+   ========================================================= */
+
+.candidate-messages-page {
+  min-height: 100vh;
+  background: #f6f7f9;
+  color: #111827;
+}
+
+.candidate-utility {
+  min-height: 100vh;
+  display: flex;
+  background: #f6f7f9;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.candidate-utility-sidebar {
+  width: 250px;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+
+  padding: 26px 16px 18px;
+
+  z-index: 20;
+}
+
+.candidate-utility-logo {
+  display: flex;
+  flex-direction: column;
+
+  text-decoration: none;
+  color: #111827;
+
+  padding: 4px 14px 28px;
+}
+
+.candidate-utility-logo strong {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+  letter-spacing: -0.6px;
+}
+
+.candidate-utility-logo small {
+  margin-top: 3px;
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 11px;
+  color: #8a919d;
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.candidate-utility-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-navigation a {
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Times New Roman", Times, serif;
+
+  padding: 0 13px;
+
+  border-radius: 10px;
+
+  color: #69717d;
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-utility-navigation a svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-navigation a:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.candidate-utility-navigation-active {
+  background: #111827 !important;
+  color: #ffffff !important;
+}
+
+.candidate-utility-navigation-badge {
+  min-width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: auto;
+
+  padding: 0 6px;
+
+  border-radius: 20px;
+
+  background: #ffffff;
+  color: #111827;
+
+  font-size: 10px;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.candidate-utility-logout {
+  width: 100%;
+  min-height: 45px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: auto;
+  padding: 0 13px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #69717d;
+
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Times New Roman", Times, serif;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-utility-logout svg {
+  width: 19px;
+  height: 19px;
+}
+
+.candidate-utility-logout:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.candidate-utility-main {
+  width: calc(100% - 250px);
+  min-height: 100vh;
+
+  margin-left: 250px;
+}
+
+.candidate-utility-topbar {
+  min-height: 82px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 18px 42px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.candidate-utility-topbar > div:first-child {
+  flex: 1;
+}
+
+.candidate-utility-topbar h1 {
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+  color: #111827;
+}
+
+.candidate-utility-topbar p {
+  margin: 4px 0 0;
+
+  color: #8a919d;
+  font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-notification {
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-right: 22px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #596170;
+
+  cursor: pointer;
+}
+
+.candidate-utility-notification svg {
+  width: 19px;
+  height: 19px;
+}
+
+.candidate-utility-notification i {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 4px;
+
+  border-radius: 20px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.candidate-utility-user > span {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-user img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidate-utility-user div {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-utility-user strong {
+  color: #111827;
+  font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-user small {
+  margin-top: 2px;
+  color: #8a919d;
+  font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-utility-content {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 38px 42px 60px;
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.candidate-messages-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 25px;
+  margin-bottom: 28px;
+}
+
+.candidate-messages-eyebrow {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #7b8491;
+
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-header h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-header p {
+  max-width: 650px;
+
+  margin: 9px 0 0;
+
+  color: #747d89;
+
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-mark-read {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 15px;
+
+  border: 1px solid #e1e4e8;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #303744;
+
+  font-size: 12px;
+  font-weight: 700;
+  font-family: "Times New Roman", Times, serif;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.candidate-messages-mark-read svg {
+  width: 16px;
+  height: 16px;
+}
+
+.candidate-messages-mark-read:hover {
+  border-color: #111827;
+  color: #111827;
+}
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.candidate-messages-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  margin-bottom: 20px;
+}
+
+.candidate-messages-search {
+  width: min(500px, 100%);
+
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 14px;
+
+  border: 1px solid #e2e5e9;
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+.candidate-messages-search svg {
+  width: 18px;
+  height: 18px;
+  color: #9299a4;
+}
+
+.candidate-messages-search input {
+  width: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: #111827;
+
+  font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-search input::placeholder {
+  color: #a0a6ae;
+}
+
+.candidate-messages-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.candidate-messages-filters button {
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 0 13px;
+
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #707884;
+
+  font-size: 12px;
+  font-weight: 700;
+  font-family: "Times New Roman", Times, serif;
+
+  cursor: pointer;
+}
+
+.candidate-messages-filters button.active {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+.candidate-messages-filters span {
+  min-width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  background: #ffffff;
+  color: #111827;
+
+  font-size: 9px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.candidate-messages-error {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  margin-bottom: 20px;
+  padding: 13px 15px;
+
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.candidate-messages-error strong {
+  font-size: 12px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-error span {
+  font-size: 12px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+.candidate-messages-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 14px;
+
+  margin-bottom: 22px;
+}
+
+.candidate-messages-summary > div {
+  min-height: 80px;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 15px 18px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.candidate-messages-summary svg {
+  width: 20px;
+  height: 20px;
+
+  color: #5e6673;
+}
+
+.candidate-messages-summary span {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  color: #8a919d;
+
+  font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-summary strong {
+  color: #111827;
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* =========================================================
+   MESSAGE PANEL
+   ========================================================= */
+
+.candidate-messages-panel {
+  overflow: hidden;
+
+  border: 1px solid #e2e5e9;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.candidate-messages-panel-header {
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px 20px;
+
+  border-bottom: 1px solid #edf0f2;
+}
+
+.candidate-messages-panel-header span {
+  color: #8a919d;
+
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.candidate-messages-panel-header h3 {
+  margin: 3px 0 0;
+
+  color: #111827;
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.candidate-messages-panel-header small {
+  color: #8a919d;
+  font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* =========================================================
+   MESSAGE LIST
+   ========================================================= */
+
+.candidate-messages-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-message-item {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 18px 20px;
+
+  border: 0;
+  border-bottom: 1px solid #edf0f2;
+
+  background: #ffffff;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.candidate-message-item:last-child {
+  border-bottom: 0;
+}
+
+.candidate-message-item:hover {
+  background: #fafafa;
+}
+
+.candidate-message-item-unread {
+  background: #fcfcfd;
+}
+
+.candidate-message-item-icon {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #f0f1f3;
+  color: #303744;
+}
+
+.candidate-message-item-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.candidate-message-item-unread .candidate-message-item-icon {
+  background: #111827;
+  color: #ffffff;
+}
+
+.candidate-message-item-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.candidate-message-item-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.candidate-message-item-top strong {
+  overflow: hidden;
+
+  color: #20252d;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate-message-new {
+  flex-shrink: 0;
+
+  padding: 3px 7px;
+
+  border-radius: 20px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.candidate-message-item-content p {
+  overflow: hidden;
+
+  margin: 5px 0;
+
+  color: #727a86;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate-message-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #9aa1aa;
+
+  font-size: 10px;
+}
+
+.candidate-message-job {
+  padding: 3px 7px;
+
+  border-radius: 20px;
+
+  background: #f1f2f4;
+  color: #68717e;
+
+  font-weight: 700;
+}
+
+.candidate-message-item-arrow {
+  flex-shrink: 0;
+
+  color: #a1a7b0;
+
+  font-size: 18px;
+}
+
+.candidate-message-item:hover .candidate-message-item-arrow {
+  color: #111827;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.candidate-messages-empty {
+  min-height: 310px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+
+  text-align: center;
+}
+
+.candidate-messages-empty-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 14px;
+
+  border-radius: 50%;
+
+  background: #f0f1f3;
+  color: #737b87;
+}
+
+.candidate-messages-empty-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.candidate-messages-empty h3 {
+  margin: 0;
+
+  color: #20252d;
+
+  font-size: 17px;
+}
+
+.candidate-messages-empty p {
+  max-width: 400px;
+
+  margin: 7px 0 17px;
+
+  color: #858d98;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.candidate-messages-empty a {
+  padding: 9px 15px;
+
+  border-radius: 8px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+/* =========================================================
+   FUTURE CHAT NOTE
+   ========================================================= */
+
+.candidate-messages-chat-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  margin-top: 20px;
+  padding: 18px 20px;
+
+  border: 1px dashed #d7dbe0;
+  border-radius: 12px;
+
+  background: #fafafa;
+}
+
+.candidate-messages-chat-icon {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #eceef1;
+  color: #626a76;
+}
+
+.candidate-messages-chat-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.candidate-messages-chat-info span {
+  color: #8a919d;
+
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.candidate-messages-chat-info h3 {
+  margin: 3px 0 5px;
+
+  color: #242932;
+
+  font-size: 14px;
+}
+
+.candidate-messages-chat-info p {
+  max-width: 850px;
+
+  margin: 0;
+
+  color: #7b838e;
+
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .candidate-utility-sidebar {
+    width: 220px;
+  }
+
+  .candidate-utility-main {
+    width: calc(100% - 220px);
+    margin-left: 220px;
+  }
+
+  .candidate-utility-content {
+    padding: 30px 25px 50px;
+  }
+
+  .candidate-utility-topbar {
+    padding: 18px 25px;
+  }
+
+  .candidate-messages-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .candidate-utility-sidebar {
+    width: 70px;
+    padding: 20px 9px;
+  }
+
+  .candidate-utility-main {
+    width: calc(100% - 70px);
+    margin-left: 70px;
+  }
+
+  .candidate-utility-logo {
+    align-items: center;
+    padding: 4px 0 25px;
+  }
+
+  .candidate-utility-logo strong {
+    font-size: 18px;
+  }
+
+  .candidate-utility-logo small,
+  .candidate-utility-navigation a span,
+  .candidate-utility-logout span {
+    display: none;
+  }
+
+  .candidate-utility-navigation a,
+  .candidate-utility-logout {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .candidate-utility-navigation-badge {
+    position: absolute;
+    margin-left: 27px;
+    margin-top: -25px;
+  }
+
+  .candidate-utility-topbar {
+    padding: 15px;
+  }
+
+  .candidate-utility-topbar p,
+  .candidate-utility-user div {
+    display: none;
+  }
+
+  .candidate-utility-content {
+    padding: 25px 15px 40px;
+  }
+
+  .candidate-messages-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .candidate-messages-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .candidate-messages-search {
+    width: 100%;
+  }
+
+  .candidate-messages-filters {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .candidate-messages-header h2 {
+    font-size: 24px;
+  }
+
+  .candidate-message-item {
+    padding: 15px;
+  }
+
+  .candidate-message-item-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .candidate-message-item-arrow {
+    display: none;
+  }
+
+  .candidate-messages-summary {
+    gap: 8px;
+  }
+
+  .candidate-messages-chat-info {
+    padding: 15px;
+  }
+}

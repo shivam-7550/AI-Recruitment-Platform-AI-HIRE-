@@ -1,0 +1,421 @@
+/* =========================================================
+   CANDIDATE SIDEBAR
+   ========================================================= */
+
+.candidate-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  width: 250px;
+  height: 100vh;
+  font-family: "Times New Roman", Times, serif;
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e5e7eb;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.candidate-sidebar-logo {
+  height: 76px;
+  font-family: "Times New Roman", Times, serif;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 24px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.candidate-sidebar-logo a {
+  color: #111827;
+
+  text-decoration: none;
+}
+
+.candidate-sidebar-logo strong {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+
+  letter-spacing: -0.5px;
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.candidate-sidebar-nav {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  padding: 22px 14px;
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   NAVIGATION LINK
+   ========================================================= */
+
+.candidate-sidebar-link {
+  position: relative;
+
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  color: #64748b;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* =========================================================
+   LINK HOVER
+   ========================================================= */
+
+.candidate-sidebar-link:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+/* =========================================================
+   ACTIVE LINK
+   ========================================================= */
+
+.candidate-sidebar-link-active {
+  background: #111827;
+
+  color: #ffffff;
+
+  font-weight: 600;
+}
+
+.candidate-sidebar-link-active:hover {
+  background: #111827;
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   ACTIVE LINK INDICATOR
+   ========================================================= */
+
+.candidate-sidebar-link-active::before {
+  content: "";
+
+  position: absolute;
+
+  left: -14px;
+
+  top: 50%;
+
+  width: 3px;
+  height: 26px;
+
+  background: #111827;
+
+  border-radius: 0 4px 4px 0;
+
+  transform: translateY(-50%);
+}
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.candidate-sidebar-link-icon {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.candidate-sidebar-link-label {
+  flex: 1;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.candidate-sidebar-link-badge {
+  min-width: 20px;
+  height: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.candidate-sidebar-link-active .candidate-sidebar-link-badge {
+  background: rgba(255, 255, 255, 0.15);
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   BOTTOM SECTION
+   ========================================================= */
+
+.candidate-sidebar-bottom {
+  padding: 14px;
+
+  border-top: 1px solid #f1f5f9;
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.candidate-sidebar-logout {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-sidebar-logout:hover {
+  background: #fef2f2;
+
+  color: #dc2626;
+}
+
+/* =========================================================
+   LOGOUT ICON
+   ========================================================= */
+
+.candidate-sidebar-logout-icon {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.candidate-sidebar-nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.candidate-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.candidate-sidebar-nav::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+
+  border-radius: 999px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .candidate-sidebar {
+    width: 220px;
+  }
+
+  .candidate-sidebar-logo {
+    padding: 0 20px;
+  }
+
+  .candidate-sidebar-nav {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .candidate-sidebar-link {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .candidate-sidebar-logout {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .candidate-sidebar {
+    position: fixed;
+
+    width: 72px;
+  }
+
+  .candidate-sidebar-logo {
+    height: 70px;
+
+    justify-content: center;
+
+    padding: 0;
+  }
+
+  .candidate-sidebar-logo strong {
+    font-size: 18px;
+
+    writing-mode: vertical-rl;
+
+    letter-spacing: 0;
+  }
+
+  .candidate-sidebar-nav {
+    padding: 16px 8px;
+  }
+
+  .candidate-sidebar-link {
+    justify-content: center;
+
+    gap: 0;
+
+    padding: 0;
+
+    min-height: 46px;
+  }
+
+  .candidate-sidebar-link-label,
+  .candidate-sidebar-link-badge {
+    display: none;
+  }
+
+  .candidate-sidebar-link-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .candidate-sidebar-link-active::before {
+    left: -8px;
+
+    height: 24px;
+  }
+
+  .candidate-sidebar-bottom {
+    padding: 8px;
+  }
+
+  .candidate-sidebar-logout {
+    justify-content: center;
+
+    padding: 0;
+
+    min-height: 46px;
+  }
+
+  .candidate-sidebar-logout span {
+    display: none;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .candidate-sidebar {
+    width: 64px;
+  }
+
+  .candidate-sidebar-link-active::before {
+    left: -8px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .candidate-sidebar-link,
+  .candidate-sidebar-logout {
+    transition: none;
+  }
+}

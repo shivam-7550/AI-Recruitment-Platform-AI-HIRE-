@@ -1,0 +1,1753 @@
+/* =========================================================
+   COMPANY DASHBOARD
+   ========================================================= */
+
+.company-dashboard {
+  min-height: 100vh;
+  margin-left: 250px;
+
+  background: #f8fafc;
+  color: #111827;
+
+  font-family: "Times New Roman", Times, serif;
+  box-sizing: border-box;
+}
+
+.company-dashboard *,
+.company-dashboard *::before,
+.company-dashboard *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   MAIN AREA
+   ========================================================= */
+
+.company-main {
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #f8fafc;
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.company-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+
+  gap: 24px;
+
+  padding: 28px;
+
+  width: 100%;
+  max-width: 1700px;
+
+  margin: 0 auto;
+}
+
+.company-center {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 24px;
+}
+
+/* =========================================================
+   APPROVAL BANNER
+   ========================================================= */
+
+.company-approval-banner {
+  min-height: 74px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 16px 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #111827;
+
+  border-radius: 12px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.company-approval-banner > svg {
+  width: 25px;
+  height: 25px;
+
+  flex-shrink: 0;
+}
+
+.company-approval-banner > div {
+  flex: 1;
+}
+
+.company-approval-banner strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.company-approval-banner p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.company-approval-banner a {
+  flex-shrink: 0;
+
+  padding: 9px 14px;
+
+  border-radius: 8px;
+
+  background: #111827;
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.company-approval-banner a:hover {
+  background: #000000;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   WELCOME SECTION
+   ========================================================= */
+
+.company-welcome {
+  position: relative;
+
+  min-height: 190px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  overflow: hidden;
+
+  padding: 30px 32px;
+
+  border-radius: 16px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.12);
+}
+
+.company-welcome::after {
+  content: "";
+
+  position: absolute;
+
+  width: 250px;
+  height: 250px;
+
+  right: -90px;
+  top: -110px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 50%;
+}
+
+.company-welcome > div:first-child {
+  position: relative;
+  z-index: 2;
+
+  max-width: 650px;
+}
+
+.company-welcome h1 {
+  margin: 0 0 8px;
+
+  font-size: 27px;
+  line-height: 1.2;
+
+  font-weight: 700;
+}
+
+.company-welcome p {
+  margin: 0 0 22px;
+
+  color: #cbd5e1;
+
+  font-size: 14px;
+}
+
+.company-welcome > div:first-child > div {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.company-welcome a {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border-radius: 8px;
+
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.company-welcome a:first-child {
+  background: #ffffff;
+  color: #111827;
+}
+
+.company-welcome a:first-child:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.company-welcome a:last-child {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  color: #ffffff;
+}
+
+.company-welcome a:last-child:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.company-welcome a svg {
+  width: 16px;
+  height: 16px;
+}
+
+.company-welcome-art {
+  position: relative;
+  z-index: 2;
+
+  width: 175px;
+  height: 130px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-welcome-art svg {
+  position: absolute;
+
+  width: 48px;
+  height: 48px;
+
+  padding: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: #ffffff;
+}
+
+.company-welcome-art svg:nth-child(1) {
+  left: 8px;
+  top: 30px;
+}
+
+.company-welcome-art svg:nth-child(2) {
+  right: 12px;
+  top: 8px;
+}
+
+.company-welcome-art svg:nth-child(3) {
+  right: 28px;
+  bottom: 8px;
+}
+
+/* =========================================================
+   METRICS
+   ========================================================= */
+
+.company-metrics {
+  display: grid;
+
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  gap: 5px;
+}
+
+.company-metrics > article {
+  min-height: 135px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 5px;
+
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.company-metrics > article:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.company-metrics > article > div {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #f1f5f9;
+}
+
+.company-metrics > article > div svg {
+  width: 19px;
+  height: 19px;
+
+  color: #111827;
+}
+
+.company-metrics > article > span {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.company-metrics > article span {
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+.company-metrics > article strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #111827;
+
+  font-size: 25px;
+  line-height: 1;
+
+  font-weight: 700;
+}
+
+.company-metrics > article small {
+  margin-top: 4px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   PANEL
+   ========================================================= */
+
+.company-panel {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.025);
+}
+
+/* =========================================================
+   PANEL HEADER
+   ========================================================= */
+
+.company-panel-head {
+  min-height: 74px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 18px 22px;
+
+  border-bottom: 1px solid #eef2f7;
+}
+
+.company-panel-head > div {
+  min-width: 0;
+}
+
+.company-panel-head h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.company-panel-head > div > h2 {
+  margin-bottom: 10px;
+}
+
+.company-panel-head > span {
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+.company-panel-head > a {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  color: #111827;
+
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.company-panel-head > a:hover {
+  text-decoration: underline;
+}
+
+.company-panel-head > a svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   JOB SEARCH
+   ========================================================= */
+
+.company-job-search {
+  width: 280px;
+
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 8px;
+}
+
+.company-job-search svg {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  color: #94a3b8;
+}
+
+.company-job-search input {
+  width: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.company-job-search input::placeholder {
+  color: #94a3b8;
+}
+
+/* =========================================================
+   ACTIVE JOB LIST
+   ========================================================= */
+
+.active-job-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.active-job-list article {
+  min-height: 75px;
+
+  display: grid;
+  grid-template-columns: 44px minmax(160px, 1fr) 95px 95px 95px 35px;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 14px 22px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  transition: background 0.2s ease;
+}
+
+.active-job-list article:last-child {
+  border-bottom: 0;
+}
+
+.active-job-list article:hover {
+  background: #fafafa;
+}
+
+.active-job-list article > span:first-child {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #f1f5f9;
+
+  color: #111827;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.active-job-list article > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.active-job-list article strong {
+  overflow: hidden;
+
+  color: #111827;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active-job-list article small {
+  overflow: hidden;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active-job-list article > p {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  margin: 0;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+.active-job-list article > p b {
+  color: #111827;
+
+  font-size: 15px;
+}
+
+.active-job-list article > button {
+  width: 30px;
+  height: 30px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  letter-spacing: 1px;
+}
+
+.active-job-list article > button:hover {
+  background: #f1f5f9;
+
+  color: #111827;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.company-empty {
+  padding: 35px 20px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   APPLICATION TABLE
+   ========================================================= */
+
+.company-application-list {
+  width: 100%;
+}
+
+.company-table-head,
+.company-application-list article {
+  display: grid;
+
+  grid-template-columns:
+    minmax(160px, 1.5fr)
+    minmax(130px, 1fr)
+    110px
+    100px
+    100px;
+
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 14px 22px;
+}
+
+.company-table-head {
+  min-height: 46px;
+
+  background: #f8fafc;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-table-head span {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+.company-application-list article {
+  min-height: 68px;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.company-application-list article:last-child {
+  border-bottom: 0;
+}
+
+.company-application-list article:hover {
+  background: #fafafa;
+}
+
+.company-application-list article > div {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.company-application-list article > div > i {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.company-application-list article > div > strong {
+  overflow: hidden;
+
+  color: #111827;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.company-application-list article > span {
+  overflow: hidden;
+
+  color: #475569;
+
+  font-size: 12px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.company-application-list article > em {
+  width: max-content;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.company-application-list article > b {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  color: #111827;
+
+  font-size: 12px;
+}
+
+.company-application-list article > b > i {
+  width: 70px;
+  height: 4px;
+
+  display: block;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e2e8f0;
+}
+
+.company-application-list article > b > i > small {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #111827;
+}
+
+/* =========================================================
+   RIGHT SIDEBAR
+   ========================================================= */
+
+.company-rightbar {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+/* =========================================================
+   SIDE CARD
+   ========================================================= */
+
+.company-side-card {
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.025);
+}
+
+.company-side-card h2 {
+  margin: 0 0 16px;
+
+  color: #111827;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+.company-side-card:not(.analytics-card):not(.activity-card) {
+  display: flex;
+  flex-direction: column;
+}
+
+.company-side-card:not(.analytics-card):not(.activity-card) > a {
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 10px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  color: #475569;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.company-side-card:not(.analytics-card):not(.activity-card) > a:last-child {
+  border-bottom: 0;
+}
+
+.company-side-card:not(.analytics-card):not(.activity-card) > a:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+.company-side-card:not(.analytics-card):not(.activity-card)
+  > a
+  svg:first-child {
+  width: 17px;
+  height: 17px;
+
+  color: #111827;
+}
+
+.company-side-card:not(.analytics-card):not(.activity-card) > a svg:last-child {
+  width: 14px;
+  height: 14px;
+
+  margin-left: auto;
+
+  color: #94a3b8;
+}
+
+/* =========================================================
+   ANALYTICS CARD
+   ========================================================= */
+
+.analytics-card > div:first-child {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.analytics-card h2 {
+  margin: 0;
+}
+
+.analytics-card > div:first-child > span {
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+.company-chart {
+  position: relative;
+
+  height: 170px;
+
+  margin-top: 18px;
+
+  padding-left: 25px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-chart::before,
+.company-chart::after {
+  content: "";
+
+  position: absolute;
+
+  left: 25px;
+  right: 0;
+
+  height: 1px;
+
+  background: #f1f5f9;
+}
+
+.company-chart::before {
+  top: 35px;
+}
+
+.company-chart::after {
+  top: 85px;
+}
+
+.company-chart svg {
+  position: absolute;
+
+  left: 25px;
+  right: 0;
+  top: 10px;
+
+  width: calc(100% - 25px);
+  height: 135px;
+
+  overflow: visible;
+}
+
+.company-chart polyline {
+  fill: none;
+
+  stroke: #111827;
+
+  stroke-width: 2.5;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.company-chart > i {
+  position: absolute;
+
+  left: 0;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+
+  font-style: normal;
+}
+
+.company-chart > i:nth-of-type(1) {
+  top: 5px;
+}
+
+.company-chart > i:nth-of-type(2) {
+  top: 38px;
+}
+
+.company-chart > i:nth-of-type(3) {
+  top: 88px;
+}
+
+.company-chart > i:nth-of-type(4) {
+  bottom: 4px;
+}
+
+.analytics-card footer {
+  display: flex;
+  justify-content: space-between;
+
+  padding-top: 9px;
+}
+
+.analytics-card footer span {
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+/* =========================================================
+   ACTIVITY CARD
+   ========================================================= */
+
+.activity-card > div {
+  display: grid;
+
+  grid-template-columns: 28px 1fr;
+
+  column-gap: 10px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.activity-card > div:last-child {
+  border-bottom: 0;
+}
+
+.activity-card > div > svg {
+  width: 18px;
+  height: 18px;
+
+  margin-top: 2px;
+
+  color: #111827;
+}
+
+.activity-card > div > p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.activity-card > div > p strong {
+  color: #111827;
+}
+
+.activity-card > div > small {
+  grid-column: 2;
+
+  margin-top: 4px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.company-loading {
+  min-height: 100vh;
+
+  margin-left: 250px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 15px;
+}
+
+/* =========================================================
+   POST JOB / PROFILE OVERLAY
+   ========================================================= */
+
+.company-post-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  background: rgba(15, 23, 42, 0.48);
+
+  backdrop-filter: blur(4px);
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   POST FORM
+   ========================================================= */
+
+.company-post-form {
+  width: min(850px, 100%);
+
+  max-height: calc(100vh - 60px);
+
+  overflow-y: auto;
+
+  padding: 0;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.company-profile-form {
+  width: min(900px, 100%);
+}
+
+/* =========================================================
+   FORM HEADER
+   ========================================================= */
+
+.company-post-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 24px 26px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-post-head span {
+  color: #94a3b8;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.8px;
+}
+
+.company-post-head h2 {
+  margin: 5px 0 5px;
+
+  color: #111827;
+
+  font-size: 22px;
+}
+
+.company-post-head p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+.company-post-head > button {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #f8fafc;
+
+  color: #475569;
+
+  cursor: pointer;
+
+  font-size: 22px;
+
+  line-height: 1;
+}
+
+.company-post-head > button:hover {
+  background: #f1f5f9;
+
+  color: #111827;
+}
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.company-form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+
+  padding: 24px 26px;
+}
+
+.company-form-grid label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.company-form-grid label.full {
+  grid-column: 1 / -1;
+}
+
+.company-form-grid label > span {
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.company-form-grid input,
+.company-form-grid select,
+.company-form-grid textarea {
+  width: 100%;
+
+  min-height: 42px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.company-form-grid textarea {
+  min-height: 130px;
+
+  resize: vertical;
+
+  line-height: 1.5;
+}
+
+.company-form-grid input:focus,
+.company-form-grid select:focus,
+.company-form-grid textarea:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+}
+
+.company-form-grid input:disabled {
+  background: #f8fafc;
+
+  color: #94a3b8;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   FORM MESSAGE
+   ========================================================= */
+
+.company-post-message {
+  margin: 0 26px 18px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 8px;
+
+  background: #f8fafc;
+
+  color: #334155;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   FORM ACTIONS
+   ========================================================= */
+
+.company-post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding: 18px 26px;
+
+  border-top: 1px solid #e5e7eb;
+
+  background: #fafafa;
+}
+
+.company-post-actions button {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 16px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.company-post-actions button:first-child {
+  border: 1px solid #dbe3ec;
+
+  background: #ffffff;
+
+  color: #475569;
+}
+
+.company-post-actions button:first-child:hover {
+  background: #f8fafc;
+}
+
+.company-post-actions button:last-child {
+  border: 1px solid #111827;
+
+  background: #111827;
+
+  color: #ffffff;
+}
+
+.company-post-actions button:last-child:hover {
+  background: #000000;
+
+  transform: translateY(-1px);
+}
+
+.company-post-actions svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================================
+   FORM SCROLLBAR
+   ========================================================= */
+
+.company-post-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.company-post-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.company-post-form::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 999px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1250px) {
+  .company-content {
+    grid-template-columns: minmax(0, 1fr) 270px;
+
+    padding: 22px;
+  }
+
+  .company-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .active-job-list article {
+    grid-template-columns:
+      42px
+      minmax(150px, 1fr)
+      80px
+      80px
+      80px
+      30px;
+  }
+}
+
+/* =========================================================
+   SMALL TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .company-content {
+    grid-template-columns: 1fr;
+  }
+
+  .company-rightbar {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .activity-card {
+    grid-column: 1 / -1;
+  }
+
+  .company-welcome-art {
+    width: 140px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .company-dashboard {
+    margin-left: 72px;
+  }
+
+  .company-loading {
+    margin-left: 72px;
+  }
+
+  .company-content {
+    padding: 16px;
+
+    gap: 16px;
+  }
+
+  .company-center {
+    gap: 16px;
+  }
+
+  .company-approval-banner {
+    align-items: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+  .company-approval-banner a {
+    margin-left: 40px;
+  }
+
+  .company-welcome {
+    min-height: auto;
+
+    padding: 24px;
+  }
+
+  .company-welcome h1 {
+    font-size: 22px;
+  }
+
+  .company-welcome-art {
+    display: none;
+  }
+
+  .company-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .company-panel-head {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .company-job-search {
+    width: 100%;
+  }
+
+  .active-job-list article {
+    grid-template-columns: 42px minmax(0, 1fr) 35px;
+
+    gap: 10px;
+  }
+
+  .active-job-list article > p {
+    display: none;
+  }
+
+  .company-table-head {
+    display: none;
+  }
+
+  .company-application-list article {
+    grid-template-columns: 1fr auto;
+
+    gap: 10px;
+
+    padding: 15px;
+  }
+
+  .company-application-list article > span:nth-of-type(1) {
+    grid-column: 1;
+  }
+
+  .company-application-list article > span:nth-of-type(2) {
+    grid-column: 1;
+  }
+
+  .company-application-list article > em {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .company-application-list article > b {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .company-rightbar {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-card {
+    grid-column: auto;
+  }
+
+  .company-post-overlay {
+    align-items: flex-start;
+
+    padding: 16px;
+  }
+
+  .company-post-form {
+    max-height: calc(100vh - 32px);
+  }
+
+  .company-form-grid {
+    grid-template-columns: 1fr;
+
+    padding: 20px;
+  }
+
+  .company-form-grid label.full {
+    grid-column: auto;
+  }
+
+  .company-post-head {
+    padding: 20px;
+  }
+
+  .company-post-actions {
+    padding: 16px 20px;
+  }
+
+  .company-post-message {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .company-dashboard {
+    margin-left: 64px;
+  }
+
+  .company-loading {
+    margin-left: 64px;
+  }
+
+  .company-content {
+    padding: 12px;
+  }
+
+  .company-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .company-welcome {
+    padding: 20px;
+  }
+
+  .company-welcome h1 {
+    font-size: 20px;
+  }
+
+  .company-welcome p {
+    font-size: 12px;
+  }
+
+  .company-welcome > div:first-child > div {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .company-welcome a {
+    width: 100%;
+  }
+
+  .company-panel-head {
+    padding: 16px;
+  }
+
+  .active-job-list article {
+    padding: 12px 16px;
+  }
+
+  .company-side-card {
+    padding: 16px;
+  }
+
+  .company-post-overlay {
+    padding: 8px;
+  }
+
+  .company-post-form {
+    max-height: calc(100vh - 16px);
+
+    border-radius: 12px;
+  }
+
+  .company-post-head {
+    padding: 16px;
+  }
+
+  .company-post-head h2 {
+    font-size: 19px;
+  }
+
+  .company-form-grid {
+    padding: 16px;
+  }
+
+  .company-post-actions {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+
+    padding: 14px 16px;
+  }
+
+  .company-post-actions button {
+    width: 100%;
+  }
+
+  .company-post-message {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .company-welcome a,
+  .company-metrics > article,
+  .active-job-list article,
+  .company-post-actions button,
+  .company-approval-banner a {
+    transition: none;
+  }
+}

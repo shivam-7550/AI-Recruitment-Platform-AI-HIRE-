@@ -1,0 +1,422 @@
+/* =========================================================
+   CANDIDATE SIDEBAR
+   ========================================================= */
+
+.company-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  width: 250px;
+  height: 100vh;
+  font-family: "Times New Roman", Times, serif;
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e5e7eb;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.company-sidebar-logo {
+  height: 76px;
+  font-family: "Times New Roman", Times, serif;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 24px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.company-sidebar-logo a {
+  color: #111827;
+
+  text-decoration: none;
+}
+
+.company-sidebar-logo strong {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: "Times New Roman", Times, serif;
+
+  letter-spacing: -0.5px;
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.company-sidebar-nav {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  padding: 22px 14px;
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   NAVIGATION LINK
+   ========================================================= */
+
+.company-sidebar-link {
+  position: relative;
+
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  color: #64748b;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* =========================================================
+   LINK HOVER
+   ========================================================= */
+
+.company-sidebar-link:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+/* =========================================================
+   ACTIVE LINK
+   ========================================================= */
+
+.company-sidebar-link-active {
+  background: #111827;
+
+  color: #ffffff;
+
+  font-weight: 600;
+}
+
+.company-sidebar-link-active:hover {
+  background: #111827;
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   ACTIVE LINK INDICATOR
+   ========================================================= */
+
+.company-sidebar-link-active::before {
+  content: "";
+
+  position: absolute;
+
+  left: -14px;
+
+  top: 50%;
+
+  width: 3px;
+  height: 26px;
+
+  background: #111827;
+
+  border-radius: 0 4px 4px 0;
+
+  transform: translateY(-50%);
+}
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.company-sidebar-link-icon {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.company-sidebar-link-label {
+  flex: 1;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.company-sidebar-link-badge {
+  min-width: 20px;
+  height: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.company-sidebar-link-active .company-sidebar-link-badge {
+  background: rgba(255, 255, 255, 0.15);
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   BOTTOM SECTION
+   ========================================================= */
+
+.company-sidebar-bottom {
+  padding: 14px;
+
+  border-top: 1px solid #f1f5f9;
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.company-sidebar-logout {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.company-sidebar-logout:hover {
+  background: #fef2f2;
+
+  color: #dc2626;
+}
+
+/* =========================================================
+   LOGOUT ICON
+   ========================================================= */
+
+.company-sidebar-logout-icon {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.company-sidebar-nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.company-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.company-sidebar-nav::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+
+  border-radius: 999px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .company-sidebar {
+    width: 220px;
+  }
+
+  .company-sidebar-logo {
+    padding: 0 20px;
+  }
+
+  .company-sidebar-nav {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .company-sidebar-link {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .company-sidebar-logout {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .company-sidebar {
+    position: fixed;
+
+    width: 72px;
+  }
+
+  .company-sidebar-logo {
+    height: 70px;
+
+    justify-content: center;
+
+    padding: 0;
+  }
+
+  .company-sidebar-logo strong {
+    font-size: 18px;
+
+    writing-mode: vertical-rl;
+
+    letter-spacing: 0;
+  }
+
+  .company-sidebar-nav {
+    padding: 16px 8px;
+  }
+
+  .company-sidebar-link {
+    justify-content: center;
+
+    gap: 0;
+
+    padding: 0;
+
+    min-height: 46px;
+  }
+
+  .company-sidebar-link-label,
+  .company-sidebar-link-badge {
+    display: none;
+  }
+
+  .company-sidebar-link-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .company-sidebar-link-active::before {
+    left: -8px;
+
+    height: 24px;
+  }
+
+  .company-sidebar-bottom {
+    padding: 8px;
+  }
+
+  .company-sidebar-logout {
+    justify-content: center;
+
+    padding: 0;
+
+    min-height: 46px;
+  }
+
+  .company-sidebar-logout span {
+    display: none;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .company-sidebar {
+    width: 64px;
+  }
+
+  .company-sidebar-link-active::before {
+    left: -8px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .company-sidebar-link,
+  .company-sidebar-logout {
+    transition: none;
+  }
+}
+

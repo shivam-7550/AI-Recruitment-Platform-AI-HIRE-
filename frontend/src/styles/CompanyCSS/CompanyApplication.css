@@ -1,0 +1,1102 @@
+/* =========================================================
+   COMPANY APPLICATIONS PAGE
+   File: CompanyApplication.css
+========================================================= */
+
+.company-applications-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f7f7f8;
+  color: #111111;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.company-applications-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 250px;
+  background: #f7f7f8;
+}
+
+.company-applications-content {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 28px 36px 50px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   TOP ACTIONS
+========================================================= */
+
+.company-applications-heading-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.company-applications-refresh-btn {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid #dddddd;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #111111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.company-applications-refresh-btn:hover {
+  background: #111111;
+  border-color: #111111;
+  color: #ffffff;
+}
+
+.company-applications-refresh-btn:active {
+  transform: scale(0.98);
+}
+
+.company-applications-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.company-applications-refresh-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.company-applications-refresh-icon {
+  animation: companyApplicationsRotate 0.8s linear infinite;
+}
+
+@keyframes companyApplicationsRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.company-applications-error {
+  margin-bottom: 18px;
+  padding: 13px 15px;
+  border: 1px solid #dddddd;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #333333;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   SUMMARY STATS
+========================================================= */
+
+.company-applications-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.company-applications-stat-card {
+  min-width: 0;
+  min-height: 86px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.company-applications-stat-card:hover {
+  border-color: #cccccc;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.company-applications-stat-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #111111;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-applications-stat-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.company-applications-stat-info {
+  min-width: 0;
+}
+
+.company-applications-stat-info span {
+  display: block;
+  margin-bottom: 5px;
+  color: #777777;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.company-applications-stat-info strong {
+  display: block;
+  color: #111111;
+  font-size: 23px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.company-applications-toolbar {
+  margin-bottom: 20px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+}
+
+.company-applications-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+
+.company-applications-results-header h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.company-applications-results-count {
+  display: block;
+  margin-top: 5px;
+  color: #777777;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.company-applications-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-applications-filter-select {
+  height: 43px;
+  min-width: 190px;
+  padding: 0 13px;
+  border: 1px solid #dddddd;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #111111;
+  outline: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.company-applications-filter-select:focus {
+  border-color: #111111;
+}
+
+.company-applications-search-box {
+  flex: 1;
+  min-width: 0;
+  height: 43px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #dddddd;
+  border-radius: 9px;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.company-applications-search-box:focus-within {
+  border-color: #111111;
+  background: #ffffff;
+}
+
+.company-applications-search-box svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: #777777;
+}
+
+.company-applications-search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #111111;
+  font-size: 13px;
+}
+
+.company-applications-search-box input::placeholder {
+  color: #999999;
+}
+
+/* =========================================================
+   APPLICATION LIST
+========================================================= */
+
+.company-applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* =========================================================
+   APPLICATION CARD
+========================================================= */
+
+.company-application-card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+  border-radius: 14px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+  box-sizing: border-box;
+}
+
+.company-application-card:hover {
+  border-color: #cccccc;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   CARD TOP
+========================================================= */
+
+.company-application-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.company-application-candidate {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.company-application-avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #111111;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.company-application-candidate-info {
+  min-width: 0;
+}
+
+.company-application-candidate-info h3 {
+  margin: 0;
+  color: #111111;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.company-application-candidate-info p {
+  margin: 4px 0 0;
+  color: #666666;
+  font-size: 12px;
+}
+
+.company-application-candidate-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.company-application-status {
+  min-height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-transform: capitalize;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.company-application-status.applied {
+  background: #eeeeee;
+  color: #222222;
+}
+
+.company-application-status.reviewing {
+  background: #e7e7e7;
+  color: #111111;
+}
+
+.company-application-status.shortlisted {
+  background: #111111;
+  color: #ffffff;
+}
+
+.company-application-status.rejected {
+  background: #f3f3f3;
+  color: #777777;
+}
+
+/* =========================================================
+   JOB INFORMATION
+========================================================= */
+
+.company-application-job-info {
+  margin-top: 17px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  background: #f8f8f8;
+  border: 1px solid #eeeeee;
+}
+
+.company-application-job-info-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #888888;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.company-application-job-info strong {
+  display: block;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   META
+========================================================= */
+
+.company-application-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 17px;
+}
+
+.company-application-meta-item {
+  min-width: 0;
+}
+
+.company-application-meta-item span {
+  display: block;
+  margin-bottom: 5px;
+  color: #888888;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.company-application-meta-item strong {
+  display: block;
+  overflow: hidden;
+  color: #222222;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   RESUME ROW
+========================================================= */
+
+.company-application-resume-row {
+  margin-top: 17px;
+  padding: 13px 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.company-application-resume-info {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.company-application-resume-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #111111;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-application-resume-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.company-application-resume-info > div:last-child {
+  min-width: 0;
+}
+
+.company-application-resume-info span {
+  display: block;
+  margin-bottom: 3px;
+  color: #888888;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.company-application-resume-info strong {
+  display: block;
+  max-width: 450px;
+  overflow: hidden;
+  color: #222222;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   DOWNLOAD BUTTON
+========================================================= */
+
+.company-application-download-btn {
+  width: 38px;
+  height: 38px;
+  min-height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid #111111;
+  border-radius: 8px;
+  background: #111111;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.company-application-download-btn:hover {
+  background: #ffffff;
+  color: #111111;
+}
+
+.company-application-download-btn:active {
+  transform: scale(0.97);
+}
+
+.company-application-download-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.company-application-download-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   CARD BOTTOM
+========================================================= */
+
+.company-application-card-bottom {
+  margin-top: 17px;
+  padding-top: 15px;
+  border-top: 1px solid #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* =========================================================
+   ATS
+========================================================= */
+
+.company-application-ats {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.company-application-ats-circle {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 3px solid #111111;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111111;
+  font-size: 10px;
+  font-weight: 900;
+  box-sizing: border-box;
+}
+
+.company-application-ats-details {
+  min-width: 0;
+}
+
+.company-application-ats-details span {
+  display: block;
+  margin-bottom: 3px;
+  color: #777777;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.company-application-ats-details strong {
+  color: #111111;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   APPLIED DATE
+========================================================= */
+
+.company-application-applied-date {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #777777;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.company-application-applied-date svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.company-application-view-btn {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.company-application-view-btn:hover {
+  background: #111111;
+  border-color: #111111;
+  color: #ffffff;
+}
+
+.company-application-view-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+.company-application-skills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 17px;
+  padding-top: 15px;
+  border-top: 1px solid #eeeeee;
+}
+
+.company-application-skill {
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 6px;
+  background: #f2f2f2;
+  border: 1px solid #e5e5e5;
+  color: #333333;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.company-applications-empty {
+  min-height: 320px;
+  padding: 40px 20px;
+  background: #ffffff;
+  border: 1px dashed #d7d7d7;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.company-applications-empty-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  background: #f0f0f0;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-applications-empty-icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.company-applications-empty h3 {
+  margin: 0;
+  color: #111111;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.company-applications-empty p {
+  max-width: 430px;
+  margin: 8px 0 0;
+  color: #777777;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.company-applications-loading {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  background: transparent;
+  color: #555555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.company-applications-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #dddddd;
+  border-top-color: #111111;
+  border-radius: 50%;
+  animation: companyApplicationsSpin 0.75s linear infinite;
+}
+
+@keyframes companyApplicationsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.company-application-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.company-application-modal {
+  width: min(720px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.company-application-modal-header {
+  padding: 20px 22px;
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.company-application-modal-header span {
+  display: block;
+  margin-bottom: 5px;
+  color: #888888;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.company-application-modal-header h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.company-application-modal-close {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.company-application-modal-close:hover {
+  background: #f2f2f2;
+}
+
+.company-application-modal-close svg {
+  width: 17px;
+  height: 17px;
+}
+
+.company-application-modal-body {
+  padding: 22px;
+}
+
+.company-application-modal-section {
+  margin-bottom: 22px;
+}
+
+.company-application-modal-section:last-child {
+  margin-bottom: 0;
+}
+
+.company-application-modal-section h4 {
+  margin: 0 0 11px;
+  color: #777777;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.company-application-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.company-application-modal-field {
+  padding: 12px;
+  border-radius: 9px;
+  background: #f8f8f8;
+  border: 1px solid #eeeeee;
+}
+
+.company-application-modal-field span {
+  display: block;
+  margin-bottom: 4px;
+  color: #888888;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.company-application-modal-field strong {
+  color: #222222;
+  font-size: 12px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+/* =========================================================
+   MODAL RESUME
+========================================================= */
+
+.company-application-modal-resume {
+  padding: 13px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.company-application-modal-resume-info {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.company-application-modal-resume-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #111111;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-application-modal-resume-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.company-application-modal-resume-info > div:last-child {
+  min-width: 0;
+}
+
+.company-application-modal-resume-info span {
+  display: block;
+  margin-bottom: 4px;
+  color: #888888;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.company-application-modal-resume-info strong {
+  display: block;
+  max-width: 420px;
+  overflow: hidden;
+  color: #222222;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .company-applications-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .company-application-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .company-application-card-bottom {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .company-applications-main {
+    margin-left: 0;
+  }
+
+  .company-applications-content {
+    padding: 25px 20px 40px;
+  }
+
+  .company-applications-toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .company-applications-filter-select {
+    width: 100%;
+  }
+
+  .company-applications-heading-action {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 650px) {
+  .company-applications-content {
+    padding: 20px 14px 32px;
+  }
+
+  .company-applications-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .company-application-card {
+    padding: 16px;
+  }
+
+  .company-application-card-top {
+    flex-direction: column;
+  }
+
+  .company-application-status {
+    align-self: flex-start;
+  }
+
+  .company-application-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .company-application-card-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .company-application-view-btn {
+    width: 100%;
+  }
+
+  .company-application-applied-date {
+    order: 2;
+  }
+
+  .company-application-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-application-resume-row,
+  .company-application-modal-resume {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .company-application-download-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .company-applications-heading-action {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .company-applications-refresh-btn {
+    width: 100%;
+  }
+
+  .company-application-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .company-application-candidate {
+    align-items: center;
+  }
+
+  .company-application-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .company-application-resume-info strong,
+  .company-application-modal-resume-info strong {
+    max-width: 220px;
+  }
+}

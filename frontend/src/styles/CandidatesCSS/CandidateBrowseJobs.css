@@ -1,0 +1,1139 @@
+/* =========================================================
+CANDIDATE BROWSE JOBS
+All classes are uniquely prefixed with:
+candidate-browse-
+========================================================= */
+
+/* =========================================================
+PAGE LAYOUT
+========================================================= */
+
+.candidate-browse-layout {
+  min-height: 100vh;
+
+  display: flex;
+
+  background: #f8fafc;
+
+  color: #111827;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* =========================================================
+MAIN PAGE
+========================================================= */
+
+.candidate-browse-page {
+  --candidate-browse-page-gutter: 36px;
+
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 0 var(--candidate-browse-page-gutter) 32px;
+
+  margin-left: 250px;
+}
+
+.candidate-browse-page > .candidate-shared-header {
+  width: calc(100% + (var(--candidate-browse-page-gutter) * 2));
+
+  margin-right: calc(var(--candidate-browse-page-gutter) * -1);
+  margin-bottom: 32px;
+  margin-left: calc(var(--candidate-browse-page-gutter) * -1);
+}
+
+/* =========================================================
+HEADER
+========================================================= */
+
+.candidate-browse-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 26px;
+}
+
+.candidate-browse-header h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 30px;
+  font-weight: 750;
+
+  line-height: 1.2;
+}
+
+.candidate-browse-header p {
+  margin: 8px 0 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+/* =========================================================
+JOB COUNT
+========================================================= */
+
+.candidate-browse-count {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 14px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.candidate-browse-count svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =========================================================
+MESSAGE
+========================================================= */
+
+.candidate-browse-message {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+
+  padding: 12px 15px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+
+  background: #eff6ff;
+
+  color: #1d4ed8;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.candidate-browse-message button {
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-browse-message button:hover {
+  background: #dbeafe;
+
+  color: #1e40af;
+}
+
+.candidate-browse-message button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================================
+FILTER BAR
+========================================================= */
+
+.candidate-browse-filters {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 26px;
+
+  padding: 14px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+/* =========================================================
+SEARCH
+========================================================= */
+
+.candidate-browse-search {
+  position: relative;
+
+  flex: 1;
+
+  min-width: 240px;
+}
+
+.candidate-browse-search svg {
+  position: absolute;
+
+  top: 50%;
+  left: 13px;
+
+  width: 17px;
+  height: 17px;
+
+  color: #9ca3af;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+.candidate-browse-search input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  padding: 0 14px 0 40px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-browse-search input::placeholder {
+  color: #9ca3af;
+}
+
+.candidate-browse-search input:hover {
+  border-color: #9ca3af;
+}
+
+.candidate-browse-search input:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.07);
+}
+
+/* =========================================================
+LOCATION
+========================================================= */
+
+.candidate-browse-location {
+  position: relative;
+
+  width: 210px;
+}
+
+.candidate-browse-location svg {
+  position: absolute;
+
+  top: 50%;
+  left: 13px;
+
+  width: 17px;
+  height: 17px;
+
+  color: #9ca3af;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+.candidate-browse-location input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  padding: 0 13px 0 39px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-browse-location input::placeholder {
+  color: #9ca3af;
+}
+
+.candidate-browse-location input:hover {
+  border-color: #9ca3af;
+}
+
+.candidate-browse-location input:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.07);
+}
+
+/* =========================================================
+EMPLOYMENT TYPE
+========================================================= */
+
+.candidate-browse-type {
+  position: relative;
+
+  width: 210px;
+}
+
+.candidate-browse-type svg {
+  position: absolute;
+
+  top: 50%;
+  left: 13px;
+
+  width: 16px;
+  height: 16px;
+
+  color: #6b7280;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+.candidate-browse-type select {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  padding: 0 34px 0 38px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-browse-type select:hover {
+  border-color: #9ca3af;
+}
+
+.candidate-browse-type select:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.07);
+}
+
+/* =========================================================
+CLEAR FILTER BUTTON
+========================================================= */
+
+.candidate-browse-clear {
+  min-height: 44px;
+
+  padding: 0 15px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-browse-clear:hover {
+  background: #f3f4f6;
+
+  border-color: #9ca3af;
+
+  color: #111827;
+}
+
+/* =========================================================
+RESULTS
+========================================================= */
+
+.candidate-browse-results {
+  width: 100%;
+}
+
+/* =========================================================
+COMPACT JOB GRID
+========================================================= */
+
+.candidate-browse-grid {
+  display: grid;
+
+  /* 4 compact cards per row */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+/* =========================================================
+COMPACT JOB CARD
+========================================================= */
+
+.candidate-browse-card {
+  min-width: 0;
+
+  min-height: 250px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding: 13px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  box-shadow: 0 2px 7px rgba(15, 23, 42, 0.035);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-browse-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #d1d5db;
+
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.07);
+}
+
+/* =========================================================
+COMPANY
+========================================================= */
+
+.candidate-browse-company {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  min-width: 0;
+
+  margin-bottom: 11px;
+}
+
+.candidate-browse-company-logo {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.candidate-browse-company > div:last-child {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+.candidate-browse-company strong {
+  overflow: hidden;
+
+  color: #111827;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate-browse-company span {
+  overflow: hidden;
+
+  margin-top: 2px;
+
+  color: #6b7280;
+
+  font-size: 10px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+JOB TITLE
+========================================================= */
+
+.candidate-browse-card h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  line-height: 1.3;
+}
+
+/* =========================================================
+DESCRIPTION
+========================================================= */
+
+.candidate-browse-description {
+  display: -webkit-box;
+
+  margin: 7px 0 10px;
+
+  overflow: hidden;
+
+  color: #6b7280;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* =========================================================
+JOB META
+========================================================= */
+
+.candidate-browse-meta {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-bottom: 9px;
+}
+
+.candidate-browse-meta span {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 4px 6px;
+
+  border-radius: 5px;
+
+  background: #f3f4f6;
+
+  color: #4b5563;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.candidate-browse-meta svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* =========================================================
+SKILLS
+========================================================= */
+
+.candidate-browse-skills {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  min-height: 22px;
+
+  margin-bottom: 10px;
+}
+
+.candidate-browse-skills span {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 4px 6px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* =========================================================
+BOTTOM INFORMATION
+========================================================= */
+
+.candidate-browse-bottom {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin-top: auto;
+
+  padding-top: 10px;
+
+  border-top: 1px solid #f1f5f9;
+}
+
+.candidate-browse-salary {
+  color: #111827;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.candidate-browse-bottom > span {
+  color: #9ca3af;
+
+  font-size: 9px;
+
+  text-align: right;
+}
+
+/* =========================================================
+ACTIONS
+========================================================= */
+
+.candidate-browse-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 9px;
+}
+
+/* =========================================================
+SAVE BUTTON
+========================================================= */
+
+.candidate-browse-save {
+  min-height: 32px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 0 9px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: inherit;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-browse-save:hover {
+  background: #f3f4f6;
+
+  border-color: #9ca3af;
+
+  color: #111827;
+}
+
+.candidate-browse-save.is-saved {
+  border-color: #111827;
+
+  background: #111827;
+
+  color: #ffffff;
+}
+
+.candidate-browse-save.is-saved:hover {
+  background: #000000;
+
+  border-color: #000000;
+}
+
+.candidate-browse-save svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* =========================================================
+APPLY BUTTON
+========================================================= */
+
+.candidate-browse-apply {
+  flex: 1;
+
+  min-height: 32px;
+
+  padding: 0 10px;
+
+  border: 1px solid #111827;
+  border-radius: 7px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.candidate-browse-apply:hover:not(:disabled) {
+  background: #000000;
+
+  border-color: #000000;
+}
+
+.candidate-browse-apply:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.candidate-browse-apply:disabled {
+  border-color: #d1d5db;
+
+  background: #f3f4f6;
+
+  color: #9ca3af;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+EMPTY STATE
+========================================================= */
+
+.candidate-browse-empty {
+  min-height: 260px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px;
+
+  border: 1px dashed #d1d5db;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  text-align: center;
+}
+
+.candidate-browse-empty > svg {
+  width: 38px;
+  height: 38px;
+
+  margin-bottom: 12px;
+
+  color: #9ca3af;
+}
+
+.candidate-browse-empty h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 17px;
+}
+
+.candidate-browse-empty p {
+  margin: 7px 0 17px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+.candidate-browse-empty button {
+  min-height: 38px;
+
+  padding: 0 14px;
+
+  border: 1px solid #111827;
+  border-radius: 8px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.candidate-browse-empty button:hover {
+  background: #000000;
+
+  border-color: #000000;
+}
+
+/* =========================================================
+LOADER
+========================================================= */
+
+.candidate-browse-loader {
+  width: 30px;
+  height: 30px;
+
+  margin-bottom: 12px;
+
+  border: 3px solid #e5e7eb;
+  border-top-color: #111827;
+
+  border-radius: 50%;
+
+  animation: candidate-browse-loading 0.7s linear infinite;
+}
+
+@keyframes candidate-browse-loading {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+TABLET - 1200px
+========================================================= */
+
+@media (max-width: 1200px) {
+  .candidate-browse-page {
+    --candidate-browse-page-gutter: 26px;
+
+    padding: 0 var(--candidate-browse-page-gutter) 28px;
+
+    margin-left: 240px;
+  }
+
+  .candidate-browse-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+  }
+
+  .candidate-browse-filters {
+    flex-wrap: wrap;
+  }
+
+  .candidate-browse-search {
+    flex-basis: 100%;
+  }
+
+  .candidate-browse-location,
+  .candidate-browse-type {
+    flex: 1;
+
+    width: auto;
+  }
+}
+
+/* =========================================================
+SMALL TABLET - 900px
+========================================================= */
+
+@media (max-width: 900px) {
+  .candidate-browse-page {
+    margin-left: 0;
+
+    --candidate-browse-page-gutter: 20px;
+
+    padding: 0 var(--candidate-browse-page-gutter) 24px;
+  }
+
+  .candidate-browse-header {
+    align-items: flex-start;
+  }
+
+  .candidate-browse-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+  }
+}
+
+/* =========================================================
+MOBILE - 650px
+========================================================= */
+
+@media (max-width: 650px) {
+  .candidate-browse-page {
+    --candidate-browse-page-gutter: 15px;
+
+    padding: 0 var(--candidate-browse-page-gutter) 30px;
+  }
+
+  .candidate-browse-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-bottom: 20px;
+  }
+
+  .candidate-browse-header h1 {
+    font-size: 25px;
+  }
+
+  .candidate-browse-header p {
+    font-size: 13px;
+  }
+
+  .candidate-browse-count {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    justify-content: center;
+  }
+
+  .candidate-browse-filters {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 9px;
+
+    padding: 11px;
+  }
+
+  .candidate-browse-search,
+  .candidate-browse-location,
+  .candidate-browse-type {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  .candidate-browse-clear {
+    width: 100%;
+  }
+
+  .candidate-browse-grid {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+  .candidate-browse-card {
+    min-height: 230px;
+
+    padding: 14px;
+  }
+}
+
+/* =========================================================
+VERY SMALL MOBILE - 400px
+========================================================= */
+
+@media (max-width: 400px) {
+  .candidate-browse-page {
+    --candidate-browse-page-gutter: 12px;
+
+    padding: 0 var(--candidate-browse-page-gutter) 25px;
+  }
+
+  .candidate-browse-header h1 {
+    font-size: 23px;
+  }
+
+  .candidate-browse-company-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .candidate-browse-card h2 {
+    font-size: 15px;
+  }
+
+  .candidate-browse-actions {
+    flex-direction: column;
+  }
+
+  .candidate-browse-save,
+  .candidate-browse-apply {
+    width: 100%;
+  }
+
+  .candidate-browse-bottom {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 5px;
+  }
+
+  .candidate-browse-bottom > span {
+    text-align: left;
+  }
+}
+
+/* =========================================================
+REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .candidate-browse-card,
+  .candidate-browse-save,
+  .candidate-browse-apply,
+  .candidate-browse-clear,
+  .candidate-browse-message button {
+    transition: none;
+  }
+
+  .candidate-browse-loader {
+    animation: none;
+  }
+}

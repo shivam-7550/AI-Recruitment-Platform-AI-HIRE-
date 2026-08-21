@@ -1,0 +1,1096 @@
+/* =========================================================
+   CANDIDATE APPLICATION FORM
+   All classes intentionally use the
+   "candidate-application-" namespace so they do not
+   conflict with other components.
+========================================================= */
+
+.candidate-application-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.candidate-application-modal {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 48px);
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.18),
+    0 8px 20px rgba(0, 0, 0, 0.08);
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.candidate-application-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px 28px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  background: #ffffff;
+}
+
+.candidate-application-header-content {
+  min-width: 0;
+}
+
+.candidate-application-header h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  line-height: 1.25;
+}
+
+.candidate-application-header p {
+  margin: 6px 0 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.candidate-application-header small {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.candidate-application-close {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #4b5563;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.candidate-application-close:hover {
+  background: #f3f4f6;
+
+  color: #111827;
+
+  border-color: #d1d5db;
+}
+
+.candidate-application-close:active {
+  transform: scale(0.96);
+}
+
+.candidate-application-close:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+.candidate-application-close svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* =========================================================
+   JOB SUMMARY
+========================================================= */
+
+.candidate-application-job-summary {
+  margin: 22px 28px 0;
+
+  padding: 18px 20px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #f9fafb;
+}
+
+.candidate-application-job-logo {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.candidate-application-job-details {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.candidate-application-job-details h3 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.candidate-application-job-details p {
+  margin: 5px 0 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+.candidate-application-job-meta {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 8px;
+
+  flex-wrap: wrap;
+}
+
+.candidate-application-job-meta span {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 9px;
+
+  border-radius: 999px;
+
+  background: #eef2ff;
+
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.candidate-application-form {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+
+  flex: 1;
+}
+
+.candidate-application-body {
+  padding: 26px 28px;
+
+  overflow-y: auto;
+
+  min-height: 0;
+}
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.candidate-application-section {
+  margin-bottom: 28px;
+}
+
+.candidate-application-section:last-child {
+  margin-bottom: 0;
+}
+
+.candidate-application-section-title {
+  margin: 0 0 16px;
+
+  color: #111827;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.candidate-application-section-title span {
+  margin-left: 3px;
+
+  color: #dc2626;
+}
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.candidate-application-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.candidate-application-full-width {
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   FIELD
+========================================================= */
+
+.candidate-application-field {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.candidate-application-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.candidate-application-field label span {
+  margin-left: 3px;
+
+  color: #dc2626;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.candidate-application-field input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.candidate-application-field input::placeholder {
+  color: #9ca3af;
+}
+
+.candidate-application-field input:hover {
+  border-color: #9ca3af;
+}
+
+.candidate-application-field input:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+.candidate-application-field input:disabled {
+  background: #f3f4f6;
+
+  color: #6b7280;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   ERROR FIELD
+========================================================= */
+
+.candidate-application-field-error input {
+  border-color: #dc2626;
+
+  background: #fffafa;
+}
+
+.candidate-application-field-error input:focus {
+  border-color: #dc2626;
+
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+}
+
+.candidate-application-error {
+  margin-top: 6px;
+
+  color: #dc2626;
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   SELECTED SKILLS
+========================================================= */
+
+.candidate-application-selected-skills {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-bottom: 12px;
+}
+
+.candidate-application-selected-skill {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 9px;
+
+  border-radius: 7px;
+
+  background: #f3f4f6;
+
+  color: #111827;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.candidate-application-selected-skill button {
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #6b7280;
+
+  font-size: 16px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.candidate-application-selected-skill button:hover {
+  background: #e5e7eb;
+
+  color: #111827;
+}
+
+.candidate-application-selected-skill button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SKILL SEARCH
+========================================================= */
+
+.candidate-application-skill-search {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+.candidate-application-skill-search svg {
+  position: absolute;
+
+  left: 13px;
+
+  width: 17px;
+  height: 17px;
+
+  color: #9ca3af;
+
+  pointer-events: none;
+}
+
+.candidate-application-skill-search input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  min-height: 44px;
+
+  padding: 11px 13px 11px 40px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-application-skill-search input:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+.candidate-application-skill-search input:disabled {
+  background: #f3f4f6;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SKILLS LIST
+========================================================= */
+
+.candidate-application-skills-list {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-top: 12px;
+
+  max-height: 220px;
+
+  padding: 10px;
+
+  overflow-y: auto;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 10px;
+
+  background: #f9fafb;
+}
+
+.candidate-application-skill-option {
+  position: relative;
+
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.candidate-application-skill-option:hover {
+  border-color: #9ca3af;
+
+  background: #f3f4f6;
+}
+
+.candidate-application-skill-option input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.candidate-application-checkbox {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 5px;
+
+  background: #ffffff;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.candidate-application-checkbox svg {
+  width: 13px;
+  height: 13px;
+}
+
+.candidate-application-skill-selected {
+  border-color: #111827;
+
+  background: #111827;
+
+  color: #ffffff;
+}
+
+.candidate-application-skill-selected .candidate-application-checkbox {
+  border-color: #ffffff;
+
+  background: #ffffff;
+
+  color: #111827;
+}
+
+/* =========================================================
+   NO SKILLS
+========================================================= */
+
+.candidate-application-no-skills {
+  grid-column: 1 / -1;
+
+  margin: 0;
+
+  padding: 18px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+  text-align: center;
+}
+
+/* =========================================================
+   EXPERIENCE
+========================================================= */
+
+.candidate-application-experience {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+.candidate-application-experience input {
+  padding-right: 65px;
+}
+
+.candidate-application-experience span {
+  position: absolute;
+
+  right: 13px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   RESUME NOTICE
+========================================================= */
+
+.candidate-application-resume-notice {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  margin-top: 4px;
+
+  padding: 13px 15px;
+
+  border: 1px solid #dbeafe;
+
+  border-radius: 9px;
+
+  background: #eff6ff;
+
+  color: #1e40af;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.candidate-application-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding: 18px 28px;
+
+  border-top: 1px solid #e5e7eb;
+
+  background: #ffffff;
+}
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+.candidate-application-cancel {
+  min-height: 44px;
+
+  padding: 0 18px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-application-cancel:hover {
+  background: #f9fafb;
+
+  border-color: #9ca3af;
+
+  color: #111827;
+}
+
+.candidate-application-cancel:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.candidate-application-submit {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 20px;
+
+  border: 1px solid #111827;
+
+  border-radius: 9px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.candidate-application-submit:hover {
+  background: #000000;
+
+  border-color: #000000;
+}
+
+.candidate-application-submit:active {
+  transform: scale(0.98);
+}
+
+.candidate-application-submit:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.candidate-application-submit svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.candidate-application-spinner {
+  width: 16px;
+  height: 16px;
+
+  display: inline-block;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: candidate-application-spin 0.7s linear infinite;
+}
+
+@keyframes candidate-application-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.candidate-application-body::-webkit-scrollbar,
+.candidate-application-skills-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.candidate-application-body::-webkit-scrollbar-track,
+.candidate-application-skills-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.candidate-application-body::-webkit-scrollbar-thumb,
+.candidate-application-skills-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+
+  border-radius: 999px;
+}
+
+.candidate-application-body::-webkit-scrollbar-thumb:hover,
+.candidate-application-skills-list::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+  .candidate-application-overlay {
+    align-items: flex-start;
+
+    padding: 16px;
+  }
+
+  .candidate-application-modal {
+    max-height: calc(100vh - 32px);
+
+    border-radius: 14px;
+  }
+
+  .candidate-application-header {
+    padding: 18px 20px;
+  }
+
+  .candidate-application-header h2 {
+    font-size: 21px;
+  }
+
+  .candidate-application-job-summary {
+    margin: 18px 20px 0;
+
+    padding: 15px;
+  }
+
+  .candidate-application-body {
+    padding: 22px 20px;
+  }
+
+  .candidate-application-footer {
+    padding: 15px 20px;
+  }
+
+  .candidate-application-skills-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .candidate-application-overlay {
+    align-items: stretch;
+
+    padding: 0;
+  }
+
+  .candidate-application-modal {
+    width: 100%;
+
+    max-height: 100vh;
+
+    min-height: 100vh;
+
+    border: 0;
+
+    border-radius: 0;
+  }
+
+  .candidate-application-header {
+    padding: 16px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+  }
+
+  .candidate-application-header h2 {
+    font-size: 19px;
+  }
+
+  .candidate-application-header p {
+    font-size: 12px;
+  }
+
+  .candidate-application-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .candidate-application-job-summary {
+    margin: 15px 16px 0;
+
+    padding: 13px;
+  }
+
+  .candidate-application-job-logo {
+    width: 42px;
+    height: 42px;
+
+    font-size: 16px;
+  }
+
+  .candidate-application-job-details h3 {
+    font-size: 15px;
+  }
+
+  .candidate-application-body {
+    padding: 20px 16px;
+  }
+
+  .candidate-application-section {
+    margin-bottom: 23px;
+  }
+
+  .candidate-application-section-title {
+    font-size: 16px;
+  }
+
+  .candidate-application-grid {
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+  }
+
+  .candidate-application-full-width {
+    grid-column: auto;
+  }
+
+  .candidate-application-skills-list {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-application-footer {
+    flex-direction: column-reverse;
+
+    padding: 14px 16px;
+
+    gap: 9px;
+  }
+
+  .candidate-application-cancel,
+  .candidate-application-submit {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 380px) {
+  .candidate-application-header {
+    padding: 14px;
+  }
+
+  .candidate-application-header h2 {
+    font-size: 17px;
+  }
+
+  .candidate-application-job-summary {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+
+  .candidate-application-body {
+    padding: 18px 14px;
+  }
+
+  .candidate-application-footer {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .candidate-application-close,
+  .candidate-application-field input,
+  .candidate-application-skill-search input,
+  .candidate-application-submit,
+  .candidate-application-cancel,
+  .candidate-application-skill-option {
+    transition: none;
+  }
+
+  .candidate-application-spinner {
+    animation: none;
+  }
+}

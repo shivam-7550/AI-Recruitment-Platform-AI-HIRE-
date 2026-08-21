@@ -1,0 +1,1266 @@
+/* =========================================================
+   COMPANY HEADER
+========================================================= */
+
+.company-header {
+  position: relative;
+
+  width: 100%;
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 28px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  font-family: "Times New Roman", Times, serif;
+
+  z-index: 900;
+}
+
+/* =========================================================
+   HEADER TITLE
+========================================================= */
+
+.company-header-title {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  min-width: 0;
+}
+
+.company-header-title h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 22px;
+  line-height: 1.3;
+
+  font-weight: 700;
+
+  letter-spacing: -0.3px;
+}
+
+.company-header-title p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.4;
+
+  font-weight: 400;
+}
+
+/* =========================================================
+   HEADER ACTIONS
+========================================================= */
+
+.company-header-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   NOTIFICATION WRAPPER
+========================================================= */
+
+.company-header-notification-wrapper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+/* =========================================================
+   NOTIFICATION BUTTON
+========================================================= */
+
+.company-header-notification-button {
+  position: relative;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.company-header-notification-button:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+.company-header-notification-button.active,
+.company-header-notification-active {
+  background: #f1f5f9;
+
+  color: #111827;
+
+  border-color: #e2e8f0;
+}
+
+.company-header-notification-button svg {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   NOTIFICATION BADGE
+========================================================= */
+
+.company-header-notification-button i {
+  position: absolute;
+
+  top: 4px;
+  right: 3px;
+
+  min-width: 17px;
+  height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 4px;
+
+  box-sizing: border-box;
+
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+
+  line-height: 1;
+}
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+========================================================= */
+
+.company-header-notification-dropdown {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: 370px;
+  max-width: calc(100vw - 30px);
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.12),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+
+  overflow: hidden;
+
+  animation: companyHeaderDropdownIn 0.16s ease-out;
+}
+
+@keyframes companyHeaderDropdownIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   NOTIFICATION HEADER
+========================================================= */
+
+.company-header-notification-head {
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 16px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.company-header-notification-head > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.company-header-notification-head strong {
+  color: #111827;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.company-header-notification-head span {
+  color: #94a3b8;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.company-header-notification-head > button {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #94a3b8;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.company-header-notification-head > button:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+.company-header-notification-head > button svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =========================================================
+   NOTIFICATION LIST
+========================================================= */
+
+.company-header-notification-list {
+  max-height: 350px;
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   NOTIFICATION ITEM
+========================================================= */
+
+.company-header-notification-item {
+  position: relative;
+
+  width: 100%;
+  min-height: 76px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 13px 16px;
+
+  box-sizing: border-box;
+
+  border: 0;
+  border-bottom: 1px solid #f8fafc;
+
+  background: #ffffff;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.company-header-notification-item:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   READ / UNREAD
+========================================================= */
+
+.company-header-notification-unread {
+  background: #fafafa;
+}
+
+.company-header-notification-read {
+  background: #ffffff;
+}
+
+/* =========================================================
+   NOTIFICATION ICON
+========================================================= */
+
+.company-header-notification-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  background: #f1f5f9;
+
+  color: #475569;
+}
+
+.company-header-notification-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================================
+   NOTIFICATION CONTENT
+========================================================= */
+
+.company-header-notification-content {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.company-header-notification-content strong {
+  overflow: hidden;
+
+  color: #111827;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.company-header-notification-content small {
+  overflow: hidden;
+
+  color: #64748b;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.company-header-notification-content em {
+  margin-top: 2px;
+
+  color: #94a3b8;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 10px;
+
+  font-style: normal;
+}
+
+/* =========================================================
+   NOTIFICATION DOT
+========================================================= */
+
+.company-header-notification-dot {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  margin-top: 7px;
+
+  border-radius: 50%;
+
+  background: #111827;
+}
+
+/* =========================================================
+   EMPTY NOTIFICATIONS
+========================================================= */
+
+.company-header-notification-empty {
+  min-height: 180px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+.company-header-notification-empty svg {
+  width: 28px;
+  height: 28px;
+
+  margin-bottom: 10px;
+
+  color: #94a3b8;
+}
+
+.company-header-notification-empty strong {
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.company-header-notification-empty span {
+  max-width: 230px;
+
+  margin-top: 5px;
+
+  color: #94a3b8;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   NOTIFICATION FOOTER
+========================================================= */
+
+.company-header-notification-footer {
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  padding: 8px 14px;
+
+  box-sizing: border-box;
+
+  border-top: 1px solid #f1f5f9;
+
+  background: #ffffff;
+}
+
+.company-header-notification-footer button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 7px 8px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #475569;
+
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.company-header-notification-footer button:hover {
+  color: #111827;
+}
+
+.company-header-notification-footer button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* =========================================================
+   PROFILE WRAPPER
+========================================================= */
+
+.company-header-profile-wrapper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+/* =========================================================
+   PROFILE TRIGGER
+========================================================= */
+
+.company-header-profile-trigger {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 150px;
+
+  padding: 5px 7px;
+
+  border: 1px solid transparent;
+  border-radius: 11px;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.company-header-profile-trigger:hover {
+  background: #f8fafc;
+
+  border-color: #f1f5f9;
+}
+
+/* =========================================================
+   COMPANY MARK
+========================================================= */
+
+.company-header-company-mark {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   PROFILE INFO
+========================================================= */
+
+.company-header-profile-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 2px;
+}
+
+.company-header-profile-info strong {
+  max-width: 145px;
+
+  overflow: hidden;
+
+  color: #111827;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.company-header-profile-info small {
+  max-width: 145px;
+
+  overflow: hidden;
+
+  color: #94a3b8;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   PROFILE POPUP
+========================================================= */
+
+.company-header-profile-popup {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: 340px;
+  max-width: calc(100vw - 30px);
+
+  padding: 0;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.12),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+
+  overflow: hidden;
+
+  animation: companyHeaderDropdownIn 0.16s ease-out;
+}
+
+/* =========================================================
+   PROFILE POPUP HEADER
+========================================================= */
+
+.company-header-profile-popup-head {
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 16px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.company-header-profile-popup-head > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.company-header-profile-popup-head span {
+  color: #94a3b8;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.8px;
+}
+
+.company-header-profile-popup-head strong {
+  color: #111827;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.company-header-profile-popup-head > button {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #94a3b8;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.company-header-profile-popup-head > button:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+.company-header-profile-popup-head > button svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =========================================================
+   PROFILE PREVIEW
+========================================================= */
+
+.company-header-profile-preview {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 16px;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.company-header-profile-avatar {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.company-header-profile-preview > div:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.company-header-profile-preview strong {
+  max-width: 220px;
+
+  overflow: hidden;
+
+  color: #111827;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.company-header-profile-preview small {
+  color: #64748b;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   PROFILE FIELDS
+========================================================= */
+
+.company-header-profile-fields {
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+
+  padding: 16px;
+}
+
+.company-header-profile-fields label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.company-header-profile-fields label > span {
+  color: #475569;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.company-header-profile-fields input {
+  width: 100%;
+  height: 39px;
+
+  padding: 0 11px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.company-header-profile-fields input:hover {
+  border-color: #cbd5e1;
+}
+
+.company-header-profile-fields input:focus {
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+}
+
+/* =========================================================
+   PROFILE MESSAGE
+========================================================= */
+
+.company-header-profile-message {
+  margin: 0 16px 14px;
+
+  padding: 9px 10px;
+
+  box-sizing: border-box;
+
+  border-radius: 7px;
+
+  background: #f8fafc;
+
+  color: #334155;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   PROFILE ACTIONS
+========================================================= */
+
+.company-header-profile-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  padding: 0 16px 14px;
+}
+
+.company-header-profile-actions button {
+  min-height: 34px;
+
+  padding: 0 13px;
+
+  border-radius: 8px;
+
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.company-header-profile-actions button:first-child {
+  border: 1px solid #e2e8f0;
+
+  background: #ffffff;
+
+  color: #64748b;
+}
+
+.company-header-profile-actions button:first-child:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+.company-header-profile-actions button:last-child {
+  border: 1px solid #111827;
+
+  background: #111827;
+
+  color: #ffffff;
+}
+
+.company-header-profile-actions button:last-child:hover {
+  background: #000000;
+
+  border-color: #000000;
+}
+
+/* =========================================================
+   FULL PROFILE BUTTON
+========================================================= */
+
+.company-header-profile-full {
+  width: 100%;
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 0 16px;
+
+  box-sizing: border-box;
+
+  border: 0;
+  border-top: 1px solid #f1f5f9;
+
+  background: #fafafa;
+
+  color: #475569;
+
+  font-family: "Times New Roman", Times, serif;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.company-header-profile-full:hover {
+  background: #f8fafc;
+
+  color: #111827;
+}
+
+.company-header-profile-full svg:first-child {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+}
+
+.company-header-profile-full span {
+  flex: 1;
+}
+
+.company-header-profile-full svg:last-child {
+  width: 15px;
+  height: 15px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   SCROLLBAR - NOTIFICATIONS
+========================================================= */
+
+.company-header-notification-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.company-header-notification-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.company-header-notification-list::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+
+  border-radius: 999px;
+}
+
+.company-header-notification-list::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+  .company-header {
+    padding: 0 20px;
+  }
+
+  .company-header-title h1 {
+    font-size: 20px;
+  }
+
+  .company-header-title p {
+    font-size: 12px;
+  }
+
+  .company-header-actions {
+    gap: 12px;
+  }
+
+  .company-header-profile-trigger {
+    min-width: 130px;
+  }
+
+  .company-header-profile-info strong,
+  .company-header-profile-info small {
+    max-width: 115px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .company-header {
+    min-height: 70px;
+
+    padding: 0 14px;
+  }
+
+  .company-header-title h1 {
+    max-width: 270px;
+
+    font-size: 17px;
+  }
+
+  .company-header-title p {
+    display: none;
+  }
+
+  .company-header-actions {
+    gap: 7px;
+  }
+
+  .company-header-notification-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .company-header-profile-trigger {
+    min-width: auto;
+
+    padding: 4px;
+  }
+
+  .company-header-profile-info {
+    display: none;
+  }
+
+  .company-header-company-mark {
+    width: 37px;
+    height: 37px;
+  }
+
+  .company-header-notification-dropdown {
+    position: fixed;
+
+    top: 70px;
+    right: 10px;
+    left: 10px;
+
+    width: auto;
+    max-width: none;
+  }
+
+  .company-header-profile-popup {
+    right: 0;
+
+    width: 320px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .company-header {
+    min-height: 64px;
+
+    padding: 0 10px;
+  }
+
+  .company-header-title h1 {
+    max-width: 180px;
+
+    overflow: hidden;
+
+    font-size: 15px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .company-header-actions {
+    gap: 3px;
+  }
+
+  .company-header-notification-button {
+    width: 37px;
+    height: 37px;
+  }
+
+  .company-header-company-mark {
+    width: 35px;
+    height: 35px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+  }
+
+  .company-header-notification-dropdown {
+    top: 64px;
+    right: 6px;
+    left: 6px;
+
+    border-radius: 12px;
+  }
+
+  .company-header-profile-popup {
+    position: fixed;
+
+    top: 64px;
+    right: 6px;
+    left: 6px;
+
+    width: auto;
+    max-width: none;
+  }
+
+  .company-header-profile-preview {
+    padding: 14px;
+  }
+
+  .company-header-profile-fields {
+    padding: 14px;
+  }
+
+  .company-header-profile-actions {
+    padding: 0 14px 12px;
+  }
+
+  .company-header-profile-full {
+    padding: 0 14px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .company-header-notification-button,
+  .company-header-notification-item,
+  .company-header-notification-footer button,
+  .company-header-profile-trigger,
+  .company-header-profile-popup-head > button,
+  .company-header-profile-fields input,
+  .company-header-profile-actions button,
+  .company-header-profile-full {
+    transition: none;
+  }
+
+  .company-header-notification-dropdown,
+  .company-header-profile-popup {
+    animation: none;
+  }
+}

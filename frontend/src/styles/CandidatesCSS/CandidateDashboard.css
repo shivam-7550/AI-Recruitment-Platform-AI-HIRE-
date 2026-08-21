@@ -1,0 +1,2511 @@
+/* =========================================================
+   CANDIDATE DASHBOARD
+   ========================================================= */
+
+.candidate-dashboard {
+  min-height: 100vh;
+  display: flex;
+  background: #f7f7f8;
+  color: #111111;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.candidate-dashboard-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.candidate-dashboard-logo {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.candidate-dashboard-logo a {
+  text-decoration: none;
+  color: #111111;
+}
+
+.candidate-dashboard-logo strong {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.candidate-dashboard-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 22px 14px;
+  overflow-y: auto;
+}
+
+.candidate-dashboard-navigation a {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 0 15px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #666666;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-dashboard-navigation a svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+
+.candidate-dashboard-navigation a:hover {
+  background: #f3f3f3;
+  color: #111111;
+}
+
+.candidate-dashboard-navigation a.candidate-dashboard-navigation-active {
+  background: #111111;
+  color: #ffffff;
+}
+
+.candidate-dashboard-navigation a small {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 20px;
+  background: #eeeeee;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.candidate-dashboard-logout {
+  margin: auto 14px 20px;
+  min-height: 46px;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 0 15px;
+  color: #666666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.candidate-dashboard-logout:hover {
+  background: #f3f3f3;
+  color: #111111;
+}
+
+.candidate-dashboard-logout svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.candidate-dashboard-main {
+  width: calc(100% - 250px);
+  margin-left: 250px;
+  min-height: 100vh;
+}
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+.candidate-dashboard-topbar {
+  min-height: 78px;
+  padding: 0 38px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.candidate-dashboard-topbar > div:first-child {
+  min-width: 0;
+}
+
+.candidate-dashboard-topbar h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 750;
+  letter-spacing: -0.4px;
+}
+
+.candidate-dashboard-topbar p {
+  margin: 4px 0 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+.candidate-dashboard-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
+
+.candidate-dashboard-notification {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.candidate-dashboard-notification:hover {
+  background: #f5f5f5;
+}
+
+.candidate-dashboard-notification svg {
+  width: 19px;
+  height: 19px;
+}
+
+.candidate-dashboard-notification i {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 20px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 10px;
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   USER
+   ========================================================= */
+
+.candidate-dashboard-user {
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 3px;
+}
+
+.candidate-dashboard-user > span {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #eeeeee;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 750;
+}
+
+.candidate-dashboard-user img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidate-dashboard-user > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.candidate-dashboard-user strong {
+  font-size: 13px;
+  color: #111111;
+}
+
+.candidate-dashboard-user small {
+  margin-top: 2px;
+  color: #888888;
+  font-size: 11px;
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.candidate-dashboard-content {
+  padding: 32px 38px 50px;
+  max-width: 1500px;
+}
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+.candidate-dashboard-message {
+  margin-bottom: 22px;
+  padding: 13px 16px;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #333333;
+}
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.candidate-dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.candidate-dashboard-metric {
+  min-height: 115px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-dashboard-metric:hover {
+  transform: translateY(-2px);
+  border-color: #cccccc;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.candidate-dashboard-metric > div {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candidate-dashboard-metric svg {
+  width: 20px;
+  height: 20px;
+}
+
+.candidate-dashboard-metric > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-dashboard-metric small {
+  color: #777777;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.candidate-dashboard-metric strong {
+  font-size: 25px;
+  line-height: 1;
+  font-weight: 750;
+}
+
+/* =========================================================
+   SEARCH / HERO SECTION
+   ========================================================= */
+
+.candidate-dashboard-search-section {
+  padding: 28px;
+  background: #111111;
+  color: #ffffff;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.candidate-dashboard-search-section > div:first-child {
+  flex: 1;
+}
+
+.candidate-dashboard-search-section span {
+  font-size: 12px;
+  color: #bbbbbb;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.candidate-dashboard-search-section h2 {
+  margin: 7px 0 5px;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+}
+
+.candidate-dashboard-search-section p {
+  margin: 0;
+  color: #aaaaaa;
+  font-size: 13px;
+}
+
+.candidate-dashboard-search {
+  width: min(440px, 100%);
+  height: 48px;
+  padding: 0 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.candidate-dashboard-search svg {
+  width: 19px;
+  height: 19px;
+  color: #777777;
+  flex-shrink: 0;
+}
+
+.candidate-dashboard-search input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #111111;
+  font-size: 13px;
+}
+
+.candidate-dashboard-search input::placeholder {
+  color: #999999;
+}
+
+/* =========================================================
+   SECTION HEADING
+   ========================================================= */
+
+.candidate-dashboard-section-heading {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.candidate-dashboard-section-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-dashboard-section-heading span {
+  color: #888888;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+
+.candidate-dashboard-section-heading h2 {
+  margin: 5px 0;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+
+.candidate-dashboard-section-heading p {
+  margin: 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+.candidate-dashboard-section-heading > a {
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.candidate-dashboard-section-heading > a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+JOB GRID - COMPACT
+========================================================= */
+
+.candidate-dashboard-job-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* =========================================================
+COMPACT JOB CARD
+========================================================= */
+
+.candidate-dashboard-job-card {
+  min-width: 0;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.candidate-dashboard-job-card:hover {
+  transform: translateY(-2px);
+  border-color: #cccccc;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+/* =========================================================
+JOB CARD HEADER
+========================================================= */
+
+.candidate-dashboard-job-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 10px;
+}
+
+/* =========================================================
+COMPANY AVATAR - SMALL
+========================================================= */
+
+.candidate-dashboard-company-avatar {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+
+  background: #f1f1f1;
+  color: #111111;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* =========================================================
+SAVE BUTTON - SMALL
+========================================================= */
+
+.candidate-dashboard-save-button {
+  width: 30px;
+  height: 30px;
+
+  border: 1px solid #e3e3e3;
+  background: #ffffff;
+
+  border-radius: 7px;
+
+  color: #777777;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.candidate-dashboard-save-button:hover {
+  background: #f4f4f4;
+  color: #111111;
+  border-color: #cccccc;
+  transform: scale(1.03);
+}
+
+.candidate-dashboard-save-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.candidate-dashboard-save-button-active {
+  background: #111111;
+  border-color: #111111;
+  color: #ffffff;
+}
+
+.candidate-dashboard-save-button-active:hover {
+  background: #222222;
+  color: #ffffff;
+}
+
+/* =========================================================
+JOB INFORMATION - COMPACT
+========================================================= */
+
+.candidate-dashboard-job-company {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #777777;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.candidate-dashboard-job-card h3 {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.3;
+
+  font-weight: 750;
+
+  letter-spacing: -0.2px;
+}
+
+.candidate-dashboard-job-description {
+  min-height: 38px;
+
+  margin: 7px 0 9px;
+
+  color: #777777;
+
+  font-size: 10px;
+  line-height: 1.45;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+JOB TAGS - COMPACT
+========================================================= */
+
+.candidate-dashboard-job-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  margin-bottom: 9px;
+}
+
+.candidate-dashboard-job-tags span {
+  padding: 3px 6px;
+
+  border-radius: 4px;
+
+  background: #f2f2f2;
+  color: #555555;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* =========================================================
+JOB META - COMPACT
+========================================================= */
+
+.candidate-dashboard-job-meta {
+  padding: 8px 0;
+
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.candidate-dashboard-job-meta span {
+  color: #666666;
+
+  font-size: 9px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate-dashboard-job-meta strong {
+  font-size: 10px;
+  font-weight: 750;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+SKILLS - COMPACT
+========================================================= */
+
+.candidate-dashboard-job-skills {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  padding-top: 8px;
+}
+
+.candidate-dashboard-job-skills span {
+  padding: 3px 5px;
+
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+
+  color: #555555;
+  background: #ffffff;
+
+  font-size: 8px;
+  font-weight: 600;
+}
+
+/* =========================================================
+JOB CARD FOOTER - COMPACT
+========================================================= */
+
+.candidate-dashboard-job-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 6px;
+
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.candidate-dashboard-job-card-footer a,
+.candidate-dashboard-job-card-footer button {
+  min-height: 30px;
+
+  padding: 0 9px;
+
+  border-radius: 6px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.candidate-dashboard-job-card-footer a {
+  flex: 1;
+
+  background: #111111;
+  color: #ffffff;
+
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candidate-dashboard-job-card-footer a:hover {
+  background: #292929;
+}
+
+.candidate-dashboard-job-card-footer button {
+  border: 1px solid #dddddd;
+
+  background: #ffffff;
+  color: #333333;
+}
+
+.candidate-dashboard-job-card-footer button:hover {
+  background: #f4f4f4;
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.candidate-dashboard-loading {
+  min-height: 220px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777777;
+  font-size: 14px;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.candidate-dashboard-empty {
+  min-height: 240px;
+  background: #ffffff;
+  border: 1px dashed #d7d7d7;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+}
+
+.candidate-dashboard-empty svg {
+  width: 28px;
+  height: 28px;
+  color: #888888;
+  margin-bottom: 12px;
+}
+
+.candidate-dashboard-empty h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.candidate-dashboard-empty p {
+  margin: 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+.candidate-dashboard-quick-actions {
+  margin-top: 35px;
+  padding: 25px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.candidate-dashboard-quick-actions > div:first-child {
+  min-width: 250px;
+}
+
+.candidate-dashboard-quick-actions > div:first-child > span {
+  color: #888888;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+.candidate-dashboard-quick-actions h2 {
+  margin: 6px 0;
+  font-size: 21px;
+}
+
+.candidate-dashboard-quick-actions p {
+  margin: 0;
+  color: #777777;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.candidate-dashboard-action-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.candidate-dashboard-action-grid a {
+  min-height: 68px;
+  padding: 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  color: #111111;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.candidate-dashboard-action-grid a:hover {
+  background: #f7f7f7;
+  border-color: #cccccc;
+}
+
+.candidate-dashboard-action-grid svg {
+  width: 19px;
+  height: 19px;
+  color: #555555;
+}
+
+.candidate-dashboard-action-grid span {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-dashboard-action-grid strong {
+  font-size: 12px;
+}
+
+.candidate-dashboard-action-grid small {
+  margin-top: 3px;
+  color: #888888;
+  font-size: 10px;
+}
+
+/* =========================================================
+   RESPONSIVE - 1200px
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .candidate-dashboard-job-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .candidate-dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .candidate-dashboard-search-section {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .candidate-dashboard-search {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - 900px
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .candidate-dashboard-sidebar {
+    width: 210px;
+  }
+
+  .candidate-dashboard-main {
+    width: calc(100% - 210px);
+    margin-left: 210px;
+  }
+
+  .candidate-dashboard-content {
+    padding: 25px;
+  }
+
+  .candidate-dashboard-topbar {
+    padding: 0 25px;
+  }
+
+  .candidate-dashboard-quick-actions {
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - 700px
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .candidate-dashboard {
+    display: block;
+  }
+
+  .candidate-dashboard-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .candidate-dashboard-logo {
+    height: 65px;
+  }
+
+  .candidate-dashboard-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 10px;
+  }
+
+  .candidate-dashboard-logout {
+    margin: 5px 14px 14px;
+  }
+
+  .candidate-dashboard-main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .candidate-dashboard-topbar {
+    padding: 16px 18px;
+    align-items: flex-start;
+  }
+
+  .candidate-dashboard-topbar-actions {
+    gap: 8px;
+  }
+
+  .candidate-dashboard-user > div {
+    display: none;
+  }
+
+  .candidate-dashboard-content {
+    padding: 20px 16px 35px;
+  }
+
+  .candidate-dashboard-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .candidate-dashboard-metric {
+    min-height: 95px;
+    padding: 14px;
+  }
+
+  .candidate-dashboard-metric strong {
+    font-size: 21px;
+  }
+
+  .candidate-dashboard-job-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-dashboard-search-section {
+    padding: 21px;
+  }
+
+  .candidate-dashboard-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .candidate-dashboard-action-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .candidate-dashboard-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .candidate-dashboard-topbar-actions {
+    justify-content: space-between;
+  }
+
+  .candidate-dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-dashboard-job-card {
+    padding: 17px;
+  }
+
+  .candidate-dashboard-search-section h2 {
+    font-size: 22px;
+  }
+
+  .candidate-dashboard-job-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .candidate-dashboard-job-card-footer a,
+  .candidate-dashboard-job-card-footer button {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   CANDIDATE DASHBOARD NOTIFICATION
+   ========================================================= */
+
+.candidate-dashboard-notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* =========================================================
+   NOTIFICATION BUTTON
+   ========================================================= */
+
+.candidate-dashboard-notification {
+  position: relative;
+
+  width: 42px;
+  height: 42px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  color: #111111;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.candidate-dashboard-notification:hover {
+  background: #f7f7f7;
+  border-color: #d7d7d7;
+}
+
+.candidate-dashboard-notification:active {
+  transform: scale(0.96);
+}
+
+.candidate-dashboard-notification svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.9;
+}
+
+/* =========================================================
+   ACTIVE BELL
+   ========================================================= */
+
+.candidate-dashboard-notification-active {
+  background: #f5f5f5;
+  border-color: #cccccc;
+}
+
+/* =========================================================
+   NOTIFICATION COUNT
+   ========================================================= */
+
+.candidate-dashboard-notification i {
+  position: absolute;
+
+  top: -6px;
+  right: -6px;
+
+  min-width: 18px;
+  height: 18px;
+
+  padding: 0 4px;
+
+  border-radius: 20px;
+
+  background: #111111;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid #ffffff;
+}
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+   ========================================================= */
+
+.candidate-dashboard-notification-dropdown {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: 365px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e5e5;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+
+  overflow: hidden;
+
+  z-index: 9999;
+
+  animation: candidateDashboardNotificationOpen 0.18s ease-out;
+}
+
+@keyframes candidateDashboardNotificationOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   SMALL ARROW
+   ========================================================= */
+
+.candidate-dashboard-notification-dropdown::before {
+  content: "";
+
+  position: absolute;
+
+  top: -6px;
+  right: 15px;
+
+  width: 12px;
+  height: 12px;
+
+  background: #ffffff;
+
+  border-left: 1px solid #e5e5e5;
+  border-top: 1px solid #e5e5e5;
+
+  transform: rotate(45deg);
+}
+
+/* =========================================================
+   NOTIFICATION HEADER
+   ========================================================= */
+
+.candidate-dashboard-notification-header {
+  position: relative;
+
+  padding: 16px 17px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #eeeeee;
+
+  background: #ffffff;
+}
+
+.candidate-dashboard-notification-header > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.candidate-dashboard-notification-header strong {
+  font-size: 14px;
+  font-weight: 750;
+  color: #111111;
+}
+
+.candidate-dashboard-notification-header span {
+  font-size: 11px;
+  color: #777777;
+}
+
+.candidate-dashboard-notification-header > button {
+  width: 28px;
+  height: 28px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #777777;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.candidate-dashboard-notification-header > button:hover {
+  background: #f4f4f4;
+  color: #111111;
+}
+
+.candidate-dashboard-notification-header svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   NOTIFICATION LIST
+   ========================================================= */
+
+.candidate-dashboard-notification-list {
+  max-height: 365px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+}
+
+.candidate-dashboard-notification-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.candidate-dashboard-notification-list::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 10px;
+}
+
+/* =========================================================
+   NOTIFICATION ITEM
+   ========================================================= */
+
+.candidate-dashboard-notification-item {
+  position: relative;
+
+  width: 100%;
+
+  border: 0;
+  border-bottom: 1px solid #eeeeee;
+
+  background: #ffffff;
+
+  padding: 13px 16px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition: background 0.18s ease;
+}
+
+.candidate-dashboard-notification-item:hover {
+  background: #f8f8f8;
+}
+
+.candidate-dashboard-notification-item:last-child {
+  border-bottom: 0;
+}
+
+/* =========================================================
+   NOTIFICATION ICON
+   ========================================================= */
+
+.candidate-dashboard-notification-icon {
+  flex: 0 0 auto;
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 9px;
+
+  background: #f1f1f1;
+
+  color: #111111;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candidate-dashboard-notification-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================================
+   NOTIFICATION CONTENT
+   ========================================================= */
+
+.candidate-dashboard-notification-content {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.candidate-dashboard-notification-content strong {
+  padding-right: 8px;
+
+  font-size: 12px;
+  line-height: 1.35;
+
+  font-weight: 700;
+
+  color: #111111;
+}
+
+.candidate-dashboard-notification-content small {
+  display: -webkit-box;
+
+  overflow: hidden;
+
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  font-size: 11px;
+  line-height: 1.45;
+
+  color: #666666;
+}
+
+.candidate-dashboard-notification-content em {
+  margin-top: 3px;
+
+  font-size: 9.5px;
+  font-style: normal;
+
+  color: #999999;
+}
+
+/* =========================================================
+   UNREAD NOTIFICATION
+   ========================================================= */
+
+.candidate-dashboard-notification-unread {
+  background: #fafafa;
+}
+
+.candidate-dashboard-notification-unread
+  .candidate-dashboard-notification-icon {
+  background: #111111;
+  color: #ffffff;
+}
+
+.candidate-dashboard-notification-unread
+  .candidate-dashboard-notification-content
+  strong {
+  font-weight: 800;
+}
+
+/* =========================================================
+   READ NOTIFICATION
+   ========================================================= */
+
+.candidate-dashboard-notification-read {
+  opacity: 0.78;
+}
+
+/* =========================================================
+   UNREAD DOT
+   ========================================================= */
+
+.candidate-dashboard-notification-dot {
+  flex: 0 0 auto;
+
+  width: 7px;
+  height: 7px;
+
+  margin-top: 5px;
+
+  border-radius: 50%;
+
+  background: #111111;
+}
+
+/* =========================================================
+   EMPTY NOTIFICATIONS
+   ========================================================= */
+
+.candidate-dashboard-notification-empty {
+  min-height: 170px;
+
+  padding: 25px 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  gap: 6px;
+}
+
+.candidate-dashboard-notification-empty svg {
+  width: 25px;
+  height: 25px;
+
+  margin-bottom: 4px;
+
+  color: #999999;
+}
+
+.candidate-dashboard-notification-empty strong {
+  font-size: 12px;
+  color: #333333;
+}
+
+.candidate-dashboard-notification-empty span {
+  max-width: 230px;
+
+  font-size: 10px;
+  line-height: 1.5;
+
+  color: #999999;
+}
+
+/* =========================================================
+   NOTIFICATION FOOTER
+   ========================================================= */
+
+.candidate-dashboard-notification-footer {
+  min-height: 48px;
+
+  padding: 8px 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  border-top: 1px solid #eeeeee;
+
+  background: #ffffff;
+}
+
+.candidate-dashboard-notification-footer button {
+  border: 0;
+
+  background: transparent;
+
+  color: #444444;
+
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 7px 5px;
+}
+
+.candidate-dashboard-notification-footer button:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.candidate-dashboard-notification-footer svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* =========================================================
+   TOPBAR ACTIONS
+   ========================================================= */
+
+.candidate-dashboard-topbar-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+}
+
+/* =========================================================
+   USER BUTTON
+   ========================================================= */
+
+.candidate-dashboard-user {
+  border: 0;
+
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 3px;
+
+  cursor: pointer;
+}
+
+.candidate-dashboard-user > span {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  background: #111111;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.candidate-dashboard-user > span img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.candidate-dashboard-user > div {
+  display: grid;
+
+  text-align: left;
+}
+
+.candidate-dashboard-user strong {
+  font-size: 13px;
+  color: #111111;
+}
+
+.candidate-dashboard-user small {
+  margin-top: 2px;
+
+  color: #777777;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   DASHBOARD MESSAGE
+   ========================================================= */
+
+.candidate-dashboard-message {
+  margin-bottom: 20px;
+
+  padding: 11px 14px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 9px;
+
+  background: #fafafa;
+
+  color: #333333;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+  .candidate-dashboard-notification-dropdown {
+    position: fixed;
+
+    top: 72px;
+    right: 15px;
+    left: 15px;
+
+    width: auto;
+
+    max-width: none;
+  }
+
+  .candidate-dashboard-notification-dropdown::before {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .candidate-dashboard-topbar-actions {
+    gap: 8px;
+  }
+
+  .candidate-dashboard-user > div {
+    display: none;
+  }
+
+  .candidate-dashboard-notification-dropdown {
+    top: 68px;
+  }
+
+  .candidate-dashboard-notification-list {
+    max-height: 320px;
+  }
+}
+
+/* =========================================================
+   CANDIDATE PROFILE WRAPPER
+   IMPORTANT:
+   Existing dashboard card dimensions are NOT modified.
+========================================================= */
+
+.candidate-dashboard-profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   HEADER PROFILE BUTTON
+========================================================= */
+
+.candidate-dashboard-user {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  padding: 5px 7px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-dashboard-user:hover {
+  background: #f5f5f5;
+}
+
+.candidate-dashboard-user-active {
+  background: #f3f3f3;
+}
+
+/* =========================================================
+   HEADER AVATAR
+========================================================= */
+
+.candidate-dashboard-user-avatar {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+  min-height: 42px;
+
+  border-radius: 50%;
+
+  background: #111111;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.candidate-dashboard-user-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+/* =========================================================
+   HEADER USER INFO
+========================================================= */
+
+.candidate-dashboard-user-info {
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  min-width: 0;
+
+  max-width: 150px;
+}
+
+.candidate-dashboard-user-info strong {
+  max-width: 150px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  color: #111111;
+
+  font-size: 13px;
+
+  line-height: 17px;
+
+  font-weight: 700;
+}
+
+.candidate-dashboard-user-info small {
+  max-width: 150px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  margin-top: 1px;
+
+  color: #777777;
+
+  font-size: 10px;
+
+  line-height: 14px;
+}
+
+/* =========================================================
+   PROFILE POPOVER
+   FIXED WIDTH
+   FIXED MINIMUM HEIGHT
+   DOES NOT CHANGE DASHBOARD CARD DIMENSIONS
+========================================================= */
+
+.candidate-dashboard-profile-popover {
+  position: absolute;
+
+  top: calc(100% + 12px);
+
+  right: 0;
+
+  width: 360px;
+
+  min-width: 360px;
+  max-width: 360px;
+
+  min-height: 310px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e5e5;
+
+  border-radius: 15px;
+
+  overflow: hidden;
+
+  z-index: 2000;
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.13);
+
+  animation: candidate-profile-popover-enter 0.16s ease-out;
+}
+
+@keyframes candidate-profile-popover-enter {
+  from {
+    opacity: 0;
+
+    transform: translateY(-6px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================================
+   PROFILE POPOVER HEADER
+========================================================= */
+
+.candidate-dashboard-profile-popover-header {
+  height: 58px;
+
+  padding: 0 16px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.candidate-dashboard-profile-popover-header > div {
+  display: flex;
+
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.candidate-dashboard-profile-popover-header strong {
+  color: #111111;
+
+  font-size: 14px;
+
+  line-height: 18px;
+
+  font-weight: 700;
+}
+
+.candidate-dashboard-profile-popover-header span {
+  margin-top: 2px;
+
+  color: #888888;
+
+  font-size: 10px;
+
+  line-height: 14px;
+}
+
+.candidate-dashboard-profile-popover-header > button {
+  width: 29px;
+  height: 29px;
+
+  min-width: 29px;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background: #f4f4f4;
+
+  color: #555555;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.candidate-dashboard-profile-popover-header > button:hover {
+  background: #eaeaea;
+
+  color: #111111;
+}
+
+/* =========================================================
+   PROFILE PREVIEW
+========================================================= */
+
+.candidate-dashboard-profile-preview {
+  height: 92px;
+
+  box-sizing: border-box;
+
+  padding: 14px 16px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+/* =========================================================
+   LARGE PROFILE IMAGE
+========================================================= */
+
+.candidate-dashboard-profile-large-avatar {
+  position: relative;
+
+  width: 62px;
+  height: 62px;
+
+  min-width: 62px;
+  min-height: 62px;
+
+  border-radius: 50%;
+
+  background: #111111;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.candidate-dashboard-profile-large-avatar img {
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+/* =========================================================
+   CAMERA BUTTON
+========================================================= */
+
+.candidate-dashboard-profile-camera {
+  position: absolute;
+
+  right: -2px;
+  bottom: -2px;
+
+  width: 24px;
+  height: 24px;
+
+  min-width: 24px;
+  min-height: 24px;
+
+  border-radius: 50%;
+
+  border: 2px solid #ffffff;
+
+  background: #111111;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.candidate-dashboard-profile-camera:hover {
+  background: #222222;
+
+  transform: scale(1.06);
+}
+
+.candidate-dashboard-profile-camera input {
+  display: none;
+}
+
+/* =========================================================
+   PROFILE PREVIEW INFO
+========================================================= */
+
+.candidate-dashboard-profile-preview-info {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+.candidate-dashboard-profile-preview-info strong {
+  max-width: 245px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  color: #111111;
+
+  font-size: 15px;
+
+  line-height: 20px;
+
+  font-weight: 700;
+}
+
+.candidate-dashboard-profile-preview-info span {
+  max-width: 245px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  margin-top: 3px;
+
+  color: #777777;
+
+  font-size: 11px;
+
+  line-height: 15px;
+}
+
+/* =========================================================
+   PROFILE DETAILS
+========================================================= */
+
+.candidate-dashboard-profile-details {
+  padding: 0 16px 15px;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   DETAIL ROW
+========================================================= */
+
+.candidate-dashboard-profile-detail {
+  min-height: 42px;
+
+  padding: 7px 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.candidate-dashboard-profile-detail span {
+  color: #999999;
+
+  font-size: 9px;
+
+  line-height: 12px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.07em;
+}
+
+.candidate-dashboard-profile-detail strong {
+  max-width: 320px;
+
+  margin-top: 3px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  color: #222222;
+
+  font-size: 12px;
+
+  line-height: 16px;
+
+  font-weight: 600;
+}
+
+/* =========================================================
+   EDIT PROFILE BUTTON
+========================================================= */
+
+.candidate-dashboard-profile-edit-button {
+  width: 100%;
+
+  height: 34px;
+
+  margin-top: 11px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dddddd;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.candidate-dashboard-profile-edit-button:hover {
+  background: #111111;
+
+  color: #ffffff;
+
+  border-color: #111111;
+}
+
+/* =========================================================
+   EDIT FORM
+========================================================= */
+
+.candidate-dashboard-profile-edit-form {
+  padding: 0 16px 15px;
+
+  box-sizing: border-box;
+}
+
+.candidate-dashboard-profile-edit-form label {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  margin-bottom: 11px;
+}
+
+.candidate-dashboard-profile-edit-form label span {
+  color: #555555;
+
+  font-size: 10px;
+
+  line-height: 13px;
+
+  font-weight: 600;
+}
+
+.candidate-dashboard-profile-edit-form input {
+  width: 100%;
+
+  height: 36px;
+
+  box-sizing: border-box;
+
+  padding: 0 10px;
+
+  border: 1px solid #dddddd;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #111111;
+
+  font-size: 11px;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.candidate-dashboard-profile-edit-form input:focus {
+  border-color: #111111;
+
+  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.05);
+}
+
+/* =========================================================
+   EDIT ACTIONS
+========================================================= */
+
+.candidate-dashboard-profile-edit-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 7px;
+
+  margin-top: 2px;
+}
+
+.candidate-dashboard-profile-cancel,
+.candidate-dashboard-profile-save {
+  height: 34px;
+
+  padding: 0 12px;
+
+  border-radius: 8px;
+
+  font-size: 10px;
+
+  line-height: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.candidate-dashboard-profile-cancel {
+  border: 1px solid #dddddd;
+
+  background: #ffffff;
+
+  color: #555555;
+}
+
+.candidate-dashboard-profile-cancel:hover {
+  background: #f5f5f5;
+}
+
+.candidate-dashboard-profile-save {
+  border: 1px solid #111111;
+
+  background: #111111;
+
+  color: #ffffff;
+}
+
+.candidate-dashboard-profile-save:hover {
+  background: #222222;
+}
+
+.candidate-dashboard-profile-save:disabled,
+.candidate-dashboard-profile-cancel:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   PROFILE FOOTER
+========================================================= */
+
+.candidate-dashboard-profile-footer {
+  height: 48px;
+
+  box-sizing: border-box;
+
+  padding: 6px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  border-top: 1px solid #eeeeee;
+}
+
+.candidate-dashboard-profile-footer button {
+  flex: 1;
+
+  height: 34px;
+
+  border: 0;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #555555;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.candidate-dashboard-profile-footer button:hover {
+  background: #f4f4f4;
+
+  color: #111111;
+}
+
+/* =========================================================
+   EXISTING NOTIFICATION / PROFILE Z-INDEX
+========================================================= */
+
+.candidate-dashboard-notification-wrapper {
+  position: relative;
+
+  z-index: 2100;
+}
+
+.candidate-dashboard-profile-wrapper {
+  z-index: 2200;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .candidate-dashboard-user-info {
+    display: none;
+  }
+
+  .candidate-dashboard-profile-popover {
+    position: fixed;
+
+    top: 72px;
+
+    right: 15px;
+    left: auto;
+
+    width: 360px;
+
+    min-width: 360px;
+    max-width: calc(100vw - 30px);
+  }
+}
+
+@media (max-width: 430px) {
+  .candidate-dashboard-profile-popover {
+    left: 15px;
+    right: 15px;
+
+    width: auto;
+
+    min-width: 0;
+    max-width: none;
+  }
+
+  .candidate-dashboard-profile-preview-info strong,
+  .candidate-dashboard-profile-preview-info span {
+    max-width: calc(100vw - 145px);
+  }
+}
