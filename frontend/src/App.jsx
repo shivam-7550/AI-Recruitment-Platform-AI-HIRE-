@@ -13,11 +13,19 @@ import CandidateRegister from "./pages/Candidates/CandidateRegister";
 import CompanyRegister from "./pages/Companies/CompanyRegister";
 
 // ==========================================
-// Dashboards
+// Candidate Dashboard
 // ==========================================
 import CandidateDashboard from "./pages/Candidates/CandidateDashboard";
+
+// ==========================================
+// Company Dashboard
+// ==========================================
 import CompanyDashboard from "./pages/Companies/CompanyDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
+
+// ==========================================
+// Admin Dashboard
+// ==========================================
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 // ==========================================
 // Candidate Pages
@@ -39,7 +47,7 @@ import CompanyApplication from "./pages/Companies/CompanyApplication";
 // ==========================================
 // Admin Pages
 // ==========================================
-import AdminJobs from "./pages/AdminJobs";
+import AdminJobs from "./pages/Admin/AdminJobs";
 
 // ==========================================
 // Route Guards
@@ -122,90 +130,43 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="Company" />}>
-        {/* -----------------------------------------
-            Company Dashboard
-        ----------------------------------------- */}
-
+        {/* Dashboard */}
         <Route path="/company/dashboard" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Company Profile
-        ----------------------------------------- */}
-
+        {/* Profile */}
         <Route path="/company/profile" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Posted Jobs
-        ----------------------------------------- */}
-
+        {/* Posted Jobs */}
         <Route path="/company/posted-jobs" element={<CompanyPostedJobs />} />
 
-        {/* -----------------------------------------
-            Create / Post New Job
-
-            IMPORTANT:
-            Dedicated route is used instead of
-            rendering CompanyDashboard.
-
-            This prevents:
-            Posted Jobs -> Post Job -> Back
-            from unexpectedly redirecting to Dashboard.
-        ----------------------------------------- */}
-
+        {/* Create Job */}
         <Route path="/company/jobs/new" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Job Details
-        ----------------------------------------- */}
-
+        {/* Job Details */}
         <Route path="/company/jobs/:id" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Edit Job
-        ----------------------------------------- */}
-
+        {/* Edit Job */}
         <Route path="/company/jobs/:id/edit" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Candidates
-        ----------------------------------------- */}
-
+        {/* Candidates */}
         <Route path="/company/candidates" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Applications
-        ----------------------------------------- */}
-
+        {/* Applications */}
         <Route path="/company/applications" element={<CompanyApplication />} />
 
-        {/* -----------------------------------------
-            Interviews
-        ----------------------------------------- */}
-
+        {/* Interviews */}
         <Route path="/company/interviews" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Messages
-        ----------------------------------------- */}
-
+        {/* Messages */}
         <Route path="/company/messages" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Analytics
-        ----------------------------------------- */}
-
+        {/* Analytics */}
         <Route path="/company/analytics" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Team Members
-        ----------------------------------------- */}
-
+        {/* Team */}
         <Route path="/company/team" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Settings
-        ----------------------------------------- */}
-
+        {/* Settings */}
         <Route path="/company/settings" element={<CompanyDashboard />} />
       </Route>
 
@@ -214,15 +175,83 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="Admin" />}>
-        {/* Dashboard */}
+        {/* -----------------------------------------
+            Admin Dashboard
+        ----------------------------------------- */}
+
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-        {/* Jobs */}
+        {/* -----------------------------------------
+            Admin Jobs
+        ----------------------------------------- */}
+
         <Route path="/admin/jobs" element={<AdminJobs />} />
+
+        {/* -----------------------------------------
+            Admin Companies
+
+            Currently handled through dashboard.
+            Later can be replaced with:
+            <AdminCompanies />
+        ----------------------------------------- */}
+
+        <Route
+          path="/admin/companies"
+          element={<Navigate to="/admin/dashboard#companies" replace />}
+        />
+
+        {/* -----------------------------------------
+            Admin Users
+
+            Currently handled through dashboard.
+            Later can be replaced with:
+            <AdminUsers />
+        ----------------------------------------- */}
+
+        <Route
+          path="/admin/users"
+          element={<Navigate to="/admin/dashboard#companies" replace />}
+        />
+
+        {/* -----------------------------------------
+            Admin Reports
+        ----------------------------------------- */}
+
+        <Route
+          path="/admin/reports"
+          element={<Navigate to="/admin/dashboard#jobs" replace />}
+        />
+
+        {/* -----------------------------------------
+            AI Insights
+        ----------------------------------------- */}
+
+        <Route
+          path="/admin/ai-insights"
+          element={<Navigate to="/admin/dashboard#insights" replace />}
+        />
+
+        {/* -----------------------------------------
+            Notifications
+        ----------------------------------------- */}
+
+        <Route
+          path="/admin/notifications"
+          element={<Navigate to="/admin/dashboard" replace />}
+        />
+
+        {/* -----------------------------------------
+            Admin Settings
+        ----------------------------------------- */}
+
+        <Route
+          path="/admin/settings"
+          element={<Navigate to="/admin/dashboard" replace />}
+        />
       </Route>
 
       {/* =====================================================
-          404
+          404 / FALLBACK
       ===================================================== */}
 
       <Route path="*" element={<SafeFallback />} />

@@ -88,6 +88,42 @@ public sealed class ResumeController : ControllerBase
 
 
     // =====================================================
+    // Analyze Resume
+    // =====================================================
+
+    [HttpGet("{resumeId:guid}/analysis")]
+    public async Task<IActionResult> AnalyzeResume(
+        Guid resumeId,
+        CancellationToken cancellationToken)
+    {
+        var userId =
+            GetUserId();
+
+        if (userId == null)
+            return Unauthorized();
+
+        try
+        {
+            var result =
+                await _resumeService
+                    .AnalyzeResumeAsync(
+                        userId.Value,
+                        resumeId,
+                        cancellationToken);
+
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+
+    // =====================================================
     // Delete Resume
     // =====================================================
 

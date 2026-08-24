@@ -18,8 +18,8 @@ import {
   X,
 } from "lucide-react";
 
-import CompanySidebar from "../../components/CompanySidebar";
-import CompanyHeader from "../../components/CompanyHeader";
+import CompanySidebar from "../../components/Company/CompanySidebar";
+import CompanyHeader from "../../components/Company/CompanyHeader";
 
 import { companyApi, jobsApi } from "../../services/api.js";
 
@@ -621,7 +621,6 @@ export default function CompanyApplication() {
                           </p>
                         </div>
                       </div>
-
                     </div>
 
                     {/* JOB */}
@@ -714,7 +713,6 @@ export default function CompanyApplication() {
                         <CalendarDays />
                         Applied {formatDate(application.appliedAt)}
                       </div>
-
                     </div>
 
                     {/* SKILLS */}

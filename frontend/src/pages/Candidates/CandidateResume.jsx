@@ -10,8 +10,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-import CandidateSidebar from "../../components/CandidateSidebar";
-import CandidateHeader from "../../components/CandidateHeader";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
+import CandidateHeader from "../../components/Candidate/CandidateHeader";
 
 import { candidateApi } from "../../services/api";
 
@@ -86,14 +86,12 @@ export default function CandidateResume() {
       return;
     }
 
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
+    const allowedExtensions = [".pdf", ".docx"];
 
-    if (!allowedTypes.includes(selectedFile.type)) {
-      setError("Please upload a PDF, DOC, or DOCX file.");
+    const extension = "." + selectedFile.name.split(".").pop().toLowerCase();
+
+    if (!allowedExtensions.includes(extension)) {
+      setError("Please upload a PDF or DOCX file.");
       setFile(null);
       return;
     }
@@ -247,14 +245,14 @@ export default function CandidateResume() {
             <div className="candidate-resume-section-heading">
               <div>
                 <h3>Upload Resume</h3>
-                <p>PDF, DOC or DOCX files up to 5 MB.</p>
+                <p>PDF or DOCX files up to 5 MB.</p>
               </div>
             </div>
 
             <label className="candidate-resume-dropzone">
               <input
                 type="file"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf,.docx"
                 onChange={handleFileChange}
               />
 

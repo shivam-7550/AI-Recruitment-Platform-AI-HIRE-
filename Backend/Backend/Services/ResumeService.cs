@@ -242,6 +242,72 @@ public sealed class ResumeService : IResumeService
     }
 
     // =====================================================
+    // Analyze Resume
+    // =====================================================
+
+    public async Task<ResumeATSScoreDto> AnalyzeResumeAsync(
+        Guid userId,
+        Guid resumeId,
+        CancellationToken cancellationToken)
+    {
+        var resume =
+            await _resumeRepository
+                .GetResumeByUserIdAsync(
+                    userId,
+                    cancellationToken);
+
+        if (resume == null || resume.Id != resumeId)
+        {
+            throw new KeyNotFoundException(
+                "Resume not found.");
+        }
+
+        var matchedSkills =
+            (resume.ExtractedSkills ?? string.Empty)
+                .Split(
+                    ',',
+                    StringSplitOptions.RemoveEmptyEntries |
+                    StringSplitOptions.TrimEntries)
+                .ToList();
+
+        var strengths = new List<string>();
+
+        var suggestions = new List<string>();
+
+        if (matchedSkills.Count > 0)
+        {
+            strengths.Add("Relevant skills were detected in your resume.");
+        }
+        else
+        {
+            suggestions.Add("Add a clear skills section with relevant technologies.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(resume.Email) ||
+            !string.IsNullOrWhiteSpace(resume.PhoneNumber))
+        {
+            strengths.Add("Contact information is available.");
+        }
+        else
+        {
+            suggestions.Add("Add your email address and phone number.");
+        }
+
+        if (resume.ATSScore < 60)
+        {
+            suggestions.Add("Add measurable experience, education and project details.");
+        }
+
+        return new ResumeATSScoreDto
+        {
+            ATSScore = resume.ATSScore,
+            MatchedSkills = matchedSkills,
+            Strengths = strengths,
+            Suggestions = suggestions
+        };
+    }
+
+    // =====================================================
     // Delete Resume
     // =====================================================
 

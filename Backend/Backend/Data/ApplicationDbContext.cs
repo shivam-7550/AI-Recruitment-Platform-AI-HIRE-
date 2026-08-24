@@ -35,6 +35,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<UserSettings> UserSettings { get; set; }
 
+    public DbSet<Interview> Interviews { get; set; } = null!;
+
 
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)

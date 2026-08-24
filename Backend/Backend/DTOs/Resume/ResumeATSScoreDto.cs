@@ -2,7 +2,13 @@
 
 public sealed class ResumeATSScoreDto
 {
-    public double Score { get; set; }
+    public double ATSScore { get; set; }
 
-    public Dictionary<string, double> Breakdown { get; set; } = new();
+    public List<string> MatchedSkills { get; set; } = new();
+
+    public List<string> MissingSkills { get; set; } = new();
+
+    public List<string> Strengths { get; set; } = new();
+
+    public List<string> Suggestions { get; set; } = new();
 }

@@ -11,7 +11,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-import "../styles/CandidatesCSS/CandidateSidebar.css";
+import "../../styles/CandidatesCSS/CandidateSidebar.css";
 
 const NAVIGATION_ITEMS = [
   {

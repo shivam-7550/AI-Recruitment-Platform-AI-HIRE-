@@ -230,6 +230,9 @@ export const candidateApi = {
     });
   },
 
+  analyzeResume: (resumeId) =>
+    api(`/Resume/${resumeId}/analysis`),
+
   removeResume: () =>
     api("/Resume", {
       method: "DELETE",

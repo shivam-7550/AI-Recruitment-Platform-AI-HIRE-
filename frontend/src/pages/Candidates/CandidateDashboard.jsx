@@ -20,7 +20,7 @@ import {
 import { candidateApi, jobsApi, savedJobsApi } from "../../services/api";
 
 import "../../styles/CandidatesCSS/CandidateDashboard.css";
-import CandidateSidebar from "../../components/CandidateSidebar";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
 import NotificationBell from "../../components/notifications/NotificationBell";
 
 /* =========================================================

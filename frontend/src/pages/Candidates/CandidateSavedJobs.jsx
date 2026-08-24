@@ -8,8 +8,8 @@ import {
   savedJobsApi,
 } from "../../services/api";
 
-import CandidateSidebar from "../../components/CandidateSidebar";
-import CandidateHeader from "../../components/CandidateHeader";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
+import CandidateHeader from "../../components/Candidate/CandidateHeader";
 
 import "../../styles/CandidatesCSS/CandidateSavedJobs.css";
 

@@ -10,7 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-import "../styles/CompanyCSS/CompanySidebar.css";
+import "../../styles/CompanyCSS/CompanySidebar.css";
 
 const NAVIGATION_ITEMS = [
   {
@@ -18,11 +18,11 @@ const NAVIGATION_ITEMS = [
     path: "/company/dashboard",
     icon: BriefcaseBusiness,
   },
-  {
-    label: "Post a Job",
-    path: "/company/jobs/new",
-    icon: Plus,
-  },
+  // {
+  //   label: "Post a Job",
+  //   path: "/company/jobs/new",
+  //   icon: Plus,
+  // },
   {
     label: "Posted Jobs",
     path: "/company/posted-jobs",

@@ -16,8 +16,8 @@ import {
   XCircle,
 } from "lucide-react";
 
-import CompanySidebar from "../../components/CompanySidebar";
-import CompanyHeader from "../../components/CompanyHeader";
+import CompanySidebar from "../../components/Company/CompanySidebar";
+import CompanyHeader from "../../components/Company/CompanyHeader";
 
 import { companyApi, jobsApi } from "../../services/api";
 

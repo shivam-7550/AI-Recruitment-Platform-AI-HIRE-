@@ -1,0 +1,224 @@
+.admin-header {
+  min-height: 82px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 16px 30px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.admin-header-title {
+  min-width: 260px;
+}
+
+.admin-header-title > span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #9ca3af;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-header-title h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 23px;
+  line-height: 1.2;
+
+  letter-spacing: -0.6px;
+}
+
+.admin-header-title p {
+  margin: 4px 0 0;
+
+  color: #8a919b;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.admin-header-search {
+  position: relative;
+
+  width: min(360px, 30vw);
+
+  margin-left: auto;
+}
+
+.admin-header-search svg {
+  position: absolute;
+
+  left: 13px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #9ca3af;
+}
+
+.admin-header-search input {
+  width: 100%;
+  height: 40px;
+
+  padding: 0 14px 0 40px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #f9fafb;
+  color: #111827;
+
+  font-size: 12px;
+
+  box-sizing: border-box;
+}
+
+.admin-header-search input:focus {
+  border-color: #9ca3af;
+  background: #ffffff;
+}
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.admin-header-notification {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   USER
+========================================================= */
+
+.admin-header-user {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding-left: 8px;
+}
+
+.admin-header-avatar {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.admin-header-user-info strong {
+  display: block;
+
+  color: #111827;
+
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.admin-header-user-info small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #9ca3af;
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .admin-header-search {
+    width: 240px;
+  }
+
+  .admin-header-title {
+    min-width: 210px;
+  }
+}
+
+@media (max-width: 850px) {
+  .admin-header {
+    padding: 14px 18px;
+  }
+
+  .admin-header-title p {
+    display: none;
+  }
+
+  .admin-header-search {
+    width: 200px;
+  }
+
+  .admin-header-user-info {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .admin-header {
+    gap: 10px;
+  }
+
+  .admin-header-title {
+    min-width: 0;
+  }
+
+  .admin-header-title h1 {
+    font-size: 18px;
+  }
+
+  .admin-header-search {
+    width: 40px;
+  }
+
+  .admin-header-search input {
+    width: 40px;
+    padding: 0;
+    opacity: 0;
+  }
+
+  .admin-header-search svg {
+    left: 11px;
+  }
+}

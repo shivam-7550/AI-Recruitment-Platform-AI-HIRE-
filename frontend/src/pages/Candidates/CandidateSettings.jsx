@@ -15,8 +15,8 @@ import {
   UserRound,
 } from "lucide-react";
 
-import CandidateSidebar from "../../components/CandidateSidebar";
-import CandidateHeader from "../../components/CandidateHeader";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
+import CandidateHeader from "../../components/Candidate/CandidateHeader";
 
 import "../../styles/CandidatesCSS/CandidateSettings.css";
 

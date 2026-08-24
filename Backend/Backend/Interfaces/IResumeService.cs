@@ -13,6 +13,11 @@ public interface IResumeService
         Guid userId,
         CancellationToken cancellationToken);
 
+    Task<ResumeATSScoreDto> AnalyzeResumeAsync(
+        Guid userId,
+        Guid resumeId,
+        CancellationToken cancellationToken);
+
     Task<bool> DeleteResumeAsync(
         Guid userId,
         CancellationToken cancellationToken);

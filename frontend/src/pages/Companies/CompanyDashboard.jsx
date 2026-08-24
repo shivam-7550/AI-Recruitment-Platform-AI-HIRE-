@@ -20,13 +20,13 @@ import {
 } from "lucide-react";
 
 import RoleDashboard from "../../components/RoleDashboard";
-import CompanySidebar from "../../components/CompanySidebar";
+import CompanySidebar from "../../components/Company/CompanySidebar";
 import { CompanyWorkspace } from "../WorkspaceModules";
 
 import { companyApi, jobsApi, notificationApi } from "../../services/api";
 
 import "../../styles/CompanyCSS/CompanyDashboard.css";
-import CompanyHeader from "../../components/CompanyHeader";
+import CompanyHeader from "../../components/Company/CompanyHeader";
 
 export default function CompanyDashboard() {
   const { pathname } = useLocation();

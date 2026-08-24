@@ -9,8 +9,8 @@ import {
   X,
 } from "lucide-react";
 
-import CandidateSidebar from "../../components/CandidateSidebar";
-import CandidateHeader from "../../components/CandidateHeader";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
+import CandidateHeader from "../../components/Candidate/CandidateHeader";
 import ApplicationForm from "../../components/ApplicationForm";
 
 import { candidateApi, jobsApi, savedJobsApi } from "../../services/api";
@@ -256,12 +256,6 @@ export default function CandidateBrowseJobs() {
   // ==========================================
 
   function openApplicationForm(job) {
-    if (!resume) {
-      setMessage("Please upload your resume before applying for a job.");
-
-      return;
-    }
-
     if (hasApplied(job.id)) {
       setMessage("You have already applied for this job.");
 
@@ -298,7 +292,9 @@ export default function CandidateBrowseJobs() {
       throw new Error("No job selected.");
     }
 
-    if (!resume?.id) {
+    const resumeId = applicationData.resumeId || resume?.id;
+
+    if (!resumeId) {
       throw new Error("Please upload a resume before applying.");
     }
 
@@ -317,7 +313,7 @@ export default function CandidateBrowseJobs() {
 
       const response = await candidateApi.apply(
         selectedJob.id,
-        resume.id,
+        resumeId,
         applicationData,
       );
 

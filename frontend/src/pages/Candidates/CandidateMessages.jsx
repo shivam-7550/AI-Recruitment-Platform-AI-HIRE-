@@ -17,9 +17,9 @@ import {
 } from "lucide-react";
 
 import { candidateApi, notificationApi } from "../../services/api";
-import CandidateHeader from "../../components/CandidateHeader";
+import CandidateHeader from "../../components/Candidate/CandidateHeader";
 import "../../styles/CandidatesCSS/CandidateMessage.css";
-import CandidateSidebar from "../../components/CandidateSidebar";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
 
 export default function CandidateMessages() {
   const navigate = useNavigate();

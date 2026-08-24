@@ -1,522 +1,132 @@
-using Backend.Constants;
-using Backend.Data;
-using Backend.DTOs.Dashboard;
+using Backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Backend.Dashboards;
+namespace Backend.Controllers;
 
 [ApiController]
-[Route("api/dashboards/candidate")]
-[Authorize(Roles = Roles.User)]
-public sealed class CandidateDashboardController : ControllerBase
+[Route("api/[controller]")]
+[Authorize(Roles = "User")]
+public class CandidateDashboardController : ControllerBase
 {
-    private readonly ApplicationDbContext _db;
+    private readonly IApplicationService _applicationService;
+    private readonly IJobService _jobService;
+    private readonly IResumeService _resumeService;
+    private readonly IUserProfileService _userProfileService;
 
     public CandidateDashboardController(
-        ApplicationDbContext db)
+        IApplicationService applicationService,
+        IJobService jobService,
+        IResumeService resumeService,
+        IUserProfileService userProfileService)
     {
-        _db = db;
+        _applicationService = applicationService;
+        _jobService = jobService;
+        _resumeService = resumeService;
+        _userProfileService = userProfileService;
     }
-
 
     [HttpGet]
-    public async Task<ActionResult<CandidateDashboardDto>> Get(
+    public async Task<IActionResult> GetDashboard(
         CancellationToken cancellationToken)
     {
-        // =====================================================
-        // Current User
-        // =====================================================
+        var userId = GetUserId();
 
-        if (!Guid.TryParse(
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier),
-                out var userId))
+        var profileTask = _userProfileService
+            .GetProfileAsync(userId, cancellationToken);
+
+        var applicationsTask = _applicationService
+            .GetApplicationsByUserAsync(userId, cancellationToken);
+
+        var resumeTask = _resumeService
+            .GetResumeAsync(userId, cancellationToken);
+
+        var jobsTask = _jobService
+            .GetAllJobsAsync(cancellationToken);
+
+        await Task.WhenAll(
+            profileTask,
+            applicationsTask,
+            resumeTask,
+            jobsTask);
+
+        var profile = await profileTask;
+        var applications = await applicationsTask;
+        var resume = await resumeTask;
+        var jobs = await jobsTask;
+
+        return Ok(new
         {
-            return Unauthorized();
-        }
-
-
-        // =====================================================
-        // Candidate
-        // =====================================================
-
-        var user =
-            await _db.Users
-                .AsNoTracking()
-                .Include(x => x.Profile)
-                .Include(x => x.Resumes)
-                .FirstOrDefaultAsync(
-                    x => x.Id == userId,
-                    cancellationToken);
-
-        if (user == null)
-            return NotFound();
-
-
-        // =====================================================
-        // Applications
-        // =====================================================
-
-        var applications =
-            await _db.JobApplications
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .Include(x => x.Job)
-                    .ThenInclude(x => x.Company)
-                .OrderByDescending(
-                    x => x.AppliedAt)
-                .ToListAsync(
-                    cancellationToken);
-
-
-        // =====================================================
-        // Saved Jobs
-        // =====================================================
-
-        var savedJobIds =
-            await _db.SavedJobs
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .Select(x => x.JobId)
-                .ToListAsync(
-                    cancellationToken);
-
-
-        // =====================================================
-        // Recommended Jobs
-        // =====================================================
-
-        var now =
-            DateTime.UtcNow;
-
-        var jobs =
-            await _db.Jobs
-                .AsNoTracking()
-                .Where(x =>
-                    x.IsActive &&
-                    x.LastDateToApply >= now)
-                .Include(x => x.Company)
-                .OrderByDescending(
-                    x => x.CreatedAt)
-                .Take(12)
-                .ToListAsync(
-                    cancellationToken);
-
-
-        // =====================================================
-        // Profile Score
-        // =====================================================
-
-        var profileScore =
-            CalculateProfileScore(user);
-
-
-        // =====================================================
-        // Latest Resume
-        // =====================================================
-
-        var resume =
-            user.Resumes
-                .OrderByDescending(
-                    x => x.UploadedAt)
-                .FirstOrDefault();
-
-
-        // =====================================================
-        // Resume ATS Breakdown
-        // =====================================================
-
-        var resumeBreakdown =
-            CalculateResumeBreakdown(resume);
-
-
-        // =====================================================
-        // Dashboard Response
-        // =====================================================
-
-        var response =
-            new CandidateDashboardDto
-            {
-                Candidate =
-                    new CandidateInfoDto
-                    {
-                        Id = user.Id,
-                        Name = user.Name,
-                        Email = user.Email,
-                        PhotoUrl =
-                            user.Profile?.PhotoUrl
-                    },
-
-
-                Stats =
-                    new CandidateStatsDto
-                    {
-                        AppliedJobs =
-                            applications.Count,
-
-                        Interviews =
-                            applications.Count(
-                                x =>
-                                    x.Status.Contains(
-                                        "Interview",
-                                        StringComparison
-                                            .OrdinalIgnoreCase)),
-
-                        SavedJobs =
-                            savedJobIds.Count,
-
-                        ProfileScore =
-                            profileScore.Total
-                    },
-
-
-                ProfileCompletion =
-                    new CandidateProfileCompletionDto
-                    {
-                        Total =
-                            profileScore.Total,
-
-                        Breakdown =
-                            profileScore.Breakdown
-                    },
-
-
-                Resume =
-                    resume == null
-                        ? null
-                        : new ResumeDashboardDto
-                        {
-                            Id = resume.Id,
-
-                            FileName =
-                                resume.FileName,
-
-                            FilePath =
-                                resume.FilePath,
-
-                            UploadedAt =
-                                resume.UploadedAt,
-
-                            // IMPORTANT:
-                            // This is the general
-                            // resume ATS score.
-                            AtsScore =
-                                resume.ATSScore,
-
-                            ScoreBreakdown =
-                                resumeBreakdown
-                        },
-
-
-                RecommendedJobs =
-                    jobs
-                        .Select(
-                            job =>
-                                new RecommendedJobDto
-                                {
-                                    Id = job.Id,
-
-                                    Title =
-                                        job.Title,
-
-                                    CompanyName =
-                                        job.Company.CompanyName,
-
-                                    Location =
-                                        job.Location,
-
-                                    Salary =
-                                        job.Salary,
-
-                                    EmploymentType =
-                                        job.EmploymentType,
-
-                                    Experience =
-                                        job.Experience,
-
-                                    Skills =
-                                        job.Skills,
-
-                                    IsSaved =
-                                        savedJobIds.Contains(
-                                            job.Id),
-
-                                    HasApplied =
-                                        applications.Any(
-                                            a =>
-                                                a.JobId ==
-                                                job.Id)
-                                })
-                        .ToList(),
-
-
-                RecentApplications =
-                    applications
-                        .Take(8)
-                        .Select(
-                            application =>
-                                new RecentApplicationDto
-                                {
-                                    Id =
-                                        application.Id,
-
-                                    JobId =
-                                        application.JobId,
-
-                                    JobTitle =
-                                        application.Job.Title,
-
-                                    CompanyName =
-                                        application.Job
-                                            .Company
-                                            .CompanyName,
-
-                                    Status =
-                                        application.Status,
-
-                                    // This is the
-                                    // job-specific
-                                    // matching score.
-                                    ATSScore =
-                                        application.ATSScore,
-
-                                    AppliedAt =
-                                        application.AppliedAt
-                                })
-                        .ToList()
-            };
-
-
-        return Ok(response);
+            profile,
+            applications,
+            resume,
+            recommendedJobs = jobs.Take(10)
+        });
     }
 
 
-    // =====================================================
-    // PROFILE SCORE
-    // =====================================================
+    // ==========================================
+    // Dashboard Statistics
+    // ==========================================
 
-    private static CandidateProfileCompletionDto
-        CalculateProfileScore(
-            Backend.Models.User user)
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetStats(
+        CancellationToken cancellationToken)
     {
-        var profile =
-            user.Profile;
+        var userId = GetUserId();
 
-        var breakdown =
-            new Dictionary<string, int>
-            {
-                ["personalInfo"] =
-                    !string.IsNullOrWhiteSpace(
-                        user.Name) &&
-                    !string.IsNullOrWhiteSpace(
-                        user.Email) &&
-                    !string.IsNullOrWhiteSpace(
-                        profile?.Phone) &&
-                    !string.IsNullOrWhiteSpace(
-                        profile?.City)
-                        ? 20
-                        : 0,
+        var applications = await _applicationService
+            .GetApplicationsByUserAsync(userId, cancellationToken);
 
-                ["professionalSummary"] =
-                    !string.IsNullOrWhiteSpace(
-                        profile?.ProfessionalHeadline) &&
-                    !string.IsNullOrWhiteSpace(
-                        profile?.Bio)
-                        ? 15
-                        : 0,
+        var totalApplications = applications.Count();
 
-                ["experience"] =
-                    profile?.ExperienceYears != null &&
-                    (!string.IsNullOrWhiteSpace(
-                        profile.CurrentCompany) ||
-                     !string.IsNullOrWhiteSpace(
-                        profile.InternshipDetails))
-                        ? 20
-                        : 0,
+        var shortlisted = applications.Count(x =>
+            string.Equals(
+                x.Status,
+                "Shortlisted",
+                StringComparison.OrdinalIgnoreCase));
 
-                ["education"] =
-                    !string.IsNullOrWhiteSpace(
-                        profile?.Degree) &&
-                    !string.IsNullOrWhiteSpace(
-                        profile?.Institution) &&
-                    profile.GraduationYear != null
-                        ? 15
-                        : 0,
+        var interviews = applications.Count(x =>
+            string.Equals(
+                x.Status,
+                "Interview",
+                StringComparison.OrdinalIgnoreCase));
 
-                ["skills"] =
-                    Split(
-                        profile?.Skills)
-                    .Length >= 3
-                        ? 15
-                        : 0,
+        var hired = applications.Count(x =>
+            string.Equals(
+                x.Status,
+                "Hired",
+                StringComparison.OrdinalIgnoreCase));
 
-                ["links"] =
-                    !string.IsNullOrWhiteSpace(
-                        profile?.LinkedInUrl)
-                        ? 5
-                        : 0,
+        var rejected = applications.Count(x =>
+            string.Equals(
+                x.Status,
+                "Rejected",
+                StringComparison.OrdinalIgnoreCase));
 
-                ["portfolio"] =
-                    !string.IsNullOrWhiteSpace(
-                        profile?.PortfolioUrl)
-                        ? 5
-                        : 0,
-
-                ["photo"] =
-                    !string.IsNullOrWhiteSpace(
-                        profile?.PhotoUrl)
-                        ? 5
-                        : 0
-            };
-
-        return new CandidateProfileCompletionDto
+        return Ok(new
         {
-            Total =
-                breakdown.Values.Sum(),
-
-            Breakdown =
-                breakdown
-        };
+            totalApplications,
+            shortlisted,
+            interviews,
+            hired,
+            rejected
+        });
     }
 
 
-    // =====================================================
-    // RESUME ATS BREAKDOWN
-    // =====================================================
+    // ==========================================
+    // Helper
+    // ==========================================
 
-    private static Dictionary<string, double>
-        CalculateResumeBreakdown(
-            Backend.Models.Resume? resume)
+    private Guid GetUserId()
     {
-        if (resume == null)
-        {
-            return new Dictionary<string, double>();
-        }
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var text =
-            resume.ResumeText ??
-            string.Empty;
+        if (!Guid.TryParse(userId, out var id))
+            throw new UnauthorizedAccessException("Invalid user ID.");
 
-        var breakdown =
-            new Dictionary<string, double>
-            {
-                ["contactDetails"] =
-                    HasEmail(
-                        resume,
-                        text)
-                        ? 15
-                        : 0,
-
-                ["skills"] =
-                    Math.Min(
-                        Split(
-                            resume.ExtractedSkills)
-                            .Length * 5,
-                        30),
-
-                ["experience"] =
-                    resume.Experience > 0 ||
-                    Has(
-                        text,
-                        "experience",
-                        "internship")
-                        ? 20
-                        : 0,
-
-                ["education"] =
-                    !string.IsNullOrWhiteSpace(
-                        resume.Education) ||
-                    Has(
-                        text,
-                        "education",
-                        "university",
-                        "college",
-                        "degree")
-                        ? 15
-                        : 0,
-
-                ["projects"] =
-                    Has(
-                        text,
-                        "project",
-                        "projects")
-                        ? 10
-                        : 0,
-
-                ["certifications"] =
-                    Has(
-                        text,
-                        "certification",
-                        "certificate",
-                        "certified")
-                        ? 5
-                        : 0,
-
-                ["formatting"] =
-                    FormattingScore(text)
-            };
-
-        return breakdown;
-    }
-
-
-    private static bool HasEmail(
-        Backend.Models.Resume resume,
-        string text)
-    {
-        return
-            !string.IsNullOrWhiteSpace(
-                resume.Email)
-            ||
-            System.Text.RegularExpressions.Regex
-                .IsMatch(
-                    text,
-                    @"\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b");
-    }
-
-
-    private static double FormattingScore(
-        string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return 0;
-
-        var words =
-            System.Text.RegularExpressions.Regex
-                .Matches(
-                    text,
-                    @"\b\w+\b")
-                .Count;
-
-        return words is >= 150 and <= 1500
-            ? 5
-            : 2.5;
-    }
-
-
-    private static string[] Split(
-        string? value)
-    {
-        return (value ?? string.Empty)
-            .Split(
-                ',',
-                StringSplitOptions.RemoveEmptyEntries |
-                StringSplitOptions.TrimEntries);
-    }
-
-
-    private static bool Has(
-        string text,
-        params string[] values)
-    {
-        return values.Any(
-            value =>
-                text.Contains(
-                    value,
-                    StringComparison
-                        .OrdinalIgnoreCase));
+        return id;
     }
 }

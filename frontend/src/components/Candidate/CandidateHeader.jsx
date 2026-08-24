@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { candidateApi } from "../services/api";
-import NotificationBell from "./notifications/NotificationBell";
+import { candidateApi } from "../../services/api";
+import NotificationBell from "../notifications/NotificationBell";
 
-import "../styles/CandidatesCSS/CandidateHeader.css";
+import "../../styles/CandidatesCSS/CandidateHeader.css";
 
 export default function CandidateHeader({ title, subtitle }) {
   const navigate = useNavigate();

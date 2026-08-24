@@ -16,9 +16,8 @@ import {
   X,
 } from "lucide-react";
 
-import CandidateSidebar from "../../components/CandidateSidebar";
-import CandidateHeader from "../../components/CandidateHeader";
-import { candidateApi } from "../../services/api";
+import CandidateSidebar from "../../components/Candidate/CandidateSidebar";
+import CandidateHeader from "../../components/Candidate/CandidateHeader";
 
 import "../../styles/CandidatesCSS/CandidateProfile.css";
 
@@ -75,61 +74,21 @@ const skillSuggestions = [
 export default function CandidateProfile() {
   const [profile, setProfile] = useState(initialProfile);
   const [newSkill, setNewSkill] = useState("");
-  const [resumeFile, setResumeFile] = useState(null);
   const [editing, setEditing] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    let mounted = true;
-
-    async function loadProfile() {
-      const [profileResult, resumeResult] = await Promise.allSettled([
-        candidateApi.profile(),
-        candidateApi.resume(),
-      ]);
-
-      if (!mounted) return;
-
-      if (profileResult.status === "fulfilled") {
-        const data = profileResult.value || {};
-        const nameParts = String(data.name || "").trim().split(/\s+/);
-
-        setProfile({
-          ...initialProfile,
-          ...data,
-          firstName: nameParts[0] || "",
-          lastName: nameParts.slice(1).join(" "),
-          phoneNumber: data.phone || "",
-          dateOfBirth: data.dateOfBirth?.slice(0, 10) || "",
-          headline: data.professionalHeadline || "",
-          totalExperience: data.experienceYears ?? "",
-          highestDegree: data.degree || "",
-          university: data.institution || "",
-          professionalSummary: data.bio || "",
-          linkedinUrl: data.linkedInUrl || "",
-          skills: String(data.skills || "")
-            .split(",")
-            .map((skill) => skill.trim())
-            .filter(Boolean),
-        });
-      } else {
-        setMessage(profileResult.reason?.message || "Unable to load profile.");
-      }
-
-      if (resumeResult.status === "fulfilled") {
-        setProfile((previous) => ({
-          ...previous,
-          resumeFileName: resumeResult.value?.fileName || "",
-        }));
-      }
-    }
-
-    loadProfile();
-
-    return () => {
-      mounted = false;
-    };
+    // TODO:
+    // Replace this with your actual candidate profile API.
+    //
+    // Example:
+    // const loadProfile = async () => {
+    //   const response = await candidateProfileApi.getProfile();
+    //   setProfile(response.data);
+    // };
+    //
+    // loadProfile();
   }, []);
 
   const profileCompletion = useMemo(() => {
@@ -236,8 +195,6 @@ export default function CandidateProfile() {
       resumeFileName: file.name,
     }));
 
-    setResumeFile(file);
-
     setMessage("");
   };
 
@@ -248,28 +205,16 @@ export default function CandidateProfile() {
       setSaving(true);
       setMessage("");
 
-      await candidateApi.updateProfile({
-        ...profile,
-        name: `${profile.firstName} ${profile.lastName}`.trim(),
-        phone: profile.phoneNumber || null,
-        professionalHeadline: profile.headline || null,
-        experienceYears:
-          profile.totalExperience === "" ? null : Number(profile.totalExperience),
-        expectedSalary:
-          profile.expectedSalary === "" ? null : Number(profile.expectedSalary),
-        degree: profile.highestDegree || null,
-        institution: profile.university || null,
-        bio: profile.professionalSummary || null,
-        linkedInUrl: profile.linkedinUrl || null,
-        skills: profile.skills.join(", "),
-        graduationYear:
-          profile.graduationYear === "" ? null : Number(profile.graduationYear),
-      });
+      /*
+       * TODO:
+       * Connect this to your backend.
+       *
+       * Example:
+       *
+       * await candidateProfileApi.updateProfile(profile);
+       */
 
-      if (resumeFile) {
-        await candidateApi.uploadResume(resumeFile);
-        setResumeFile(null);
-      }
+      await new Promise((resolve) => setTimeout(resolve, 700));
 
       setEditing(false);
       setMessage("Profile updated successfully.");
@@ -754,26 +699,6 @@ export default function CandidateProfile() {
             </div>
 
             <div className="candidate-profile-form-grid">
-              {/* <FormField
-                label="LinkedIn"
-                name="linkedinUrl"
-                value={profile.linkedinUrl}
-                onChange={handleChange}
-                disabled={!editing}
-                placeholder="https://linkedin.com/in/your-profile"
-                icon={<Linkedin size={16} />}
-              /> */}
-              {/* 
-              <FormField
-                label="GitHub"
-                name="githubUrl"
-                value={profile.githubUrl}
-                onChange={handleChange}
-                disabled={!editing}
-                placeholder="https://github.com/username"
-                icon={<Github size={16} />}
-              /> */}
-
               <FormField
                 label="Portfolio Website"
                 name="portfolioUrl"

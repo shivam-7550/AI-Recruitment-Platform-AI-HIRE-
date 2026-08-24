@@ -14,66 +14,137 @@ public sealed class AdminDashboardController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
 
-    public AdminDashboardController(ApplicationDbContext db)
+    public AdminDashboardController(
+        ApplicationDbContext db)
     {
         _db = db;
     }
+
+    // =========================================================
+    // Get Admin Dashboard
+    // GET: api/dashboards/admin
+    // =========================================================
 
     [HttpGet]
     public async Task<ActionResult<AdminDashboardDto>> Get(
         CancellationToken cancellationToken)
     {
-        var users = await _db.Users
-            .AsNoTracking()
-            .GroupBy(x => x.Role)
-            .Select(x => new UserRoleCountDto
+        // =====================================================
+        // Users By Role
+        // =====================================================
+
+        var usersByRole =
+            await _db.Users
+                .AsNoTracking()
+                .GroupBy(user => user.Role)
+                .Select(group => new UserRoleCountDto
+                {
+                    Role = group.Key,
+                    Count = group.Count()
+                })
+                .ToListAsync(cancellationToken);
+
+        // =====================================================
+        // Pending Companies
+        // =====================================================
+
+        var pendingCompanies =
+            await _db.Companies
+                .AsNoTracking()
+                .Where(company =>
+                    company.ApprovalStatus == "Pending")
+                .OrderBy(company => company.CreatedAt)
+                .Take(20)
+                .Select(company => new PendingCompanyDto
+                {
+                    Id = company.Id,
+                    CompanyName = company.CompanyName,
+                    Email = company.Email,
+                    Industry = company.Industry,
+                    CreatedAt = company.CreatedAt
+                })
+                .ToListAsync(cancellationToken);
+
+        // =====================================================
+        // Pending Approval Count
+        // =====================================================
+
+        var pendingApprovalCount =
+            await _db.Companies
+                .AsNoTracking()
+                .CountAsync(
+                    company =>
+                        company.ApprovalStatus == "Pending",
+                    cancellationToken);
+
+        // =====================================================
+        // Total Companies
+        // =====================================================
+
+        var totalCompanies =
+            await _db.Companies
+                .AsNoTracking()
+                .CountAsync(cancellationToken);
+
+        // =====================================================
+        // Active Jobs
+        // =====================================================
+
+        var activeJobs =
+            await _db.Jobs
+                .AsNoTracking()
+                .CountAsync(
+                    job => job.IsActive,
+                    cancellationToken);
+
+        // =====================================================
+        // Total Applications
+        // =====================================================
+
+        var totalApplications =
+            await _db.JobApplications
+                .AsNoTracking()
+                .CountAsync(cancellationToken);
+
+        // =====================================================
+        // Dashboard Response
+        // =====================================================
+
+        var response =
+            new AdminDashboardDto
             {
-                Role = x.Key,
-                Count = x.Count()
-            })
-            .ToListAsync(cancellationToken);
+                Stats =
+                    new AdminStatsDto
+                    {
+                        TotalUsers =
+                            usersByRole.Sum(
+                                item => item.Count),
 
-        var pendingCompanies = await _db.Companies
-            .AsNoTracking()
-            .Where(x => x.ApprovalStatus == "Pending")
-            .OrderBy(x => x.CreatedAt)
-            .Take(20)
-            .Select(x => new PendingCompanyDto
-            {
-                Id = x.Id,
-                CompanyName = x.CompanyName,
-                Email = x.Email,
-                Industry = x.Industry,
-                CreatedAt = x.CreatedAt
-            })
-            .ToListAsync(cancellationToken);
+                        Candidates =
+                            usersByRole
+                                .Where(item =>
+                                    item.Role == Roles.User)
+                                .Sum(item => item.Count),
 
-        var response = new AdminDashboardDto
-        {
-            Stats = new AdminStatsDto
-            {
-                TotalUsers = users.Sum(x => x.Count),
+                        Companies =
+                            totalCompanies,
 
-                Candidates = users
-                    .Where(x => x.Role == Roles.User)
-                    .Sum(x => x.Count),
+                        ActiveJobs =
+                            activeJobs,
 
-                Companies = await _db.Companies
-                    .CountAsync(cancellationToken),
+                        Applications =
+                            totalApplications,
 
-                ActiveJobs = await _db.Jobs
-                    .CountAsync(x => x.IsActive, cancellationToken),
+                        PendingApprovals =
+                            pendingApprovalCount
+                    },
 
-                Applications = await _db.JobApplications
-                    .CountAsync(cancellationToken),
+                UsersByRole =
+                    usersByRole,
 
-                PendingApprovals = pendingCompanies.Count
-            },
-
-            UsersByRole = users,
-
-            PendingCompanies = pendingCompanies
-        };
+                PendingCompanies =
+                    pendingCompanies
+            };
 
         return Ok(response);
     }

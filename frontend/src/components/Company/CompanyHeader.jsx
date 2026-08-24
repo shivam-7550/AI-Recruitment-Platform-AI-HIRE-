@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { ChevronRight, FileText, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { companyApi } from "../services/api";
-import NotificationBell from "./notifications/NotificationBell";
+import { companyApi } from "../../services/api";
+import NotificationBell from "../notifications/NotificationBell";
 
-import "../styles/CompanyCSS/CompanyHeader.css";
+import "../../styles/CompanyCSS/CompanyHeader.css";
 
 export default function CompanyHeader({
   company,

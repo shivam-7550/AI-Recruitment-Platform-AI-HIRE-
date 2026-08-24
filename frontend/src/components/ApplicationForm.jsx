@@ -132,12 +132,12 @@ export default function ApplicationForm({
     // File type validation
     // ------------------------------------------
 
-    const allowedExtensions = [".pdf", ".doc", ".docx"];
+    const allowedExtensions = [".pdf", ".docx"];
 
     const extension = "." + file.name.split(".").pop().toLowerCase();
 
     if (!allowedExtensions.includes(extension)) {
-      setResumeError("Only PDF, DOC and DOCX files are allowed.");
+      setResumeError("Only PDF and DOCX files are allowed.");
 
       return;
     }

@@ -3,8 +3,9 @@
 public enum ApplicationStatus
 {
     Applied,
+    UnderReview,
     Shortlisted,
     Interview,
-    Selected,
+    Hired,
     Rejected
 }
