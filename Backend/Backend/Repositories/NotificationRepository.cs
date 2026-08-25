@@ -45,7 +45,9 @@ public sealed class NotificationRepository : INotificationRepository
                 !item.IsArchived)
             .OrderByDescending(item => item.CreatedAt)
             .Take(50)
-            .ToListAsync(cancellationToken);
+            // This is a small, read-only polling query. Do not cancel the
+            // database command when the browser replaces a poll request.
+            .ToListAsync(CancellationToken.None);
     }
 
 

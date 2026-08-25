@@ -3,8 +3,11 @@ function key(user) {
 }
 
 export function localSavedJobIds(user) {
-  try { return JSON.parse(localStorage.getItem(key(user)) || "[]"); }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(key(user)) || "[]");
+  } catch {
+    return [];
+  }
 }
 
 export function writeLocalSavedJobIds(user, ids) {
@@ -12,7 +15,12 @@ export function writeLocalSavedJobIds(user, ids) {
 }
 
 export function mergeSavedJobIds(user, serverItems = []) {
-  const ids = [...new Set([...localSavedJobIds(user), ...serverItems.map((item) => item.jobId)])];
+  const ids = [
+    ...new Set([
+      ...localSavedJobIds(user),
+      ...serverItems.map((item) => item.jobId),
+    ]),
+  ];
   writeLocalSavedJobIds(user, ids);
   return ids;
 }

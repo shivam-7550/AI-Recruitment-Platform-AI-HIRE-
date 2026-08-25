@@ -316,62 +316,31 @@ export default function CompanyApplication() {
       return;
     }
 
-    const resumeId = application.resumeId;
-
-    const resumeUrl = application.resumeUrl;
-
-    const resumePath = application.resumePath;
-
     try {
       setDownloadingResumeId(application.id);
+      const token = session?.token;
+      const response = await fetch(
+        `/api/Application/${application.id}/resume`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+      );
 
-      /*
-       * Preferred:
-       * Secure backend endpoint using ResumeId.
-       */
-      /*
-       * Fallback:
-       * If backend already returns a direct
-       * downloadable URL.
-       */
-      if (resumeUrl) {
-        const link = document.createElement("a");
-
-        link.href = resumeUrl;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        return;
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(
+          body?.message || "Unable to download candidate resume.",
+        );
       }
 
-      /*
-       * Fallback for stored relative path.
-       */
-      if (resumePath) {
-        const normalizedPath = resumePath.replace(/\\/g, "/");
+      const file = await response.blob();
+      const downloadUrl = URL.createObjectURL(file);
+      const link = document.createElement("a");
 
-        const link = document.createElement("a");
-
-        link.href = normalizedPath;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        return;
-      }
-
-      if (resumeId) {
-        throw new Error("Resume download URL is not available.");
-      }
-
-      throw new Error("Resume is not available for this application.");
+      link.href = downloadUrl;
+      link.download = getResumeName(application);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
     } catch (err) {
       console.error("Resume download failed:", err);
 

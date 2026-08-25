@@ -177,7 +177,10 @@ export function CompanyWorkspace({ view = "overview" }) {
         .then(setCompany)
         .catch(() => {});
       const companyRefresh = window.setInterval(() => {
-        companyApi.byUser(userId).then(setCompany).catch(() => {});
+        companyApi
+          .byUser(userId)
+          .then(setCompany)
+          .catch(() => {});
       }, 5000);
       return () => window.clearInterval(companyRefresh);
     }
@@ -274,7 +277,9 @@ export function CompanyWorkspace({ view = "overview" }) {
   if (company.approvalStatus !== "Approved")
     return (
       <section className="content-section narrow">
-        <div className={`approval-card panel ${company.approvalStatus?.toLowerCase()}`}>
+        <div
+          className={`approval-card panel ${company.approvalStatus?.toLowerCase()}`}
+        >
           <p className="eyebrow">Company verification</p>
           <span className="approval-badge">{company.approvalStatus}</span>
           <h2>
@@ -289,7 +294,9 @@ export function CompanyWorkspace({ view = "overview" }) {
           </p>
           <div className="approval-steps">
             <span className="done">Profile submitted</span>
-            <span className={company.approvalStatus === "Pending" ? "current" : ""}>
+            <span
+              className={company.approvalStatus === "Pending" ? "current" : ""}
+            >
               Admin review
             </span>
             <span>Job publishing</span>
@@ -473,10 +480,14 @@ export function AdminWorkspace() {
               <span>{c.city || "—"}</span>
               <div className="admin-company-action">
                 <span className="status">{c.approvalStatus}</span>
-                {c.approvalStatus === "Pending" && <>
-                  <button onClick={() => approveCompany(c.id)}>Approve</button>
-                  <button onClick={() => rejectCompany(c.id)}>Reject</button>
-                </>}
+                {c.approvalStatus === "Pending" && (
+                  <>
+                    <button onClick={() => approveCompany(c.id)}>
+                      Approve
+                    </button>
+                    <button onClick={() => rejectCompany(c.id)}>Reject</button>
+                  </>
+                )}
               </div>
             </div>
           ))}

@@ -30,7 +30,7 @@
 
 .candidate-shared-header-title h1 {
   margin: 0;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 21px;
   font-weight: 750;
 
@@ -40,7 +40,7 @@
 
 .candidate-shared-header-title p {
   margin: 4px 0 0;
-
+  font-family: "Times New Roman", Times, serif;
   color: #777777;
   font-size: 13px;
 }
@@ -119,7 +119,7 @@
 
   background: #111111;
   color: #ffffff;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 10px;
   font-style: normal;
   font-weight: 700;
@@ -189,11 +189,13 @@
 
 .candidate-notification-dropdown-header strong {
   font-size: 15px;
+  font-family: "Times New Roman", Times, serif;
   color: #111111;
 }
 
 .candidate-notification-dropdown-header span {
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
   color: #888888;
 }
 
@@ -325,7 +327,7 @@
 
   font-size: 13px;
   font-weight: 700;
-
+  font-family: "Times New Roman", Times, serif;
   line-height: 1.35;
 }
 
@@ -333,7 +335,7 @@
   margin: 3px 0 4px;
 
   color: #666666;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 12px;
   line-height: 1.45;
 
@@ -346,7 +348,7 @@
 
 .candidate-notification-content small {
   color: #999999;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 10px;
 }
 
@@ -395,11 +397,13 @@
 
 .candidate-notification-empty strong {
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   color: #333333;
 }
 
 .candidate-notification-empty span {
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
   color: #999999;
 }
 
@@ -424,7 +428,7 @@
   justify-content: space-between;
 
   color: #111111;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 12px;
   font-weight: 700;
 
@@ -471,7 +475,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
 }
 
@@ -489,12 +493,13 @@
 
 .candidate-shared-header-user strong {
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   color: #111111;
 }
 
 .candidate-shared-header-user small {
   margin-top: 2px;
-
+  font-family: "Times New Roman", Times, serif;
   color: #777777;
   font-size: 11px;
 }

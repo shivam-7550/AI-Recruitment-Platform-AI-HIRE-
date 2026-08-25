@@ -26,7 +26,7 @@
   display: block;
 
   margin-bottom: 3px;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 10px;
   font-weight: 700;
 
@@ -40,7 +40,7 @@
   margin: 0;
 
   color: #111827;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 23px;
   line-height: 1.2;
 
@@ -51,7 +51,7 @@
   margin: 4px 0 0;
 
   color: #8a919b;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 11px;
 }
 
@@ -91,7 +91,7 @@
 
   background: #f9fafb;
   color: #111827;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 12px;
 
   box-sizing: border-box;
@@ -108,7 +108,7 @@
 
 .admin-header-notification {
   position: relative;
-
+  font-family: "Times New Roman", Times, serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,7 +139,7 @@
 
   background: #111827;
   color: #ffffff;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 11px;
   font-weight: 800;
 }
@@ -148,7 +148,7 @@
   display: block;
 
   color: #111827;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 12px;
   white-space: nowrap;
 }
@@ -159,7 +159,7 @@
   margin-top: 2px;
 
   color: #9ca3af;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 10px;
 }
 
@@ -206,6 +206,7 @@
 
   .admin-header-title h1 {
     font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
   }
 
   .admin-header-search {

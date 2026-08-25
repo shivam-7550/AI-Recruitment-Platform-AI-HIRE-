@@ -48,6 +48,8 @@ import CompanyApplication from "./pages/Companies/CompanyApplication";
 // Admin Pages
 // ==========================================
 import AdminJobs from "./pages/Admin/AdminJobs";
+import AdminCompanies from "./pages/Admin/AdminCompanies";
+import AdminUsers from "./pages/Admin/AdminUsers";
 
 // ==========================================
 // Route Guards
@@ -187,31 +189,9 @@ function App() {
 
         <Route path="/admin/jobs" element={<AdminJobs />} />
 
-        {/* -----------------------------------------
-            Admin Companies
+        <Route path="/admin/companies" element={<AdminCompanies />} />
 
-            Currently handled through dashboard.
-            Later can be replaced with:
-            <AdminCompanies />
-        ----------------------------------------- */}
-
-        <Route
-          path="/admin/companies"
-          element={<Navigate to="/admin/dashboard#companies" replace />}
-        />
-
-        {/* -----------------------------------------
-            Admin Users
-
-            Currently handled through dashboard.
-            Later can be replaced with:
-            <AdminUsers />
-        ----------------------------------------- */}
-
-        <Route
-          path="/admin/users"
-          element={<Navigate to="/admin/dashboard#companies" replace />}
-        />
+        <Route path="/admin/users" element={<AdminUsers />} />
 
         {/* -----------------------------------------
             Admin Reports

@@ -148,4 +148,31 @@ public sealed class AdminDashboardController : ControllerBase
 
         return Ok(response);
     }
+
+    // =========================================================
+    // Registered Users
+    // GET: api/dashboards/admin/users
+    // =========================================================
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers(
+        CancellationToken cancellationToken)
+    {
+        var users = await _db.Users
+            .AsNoTracking()
+            .Where(user => user.Role == Roles.User)
+            .OrderByDescending(user => user.CreatedAt)
+            .Select(user => new
+            {
+                user.Id,
+                user.Name,
+                user.Email,
+                user.Role,
+                user.CreatedAt,
+                HasCompanyProfile = user.Company != null
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(users);
+    }
 }

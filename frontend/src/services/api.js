@@ -230,8 +230,7 @@ export const candidateApi = {
     });
   },
 
-  analyzeResume: (resumeId) =>
-    api(`/Resume/${resumeId}/analysis`),
+  analyzeResume: (resumeId) => api(`/Resume/${resumeId}/analysis`),
 
   removeResume: () =>
     api("/Resume", {
@@ -356,6 +355,13 @@ export const adminApi = {
   // ---------------------------------------------------------
 
   jobs: () => api("/Job"),
+
+  // ---------------------------------------------------------
+  // Get all registered users
+  // GET /api/dashboards/admin/users
+  // ---------------------------------------------------------
+
+  users: () => api("/dashboards/admin/users"),
 
   // ---------------------------------------------------------
   // Approve company

@@ -65,7 +65,7 @@ export default function AdminHeader({
           onNotificationsChange={onNotificationsChange}
           resolveRoute={(notification) =>
             notification?.type === "CompanyRegistered"
-              ? "/admin/dashboard#companies"
+              ? "/admin/companies"
               : notification?.jobId
                 ? "/admin/jobs"
                 : "/admin/dashboard"

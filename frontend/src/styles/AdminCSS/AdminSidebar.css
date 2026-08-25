@@ -50,7 +50,7 @@
 
 .admin-sidebar-logo strong {
   display: block;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.4px;
@@ -60,7 +60,7 @@
   display: block;
 
   margin-top: 2px;
-
+  font-family: "Times New Roman", Times, serif;
   font-size: 11px;
   color: #8a9099;
 }
@@ -72,9 +72,9 @@
 .admin-sidebar-navigation {
   display: flex;
   flex-direction: column;
-
+  font-family: "Times New Roman", Times, serif;
   gap: 5px;
-
+  flex: 1;
   margin-top: 24px;
 }
 
@@ -83,7 +83,7 @@
 
   font-size: 10px;
   font-weight: 700;
-
+  font-family: "Times New Roman", Times, serif;
   color: #9ca3af;
 
   text-transform: uppercase;
@@ -349,4 +349,8 @@
 
   background: #dc2626;
   color: #ffffff;
+}
+
+.admin-sidebar-bottom {
+  margin-top: auto;
 }

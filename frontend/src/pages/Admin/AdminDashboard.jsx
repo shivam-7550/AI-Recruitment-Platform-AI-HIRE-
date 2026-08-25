@@ -9,7 +9,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { adminApi, notificationApi } from "../../services/api";
+import { adminApi } from "../../services/api";
 
 import AdminSidebar from "../../components/Admin/AdminSidebar";
 import AdminHeader from "../../components/Admin/AdminHeader";
@@ -37,11 +37,10 @@ export default function AdminDashboard() {
       return;
     }
 
-    Promise.all([adminApi.companies(), adminApi.jobs(), notificationApi.mine()])
-      .then(([companyData, jobData, notificationData]) => {
+    Promise.all([adminApi.companies(), adminApi.jobs()])
+      .then(([companyData, jobData]) => {
         setCompanies(companyData || []);
         setJobs(jobData || []);
-        setNotifications(notificationData || []);
       })
       .catch((error) => {
         console.error("Admin dashboard loading failed:", error);

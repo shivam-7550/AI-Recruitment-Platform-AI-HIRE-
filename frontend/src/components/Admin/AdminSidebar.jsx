@@ -50,7 +50,7 @@ export default function AdminSidebar({ unread = 0 }) {
       to: "/admin/jobs",
     },
     {
-      label: "Users",
+      label: "Candidates",
       icon: Users,
       to: "/admin/users",
     },
@@ -133,7 +133,7 @@ export default function AdminSidebar({ unread = 0 }) {
             PLATFORM INSIGHT
         ====================================================== */}
 
-        <div className="admin-sidebar-insight">
+        {/* <div className="admin-sidebar-insight">
           <div className="admin-sidebar-insight-icon">✦</div>
 
           <div>
@@ -145,7 +145,7 @@ export default function AdminSidebar({ unread = 0 }) {
 
             <NavLink to="/admin/companies">Review companies →</NavLink>
           </div>
-        </div>
+        </div> */}
 
         {/* =====================================================
             LOGOUT

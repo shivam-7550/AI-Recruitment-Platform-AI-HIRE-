@@ -390,11 +390,11 @@ export default function CompanyDashboard() {
     view === "jobs" ||
     (view === "post" && company.approvalStatus !== "Approved")
   ) {
-    return (
-      <RoleDashboard role="Company" title="Build your team. Shape the future.">
-        <CompanyWorkspace view={view} />
-      </RoleDashboard>
-    );
+    // return (
+    //   <RoleDashboard role="Company" title="Build your team. Shape the future.">
+    //     <CompanyWorkspace view={view} />
+    //   </RoleDashboard>
+    // );
   }
 
   const companyInitial = company.companyName?.slice(0, 1)?.toUpperCase() || "C";

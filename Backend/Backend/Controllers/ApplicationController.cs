@@ -12,11 +12,17 @@ namespace Backend.Controllers;
 public class ApplicationController : ControllerBase
 {
     private readonly IApplicationService _applicationService;
+    private readonly IApplicationRepository _applicationRepository;
+    private readonly IWebHostEnvironment _environment;
 
     public ApplicationController(
-        IApplicationService applicationService)
+        IApplicationService applicationService,
+        IApplicationRepository applicationRepository,
+        IWebHostEnvironment environment)
     {
         _applicationService = applicationService;
+        _applicationRepository = applicationRepository;
+        _environment = environment;
     }
 
     // =========================================================
@@ -190,6 +196,58 @@ public class ApplicationController : ControllerBase
                 message = ex.Message
             });
         }
+    }
+
+    // =========================================================
+    // COMPANY - DOWNLOAD A CANDIDATE RESUME
+    // GET: /api/Application/{applicationId}/resume
+    // =========================================================
+
+    [Authorize(Roles = "Company")]
+    [HttpGet("{applicationId:guid}/resume")]
+    public async Task<IActionResult> DownloadResume(
+        Guid applicationId,
+        CancellationToken cancellationToken)
+    {
+        var companyIdClaim = User.FindFirstValue("CompanyId");
+
+        if (!Guid.TryParse(companyIdClaim, out var companyId))
+        {
+            return Unauthorized(new { message = "Company ID not found in token." });
+        }
+
+        var application = await _applicationRepository
+            .GetCompanyApplicationByIdAsync(
+                companyId,
+                applicationId,
+                cancellationToken);
+
+        if (application?.Resume is null ||
+            string.IsNullOrWhiteSpace(application.Resume.FilePath))
+        {
+            return NotFound(new { message = "Resume not found for this application." });
+        }
+
+        var relativePath = application.Resume.FilePath.TrimStart('/', '\\');
+        var fullPath = Path.Combine(_environment.WebRootPath, relativePath);
+
+        if (!System.IO.File.Exists(fullPath))
+        {
+            return NotFound(new { message = "Resume file is no longer available." });
+        }
+
+        var contentType = Path.GetExtension(fullPath).ToLowerInvariant() switch
+        {
+            ".pdf" => "application/pdf",
+            ".doc" => "application/msword",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            _ => "application/octet-stream"
+        };
+
+        return PhysicalFile(
+            fullPath,
+            contentType,
+            application.Resume.FileName);
     }
 
 
