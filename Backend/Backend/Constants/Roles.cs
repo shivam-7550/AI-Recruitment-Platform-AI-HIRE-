@@ -9,3 +9,4 @@
         public static readonly string[] All = [Admin, Company, User];
     }
 }
+

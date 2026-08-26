@@ -1,4 +1,4 @@
-﻿using Backend.Interfaces;
+﻿using Backend.Interfaces.Auth;
 using Backend.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

@@ -12,3 +12,4 @@ public sealed class ResumeATSScoreDto
 
     public List<string> Suggestions { get; set; } = new();
 }
+

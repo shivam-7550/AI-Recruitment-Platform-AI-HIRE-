@@ -1,4 +1,4 @@
-using Backend.Interfaces;
+using Backend.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

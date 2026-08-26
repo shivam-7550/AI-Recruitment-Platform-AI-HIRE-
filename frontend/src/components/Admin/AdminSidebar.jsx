@@ -50,7 +50,7 @@ export default function AdminSidebar({ unread = 0 }) {
       to: "/admin/jobs",
     },
     {
-      label: "Candidates",
+      label: "Users",
       icon: Users,
       to: "/admin/users",
     },

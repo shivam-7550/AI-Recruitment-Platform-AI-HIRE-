@@ -1,0 +1,24 @@
+﻿using Backend.DTOs.Resume;
+
+namespace Backend.Interfaces.Services;
+
+public interface IResumeService
+{
+    Task<ResumeResponseDto> UploadResumeAsync(
+        Guid userId,
+        UploadResumeDto dto,
+        CancellationToken cancellationToken);
+
+    Task<ResumeResponseDto?> GetResumeAsync(
+        Guid userId,
+        CancellationToken cancellationToken);
+
+    Task<ResumeATSScoreDto> AnalyzeResumeAsync(
+        Guid userId,
+        Guid resumeId,
+        CancellationToken cancellationToken);
+
+    Task<bool> DeleteResumeAsync(
+        Guid userId,
+        CancellationToken cancellationToken);
+}

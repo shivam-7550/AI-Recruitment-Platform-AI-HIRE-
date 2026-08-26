@@ -16,7 +16,8 @@ export default function AdminUsers() {
 
   useEffect(() => {
     if (session?.role !== "Admin") return;
-    adminApi.users()
+    adminApi
+      .users()
       .then((userData) => {
         setUsers(userData || []);
       })
@@ -49,7 +50,7 @@ export default function AdminUsers() {
       <AdminSidebar unread={unread} />
       <main className="admin-dashboard-main">
         <AdminHeader
-          title="Candidates"
+          title="Users"
           subtitle="View candidates registered on the HireLine platform."
           query={query}
           onQueryChange={setQuery}

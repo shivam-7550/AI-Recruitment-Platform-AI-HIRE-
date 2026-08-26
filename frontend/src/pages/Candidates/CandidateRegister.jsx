@@ -49,9 +49,9 @@ function CandidateRegister() {
   return (
     <div className="candidate-register-container">
       <div className="candidate-register-card">
-        <p className="candidate-eyebrow">Candidate Registration</p>
+        <p className="candidate-eyebrow">User Registration</p>
 
-        <h1>Create your candidate account</h1>
+        <h1>Create your User account</h1>
 
         <p className="candidate-subtitle">Start your next career move.</p>
 

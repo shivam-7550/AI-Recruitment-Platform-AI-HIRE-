@@ -1,5 +1,5 @@
 ﻿using Backend.Data;
-using Backend.Interfaces;
+using Backend.Interfaces.Repositories;
 using Backend.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -32,12 +32,28 @@ public class InterviewRepository : IInterviewRepository
     // Get By Id
     // ==========================================
 
+    //public async Task<Interview?> GetByIdAsync(
+    //    Guid id,
+    //    CancellationToken cancellationToken)
+    //{
+    //    return await _context.Interviews
+    //        .Include(i => i.Application)
+    //        .FirstOrDefaultAsync(
+    //            i => i.Id == id,
+    //            cancellationToken);
+    //
+    //}
+
+
+    //Updated
+
     public async Task<Interview?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken)
+    Guid id,
+    CancellationToken cancellationToken)
     {
         return await _context.Interviews
             .Include(i => i.Application)
+                .ThenInclude(a => a.Job)
             .FirstOrDefaultAsync(
                 i => i.Id == id,
                 cancellationToken);
@@ -47,12 +63,26 @@ public class InterviewRepository : IInterviewRepository
     // Get By Application Id
     // ==========================================
 
+    //public async Task<Interview?> GetByApplicationIdAsync(
+    //    Guid applicationId,
+    //    CancellationToken cancellationToken)
+    //{
+    //    return await _context.Interviews
+    //        .Include(i => i.Application)
+    //        .Where(i => i.ApplicationId == applicationId)
+    //        .OrderByDescending(i => i.ScheduledAt)
+    //        .FirstOrDefaultAsync(cancellationToken);
+    //}
+
+    //Updated
+
     public async Task<Interview?> GetByApplicationIdAsync(
-        Guid applicationId,
-        CancellationToken cancellationToken)
+    Guid applicationId,
+    CancellationToken cancellationToken)
     {
         return await _context.Interviews
             .Include(i => i.Application)
+                .ThenInclude(a => a.Job)
             .Where(i => i.ApplicationId == applicationId)
             .OrderByDescending(i => i.ScheduledAt)
             .FirstOrDefaultAsync(cancellationToken);

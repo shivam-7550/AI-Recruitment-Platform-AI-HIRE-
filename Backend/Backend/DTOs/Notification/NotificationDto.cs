@@ -18,3 +18,4 @@ public sealed class NotificationDto
 
     public DateTime CreatedAt { get; set; }
 }
+

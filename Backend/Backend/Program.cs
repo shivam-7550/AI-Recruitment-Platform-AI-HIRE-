@@ -1,9 +1,26 @@
 using Backend.Data;
 using Backend.Helpers;
-using Backend.Interfaces;
+using Backend.Interfaces.ATS;
+using Backend.Interfaces.Auth;
+using Backend.Interfaces.Repositories;
+using Backend.Interfaces.Services;
+using Backend.Interfaces.Utilities;
 using Backend.Repositories;
 using Backend.Services;
+using Backend.Services.Applications;
 
+using Backend.Services.ATS;
+using Backend.Services.Auth;
+using Backend.Services.Companies;
+using Backend.Services.Interviews;
+using Backend.Services.Jobs;
+
+using Backend.Services.Notifications;
+
+using Backend.Services.Resumes;
+using Backend.Services.SavedJobs;
+
+using Backend.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -163,6 +180,13 @@ builder.Services.AddScoped<IJobService, JobService>();
 
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+
+// -----------------------------
+// Interview
+// -----------------------------
+
+builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
+builder.Services.AddScoped<IInterviewService, InterviewService>();
 
 
 // -----------------------------

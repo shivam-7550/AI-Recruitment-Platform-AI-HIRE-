@@ -34,3 +34,4 @@ namespace Backend.DTOs.UserProfile
         [MaxLength(300)] public string? GithubUrl { get; set; }
     }
 }
+

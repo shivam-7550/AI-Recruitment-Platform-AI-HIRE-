@@ -41,10 +41,18 @@ function Login() {
           Company: "/company/dashboard",
           Admin: "/admin/dashboard",
         };
-        const requestedRoute = location.state?.from?.pathname || sessionStorage.getItem("hireline-return-to");
+        const requestedRoute =
+          location.state?.from?.pathname ||
+          sessionStorage.getItem("hireline-return-to");
         sessionStorage.removeItem("hireline-return-to");
-        const rolePrefix = result.role === "User" ? "/user/" : `/${result.role.toLowerCase()}/`;
-        navigate(requestedRoute?.startsWith(rolePrefix) ? requestedRoute : (dashboardRoutes[result.role] || "/jobs"), { replace: true });
+        const rolePrefix =
+          result.role === "User" ? "/user/" : `/${result.role.toLowerCase()}/`;
+        navigate(
+          requestedRoute?.startsWith(rolePrefix)
+            ? requestedRoute
+            : dashboardRoutes[result.role] || "/jobs",
+          { replace: true },
+        );
       } else {
         alert(result.message);
       }
@@ -64,8 +72,9 @@ function Login() {
 
         {location.state?.role && (
           <p>
-            Registration successful as {location.state.role === "User" ? "Candidate" : location.state.role}. Enter your
-            password to log in.
+            Registration successful as{" "}
+            {location.state.role === "User" ? "User" : location.state.role}.
+            Enter your password to log in.
           </p>
         )}
 
@@ -91,7 +100,7 @@ function Login() {
 
         <div className="register-link">
           New to the platform?
-          <Link to="/register/candidate"> Candidate</Link>
+          <Link to="/register/candidate"> User</Link>
           <span> or </span>
           <Link to="/register/company">Company</Link>
         </div>
