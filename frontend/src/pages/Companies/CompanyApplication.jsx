@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
+
 import {
   Award,
   BriefcaseBusiness,
@@ -8,20 +9,21 @@ import {
   Clock3,
   Download,
   FileText,
-  GraduationCap,
   Mail,
   Phone,
   RefreshCw,
   Search,
-  UserRound,
+  Sparkles,
   Users,
   X,
+  Video,
+  MapPin,
 } from "lucide-react";
 
 import CompanySidebar from "../../components/Company/CompanySidebar";
 import CompanyHeader from "../../components/Company/CompanyHeader";
 
-import { companyApi, jobsApi } from "../../services/api.js";
+import { companyApi, jobsApi, interviewApi } from "../../services/api.js";
 
 import "../../styles/CompanyCSS/CompanyApplication.css";
 
@@ -37,22 +39,46 @@ export default function CompanyApplication() {
 
   const [loading, setLoading] = useState(true);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [selectedApplication, setSelectedApplication] = useState(null);
 
   const [downloadingResumeId, setDownloadingResumeId] = useState(null);
 
-  // ==========================================
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  // =========================================================
+  // INTERVIEW STATE
+  // =========================================================
+
+  const [showInterviewModal, setShowInterviewModal] = useState(false);
+
+  const [interviewLoading, setInterviewLoading] = useState(false);
+
+  const [interviewForm, setInterviewForm] = useState({
+    round: "Technical",
+    interviewType: "Online",
+    scheduledAt: "",
+    durationMinutes: 30,
+    meetingLink: "",
+    location: "",
+    instructions: "",
+  });
+
+  // =========================================================
   // AUTH
-  // ==========================================
+  // =========================================================
 
   const userId = session?.userId || tokenUserId(session?.token);
 
-  // ==========================================
+  // =========================================================
   // LOAD COMPANY + JOBS
-  // ==========================================
+  // =========================================================
 
   useEffect(() => {
     if (!userId) {
@@ -102,9 +128,9 @@ export default function CompanyApplication() {
     }
   }
 
-  // ==========================================
+  // =========================================================
   // LOAD APPLICATIONS
-  // ==========================================
+  // =========================================================
 
   async function loadApplications(companyJobs = jobs) {
     if (!companyJobs.length) {
@@ -149,9 +175,9 @@ export default function CompanyApplication() {
     }
   }
 
-  // ==========================================
+  // =========================================================
   // REFRESH
-  // ==========================================
+  // =========================================================
 
   async function handleRefresh() {
     if (!jobs.length) {
@@ -168,9 +194,9 @@ export default function CompanyApplication() {
     }
   }
 
-  // ==========================================
+  // =========================================================
   // FILTER APPLICATIONS
-  // ==========================================
+  // =========================================================
 
   const filteredApplications = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -212,14 +238,14 @@ export default function CompanyApplication() {
     });
   }, [applications, selectedJob, search]);
 
-  // ==========================================
+  // =========================================================
   // STATS
-  // ==========================================
+  // =========================================================
 
   const totalApplications = applications.length;
 
   const pendingApplications = applications.filter((application) =>
-    ["applied", "pending", "reviewing"].includes(
+    ["applied", "pending", "reviewing", "underreview"].includes(
       String(application.status || "Applied").toLowerCase(),
     ),
   ).length;
@@ -240,9 +266,9 @@ export default function CompanyApplication() {
         ).toFixed(1)
       : "0";
 
-  // ==========================================
+  // =========================================================
   // JOB TITLE
-  // ==========================================
+  // =========================================================
 
   function getJobTitle(jobId) {
     const job = jobs.find(
@@ -252,9 +278,9 @@ export default function CompanyApplication() {
     return job?.title || "Unknown Position";
   }
 
-  // ==========================================
+  // =========================================================
   // STATUS CLASS
-  // ==========================================
+  // =========================================================
 
   function getStatusClass(status) {
     const normalized = String(status || "Applied").toLowerCase();
@@ -267,20 +293,20 @@ export default function CompanyApplication() {
       return "rejected";
     }
 
-    if (normalized.includes("review") || normalized.includes("pending")) {
-      return "reviewing";
+    if (normalized.includes("interview")) {
+      return "interview";
     }
 
-    if (normalized.includes("interview")) {
-      return "shortlisted";
+    if (normalized.includes("review") || normalized.includes("pending")) {
+      return "reviewing";
     }
 
     return "applied";
   }
 
-  // ==========================================
+  // =========================================================
   // RESUME HELPERS
-  // ==========================================
+  // =========================================================
 
   function hasResume(application) {
     return Boolean(
@@ -307,9 +333,9 @@ export default function CompanyApplication() {
     return "Candidate Resume";
   }
 
-  // ==========================================
+  // =========================================================
   // DOWNLOAD RESUME
-  // ==========================================
+  // =========================================================
 
   async function handleDownloadResume(application) {
     if (!application) {
@@ -318,28 +344,43 @@ export default function CompanyApplication() {
 
     try {
       setDownloadingResumeId(application.id);
+
       const token = session?.token;
+
       const response = await fetch(
         `/api/Application/${application.id}/resume`,
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+        {
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+        },
       );
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
+
         throw new Error(
           body?.message || "Unable to download candidate resume.",
         );
       }
 
       const file = await response.blob();
+
       const downloadUrl = URL.createObjectURL(file);
+
       const link = document.createElement("a");
 
       link.href = downloadUrl;
       link.download = getResumeName(application);
+
       document.body.appendChild(link);
+
       link.click();
+
       link.remove();
+
       URL.revokeObjectURL(downloadUrl);
     } catch (err) {
       console.error("Resume download failed:", err);
@@ -350,9 +391,177 @@ export default function CompanyApplication() {
     }
   }
 
-  // ==========================================
-  // LOADING
-  // ==========================================
+  // =========================================================
+  // AI CANDIDATE ANALYSIS
+  // =========================================================
+
+  async function handleAIAnalysis(application) {
+    if (!application?.id) {
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+      setAiAnalysis(null);
+      setError("");
+
+      const result = await companyApi.analyzeCandidateWithAI(application.id);
+
+      setAiAnalysis(result);
+    } catch (err) {
+      console.error("AI candidate analysis failed:", err);
+
+      setError(err?.message || "Unable to analyze candidate with AI.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  // =========================================================
+  // OPEN INTERVIEW MODAL
+  // =========================================================
+
+  function openInterviewModal() {
+    if (!selectedApplication?.id) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+
+    setInterviewForm({
+      round: "Technical",
+      interviewType: "Online",
+      scheduledAt: "",
+      durationMinutes: 30,
+      meetingLink: "",
+      location: "",
+      instructions: "",
+    });
+
+    setShowInterviewModal(true);
+  }
+
+  // =========================================================
+  // CLOSE INTERVIEW MODAL
+  // =========================================================
+
+  function closeInterviewModal() {
+    if (interviewLoading) {
+      return;
+    }
+
+    setShowInterviewModal(false);
+  }
+
+  // =========================================================
+  // INTERVIEW FORM CHANGE
+  // =========================================================
+
+  function handleInterviewChange(event) {
+    const { name, value } = event.target;
+
+    setInterviewForm((previous) => ({
+      ...previous,
+      [name]: name === "durationMinutes" ? Number(value) : value,
+    }));
+  }
+
+  // =========================================================
+  // CREATE INTERVIEW
+  // =========================================================
+
+  async function handleScheduleInterview(event) {
+    event.preventDefault();
+
+    if (!selectedApplication?.id) {
+      setError("No application selected.");
+      return;
+    }
+
+    if (!interviewForm.scheduledAt) {
+      setError("Please select an interview date and time.");
+      return;
+    }
+
+    if (
+      interviewForm.interviewType === "Online" &&
+      !interviewForm.meetingLink.trim()
+    ) {
+      setError("Meeting link is required for an online interview.");
+      return;
+    }
+
+    if (
+      interviewForm.interviewType === "InPerson" &&
+      !interviewForm.location.trim()
+    ) {
+      setError("Location is required for an in-person interview.");
+      return;
+    }
+
+    try {
+      setInterviewLoading(true);
+      setError("");
+      setSuccess("");
+
+      const payload = {
+        applicationId: selectedApplication.id,
+
+        round: interviewForm.round,
+
+        interviewType: interviewForm.interviewType,
+
+        scheduledAt: new Date(interviewForm.scheduledAt).toISOString(),
+
+        durationMinutes: Number(interviewForm.durationMinutes),
+
+        meetingLink: interviewForm.meetingLink.trim() || null,
+
+        location: interviewForm.location.trim() || null,
+
+        instructions: interviewForm.instructions.trim() || null,
+      };
+
+      await interviewApi.create(payload);
+
+      // =====================================================
+      // Update local application status
+      // =====================================================
+
+      const updatedApplication = {
+        ...selectedApplication,
+        status: "Interview",
+      };
+
+      setSelectedApplication(updatedApplication);
+
+      setApplications((previous) =>
+        previous.map((application) =>
+          application.id === selectedApplication.id
+            ? {
+                ...application,
+                status: "Interview",
+              }
+            : application,
+        ),
+      );
+
+      setShowInterviewModal(false);
+
+      setSuccess("Interview scheduled successfully.");
+    } catch (err) {
+      console.error("Interview scheduling failed:", err);
+
+      setError(err?.message || "Unable to schedule interview.");
+    } finally {
+      setInterviewLoading(false);
+    }
+  }
+
+  // =========================================================
+  // AUTH REDIRECT
+  // =========================================================
 
   if (!session) {
     return <Navigate to="/login" replace />;
@@ -367,35 +576,40 @@ export default function CompanyApplication() {
     );
   }
 
+  // =========================================================
+  // LOADING
+  // =========================================================
+
   if (loading) {
     return (
       <div className="company-applications-loading">
         <div className="company-applications-spinner" />
+
         <span>Loading applications...</span>
       </div>
     );
   }
 
-  // ==========================================
+  // =========================================================
   // UI
-  // ==========================================
+  // =========================================================
 
   return (
     <div className="company-applications-page">
-      {/* ========================================
+      {/* =====================================================
           SIDEBAR
-      ======================================== */}
+      ===================================================== */}
 
       <CompanySidebar company={company} />
 
-      {/* ========================================
+      {/* =====================================================
           MAIN
-      ======================================== */}
+      ===================================================== */}
 
       <div className="company-applications-main">
-        {/* ========================================
+        {/* ===================================================
             HEADER
-        ======================================== */}
+        =================================================== */}
 
         <CompanyHeader
           company={company}
@@ -404,14 +618,14 @@ export default function CompanyApplication() {
           pageSubtitle="Review and manage candidates who applied to your posted jobs."
         />
 
-        {/* ========================================
+        {/* ===================================================
             CONTENT
-        ======================================== */}
+        =================================================== */}
 
         <main className="company-applications-content">
-          {/* ====================================
+          {/* =================================================
               PAGE ACTION
-          ==================================== */}
+          ================================================= */}
 
           <div className="company-applications-heading-action">
             <Link
@@ -438,15 +652,23 @@ export default function CompanyApplication() {
             </button>
           </div>
 
-          {/* ====================================
+          {/* =================================================
               ERROR
-          ==================================== */}
+          ================================================= */}
 
           {error && <div className="company-applications-error">{error}</div>}
 
-          {/* ====================================
+          {/* =================================================
+              SUCCESS
+          ================================================= */}
+
+          {success && (
+            <div className="company-applications-success">{success}</div>
+          )}
+
+          {/* =================================================
               STATS
-          ==================================== */}
+          ================================================= */}
 
           <section className="company-applications-stats">
             <article className="company-applications-stat-card">
@@ -456,6 +678,7 @@ export default function CompanyApplication() {
 
               <div className="company-applications-stat-info">
                 <span>Total Applications</span>
+
                 <strong>{totalApplications}</strong>
               </div>
             </article>
@@ -467,6 +690,7 @@ export default function CompanyApplication() {
 
               <div className="company-applications-stat-info">
                 <span>Pending Review</span>
+
                 <strong>{pendingApplications}</strong>
               </div>
             </article>
@@ -478,6 +702,7 @@ export default function CompanyApplication() {
 
               <div className="company-applications-stat-info">
                 <span>Shortlisted</span>
+
                 <strong>{shortlistedApplications}</strong>
               </div>
             </article>
@@ -489,14 +714,15 @@ export default function CompanyApplication() {
 
               <div className="company-applications-stat-info">
                 <span>Average ATS</span>
+
                 <strong>{averageATS}%</strong>
               </div>
             </article>
           </section>
 
-          {/* ====================================
+          {/* =================================================
               TOOLBAR
-          ==================================== */}
+          ================================================= */}
 
           <section className="company-applications-toolbar">
             <div className="company-applications-results-header">
@@ -514,8 +740,6 @@ export default function CompanyApplication() {
             </div>
 
             <div className="company-applications-toolbar-row">
-              {/* JOB FILTER */}
-
               <select
                 className="company-applications-filter-select"
                 value={selectedJob}
@@ -530,8 +754,6 @@ export default function CompanyApplication() {
                 ))}
               </select>
 
-              {/* SEARCH */}
-
               <label className="company-applications-search-box">
                 <Search />
 
@@ -545,13 +767,14 @@ export default function CompanyApplication() {
             </div>
           </section>
 
-          {/* ====================================
+          {/* =================================================
               APPLICATIONS
-          ==================================== */}
+          ================================================= */}
 
           {applicationsLoading ? (
             <div className="company-applications-loading">
               <div className="company-applications-spinner" />
+
               <span>Loading candidate applications...</span>
             </div>
           ) : (
@@ -568,6 +791,26 @@ export default function CompanyApplication() {
                   <article
                     key={application.id}
                     className="company-application-card"
+                    onClick={() => {
+                      setSelectedApplication(application);
+
+                      setAiAnalysis(null);
+                      setError("");
+                      setSuccess("");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+
+                        setSelectedApplication(application);
+
+                        setAiAnalysis(null);
+                        setError("");
+                        setSuccess("");
+                      }
+                    }}
                   >
                     {/* CARD TOP */}
 
@@ -609,21 +852,25 @@ export default function CompanyApplication() {
                     <div className="company-application-meta">
                       <div className="company-application-meta-item">
                         <span>Email</span>
+
                         <strong>{application.email || "-"}</strong>
                       </div>
 
                       <div className="company-application-meta-item">
                         <span>Contact</span>
+
                         <strong>{application.contact || "-"}</strong>
                       </div>
 
                       <div className="company-application-meta-item">
                         <span>Qualification</span>
+
                         <strong>{application.qualification || "-"}</strong>
                       </div>
 
                       <div className="company-application-meta-item">
                         <span>Experience</span>
+
                         <strong>
                           {Number(application.experience || 0)} years
                         </strong>
@@ -653,7 +900,11 @@ export default function CompanyApplication() {
                         <button
                           type="button"
                           className="company-application-download-btn"
-                          onClick={() => handleDownloadResume(application)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+
+                            handleDownloadResume(application);
+                          }}
                           disabled={downloadingResumeId === application.id}
                           title="Download Resume"
                           aria-label="Download Resume"
@@ -705,11 +956,28 @@ export default function CompanyApplication() {
                           )}
                         </div>
                       )}
+
+                    {/* VIEW */}
+
+                    <button
+                      type="button"
+                      className="company-application-view-btn"
+                      onClick={(event) => {
+                        event.stopPropagation();
+
+                        setSelectedApplication(application);
+
+                        setAiAnalysis(null);
+                        setError("");
+                        setSuccess("");
+                      }}
+                    >
+                      View Candidate Details
+                      <ChevronRight />
+                    </button>
                   </article>
                 );
               })}
-
-              {/* EMPTY */}
 
               {!filteredApplications.length && (
                 <div className="company-applications-empty">
@@ -735,14 +1003,18 @@ export default function CompanyApplication() {
         </main>
       </div>
 
-      {/* ========================================
+      {/* =====================================================
           APPLICATION DETAIL MODAL
-      ======================================== */}
+      ===================================================== */}
 
       {selectedApplication && (
         <div
           className="company-application-modal-overlay"
-          onClick={() => setSelectedApplication(null)}
+          onClick={() => {
+            setSelectedApplication(null);
+            setAiAnalysis(null);
+            setError("");
+          }}
         >
           <div
             className="company-application-modal"
@@ -760,7 +1032,11 @@ export default function CompanyApplication() {
               <button
                 type="button"
                 className="company-application-modal-close"
-                onClick={() => setSelectedApplication(null)}
+                onClick={() => {
+                  setSelectedApplication(null);
+                  setAiAnalysis(null);
+                  setError("");
+                }}
                 aria-label="Close candidate profile"
               >
                 <X />
@@ -770,7 +1046,31 @@ export default function CompanyApplication() {
             {/* MODAL BODY */}
 
             <div className="company-application-modal-body">
-              {/* POSITION */}
+              {/* =================================================
+                  APPLICATION STATUS
+              ================================================= */}
+
+              <section className="company-application-modal-section">
+                <h4>Application Status</h4>
+
+                <div className="company-application-status-row">
+                  <span
+                    className={`company-application-status ${getStatusClass(
+                      selectedApplication.status,
+                    )}`}
+                  >
+                    {selectedApplication.status || "Applied"}
+                  </span>
+
+                  <span>
+                    Applied {formatDate(selectedApplication.appliedAt)}
+                  </span>
+                </div>
+              </section>
+
+              {/* =================================================
+                  POSITION
+              ================================================= */}
 
               <section className="company-application-modal-section">
                 <h4>Applied For</h4>
@@ -783,7 +1083,9 @@ export default function CompanyApplication() {
                 </div>
               </section>
 
-              {/* CONTACT */}
+              {/* =================================================
+                  CONTACT
+              ================================================= */}
 
               <section className="company-application-modal-section">
                 <h4>Contact Information</h4>
@@ -791,17 +1093,21 @@ export default function CompanyApplication() {
                 <div className="company-application-modal-grid">
                   <div className="company-application-modal-field">
                     <span>Email</span>
+
                     <strong>{selectedApplication.email || "-"}</strong>
                   </div>
 
                   <div className="company-application-modal-field">
                     <span>Phone</span>
+
                     <strong>{selectedApplication.contact || "-"}</strong>
                   </div>
                 </div>
               </section>
 
-              {/* EDUCATION */}
+              {/* =================================================
+                  EDUCATION
+              ================================================= */}
 
               <section className="company-application-modal-section">
                 <h4>Education</h4>
@@ -809,21 +1115,25 @@ export default function CompanyApplication() {
                 <div className="company-application-modal-grid">
                   <div className="company-application-modal-field">
                     <span>Qualification</span>
+
                     <strong>{selectedApplication.qualification || "-"}</strong>
                   </div>
 
                   <div className="company-application-modal-field">
                     <span>Course</span>
+
                     <strong>{selectedApplication.course || "-"}</strong>
                   </div>
 
                   <div className="company-application-modal-field">
                     <span>College / University</span>
+
                     <strong>{selectedApplication.collegeName || "-"}</strong>
                   </div>
 
                   <div className="company-application-modal-field">
                     <span>Experience</span>
+
                     <strong>
                       {Number(selectedApplication.experience || 0)} years
                     </strong>
@@ -831,7 +1141,9 @@ export default function CompanyApplication() {
                 </div>
               </section>
 
-              {/* SKILLS */}
+              {/* =================================================
+                  SKILLS
+              ================================================= */}
 
               <section className="company-application-modal-section">
                 <h4>Skills</h4>
@@ -852,7 +1164,9 @@ export default function CompanyApplication() {
                 </div>
               </section>
 
-              {/* RESUME */}
+              {/* =================================================
+                  RESUME
+              ================================================= */}
 
               <section className="company-application-modal-section">
                 <h4>Candidate Resume</h4>
@@ -891,7 +1205,9 @@ export default function CompanyApplication() {
                 </div>
               </section>
 
-              {/* ATS */}
+              {/* =================================================
+                  ATS
+              ================================================= */}
 
               <section className="company-application-modal-section">
                 <h4>ATS Score</h4>
@@ -911,24 +1227,363 @@ export default function CompanyApplication() {
                 </div>
               </section>
 
-              {/* APPLICATION */}
+              {/* =================================================
+                  AI ANALYSIS
+              ================================================= */}
+
+              <section className="company-application-modal-section company-application-ai-section">
+                <div className="company-application-ai-header">
+                  <div>
+                    <h4>AI Candidate Analysis</h4>
+
+                    <p>
+                      AI helps the company understand this candidate; ATS score
+                      remains keyword-based.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="company-application-ai-btn"
+                    onClick={() => handleAIAnalysis(selectedApplication)}
+                    disabled={aiLoading}
+                  >
+                    <Sparkles />
+
+                    {aiLoading ? "Analyzing..." : "Analyze with AI"}
+                  </button>
+                </div>
+
+                {aiAnalysis && (
+                  <div className="company-application-ai-result">
+                    <div className="company-application-ai-block">
+                      <span>Summary</span>
+
+                      <p>{aiAnalysis.summary || "No summary returned."}</p>
+                    </div>
+
+                    <div className="company-application-ai-columns">
+                      <div className="company-application-ai-block">
+                        <span>Strengths</span>
+
+                        {aiAnalysis.strengths?.length ? (
+                          <ul>
+                            {aiAnalysis.strengths.map((item, index) => (
+                              <li key={`strength-${index}`}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No specific strengths returned.</p>
+                        )}
+                      </div>
+
+                      <div className="company-application-ai-block">
+                        <span>Missing Job Skills</span>
+
+                        {aiAnalysis.missingSkills?.length ? (
+                          <ul>
+                            {aiAnalysis.missingSkills.map((item, index) => (
+                              <li key={`missing-${index}`}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No important missing skills identified.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="company-application-ai-columns">
+                      <div className="company-application-ai-block">
+                        <span>Suggestions</span>
+
+                        {aiAnalysis.suggestions?.length ? (
+                          <ul>
+                            {aiAnalysis.suggestions.map((item, index) => (
+                              <li key={`suggestion-${index}`}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No suggestions returned.</p>
+                        )}
+                      </div>
+
+                      <div className="company-application-ai-block">
+                        <span>Interview Focus</span>
+
+                        {aiAnalysis.interviewFocus?.length ? (
+                          <ul>
+                            {aiAnalysis.interviewFocus.map((item, index) => (
+                              <li key={`focus-${index}`}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No interview focus returned.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              {/* =================================================
+                  INTERVIEW ACTION
+              ================================================= */}
 
               <section className="company-application-modal-section">
-                <h4>Application Details</h4>
+                <h4>Interview</h4>
 
-                <div className="company-application-modal-grid">
-                  <div className="company-application-modal-field">
-                    <span>Status</span>
-                    <strong>{selectedApplication.status || "Applied"}</strong>
+                <div className="company-application-interview-action">
+                  <div>
+                    <span>
+                      {String(
+                        selectedApplication.status || "",
+                      ).toLowerCase() === "interview"
+                        ? "Interview has been scheduled for this candidate."
+                        : "Ready to move this candidate to the interview stage?"}
+                    </span>
                   </div>
 
-                  <div className="company-application-modal-field">
-                    <span>Applied On</span>
-                    <strong>{formatDate(selectedApplication.appliedAt)}</strong>
-                  </div>
+                  <button
+                    type="button"
+                    className="company-application-interview-btn"
+                    onClick={openInterviewModal}
+                  >
+                    <CalendarDays />
+
+                    {String(selectedApplication.status || "").toLowerCase() ===
+                    "interview"
+                      ? "Schedule Another Round"
+                      : "Schedule Interview"}
+                  </button>
                 </div>
               </section>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================
+          SCHEDULE INTERVIEW MODAL
+      ===================================================== */}
+
+      {showInterviewModal && selectedApplication && (
+        <div
+          className="company-interview-modal-overlay"
+          onClick={closeInterviewModal}
+        >
+          <div
+            className="company-interview-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* HEADER */}
+
+            <div className="company-interview-modal-header">
+              <div>
+                <span>INTERVIEW SCHEDULING</span>
+
+                <h2>Schedule Interview</h2>
+
+                <p>
+                  {selectedApplication.name || "Candidate"}
+                  {" • "}
+                  {selectedApplication.jobTitle ||
+                    getJobTitle(selectedApplication.jobId)}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="company-interview-modal-close"
+                onClick={closeInterviewModal}
+                disabled={interviewLoading}
+              >
+                <X />
+              </button>
+            </div>
+
+            {/* FORM */}
+
+            <form
+              className="company-interview-form"
+              onSubmit={handleScheduleInterview}
+            >
+              {/* ROUND */}
+
+              <div className="company-interview-form-group">
+                <label htmlFor="round">Interview Round</label>
+
+                <select
+                  id="round"
+                  name="round"
+                  value={interviewForm.round}
+                  onChange={handleInterviewChange}
+                  required
+                >
+                  <option value="HR">HR</option>
+
+                  <option value="Technical">Technical</option>
+
+                  <option value="Managerial">Managerial</option>
+
+                  <option value="Final">Final</option>
+                </select>
+              </div>
+
+              {/* INTERVIEW TYPE */}
+
+              <div className="company-interview-form-group">
+                <label htmlFor="interviewType">Interview Type</label>
+
+                <select
+                  id="interviewType"
+                  name="interviewType"
+                  value={interviewForm.interviewType}
+                  onChange={handleInterviewChange}
+                  required
+                >
+                  <option value="Online">Online</option>
+
+                  <option value="InPerson">In Person</option>
+
+                  <option value="Phone">Phone</option>
+                </select>
+              </div>
+
+              {/* DATE TIME */}
+
+              <div className="company-interview-form-row">
+                <div className="company-interview-form-group">
+                  <label htmlFor="scheduledAt">Date & Time</label>
+
+                  <div className="company-interview-input-icon">
+                    <CalendarDays />
+
+                    <input
+                      id="scheduledAt"
+                      type="datetime-local"
+                      name="scheduledAt"
+                      value={interviewForm.scheduledAt}
+                      onChange={handleInterviewChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* DURATION */}
+
+                <div className="company-interview-form-group">
+                  <label htmlFor="durationMinutes">Duration</label>
+
+                  <select
+                    id="durationMinutes"
+                    name="durationMinutes"
+                    value={interviewForm.durationMinutes}
+                    onChange={handleInterviewChange}
+                    required
+                  >
+                    <option value={15}>15 minutes</option>
+
+                    <option value={30}>30 minutes</option>
+
+                    <option value={45}>45 minutes</option>
+
+                    <option value={60}>60 minutes</option>
+
+                    <option value={90}>90 minutes</option>
+
+                    <option value={120}>120 minutes</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* ONLINE */}
+
+              {interviewForm.interviewType === "Online" && (
+                <div className="company-interview-form-group">
+                  <label htmlFor="meetingLink">Meeting Link</label>
+
+                  <div className="company-interview-input-icon">
+                    <Video />
+
+                    <input
+                      id="meetingLink"
+                      type="url"
+                      name="meetingLink"
+                      value={interviewForm.meetingLink}
+                      onChange={handleInterviewChange}
+                      placeholder="https://meet.google.com/..."
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* LOCATION */}
+
+              {interviewForm.interviewType === "InPerson" && (
+                <div className="company-interview-form-group">
+                  <label htmlFor="location">Location</label>
+
+                  <div className="company-interview-input-icon">
+                    <MapPin />
+
+                    <input
+                      id="location"
+                      type="text"
+                      name="location"
+                      value={interviewForm.location}
+                      onChange={handleInterviewChange}
+                      placeholder="Office address / meeting room"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* INSTRUCTIONS */}
+
+              <div className="company-interview-form-group">
+                <label htmlFor="instructions">Instructions</label>
+
+                <textarea
+                  id="instructions"
+                  name="instructions"
+                  value={interviewForm.instructions}
+                  onChange={handleInterviewChange}
+                  placeholder="Add instructions for the candidate..."
+                  rows={4}
+                />
+              </div>
+
+              {/* ERROR */}
+
+              {error && (
+                <div className="company-interview-form-error">{error}</div>
+              )}
+
+              {/* ACTIONS */}
+
+              <div className="company-interview-form-actions">
+                <button
+                  type="button"
+                  className="company-interview-cancel-btn"
+                  onClick={closeInterviewModal}
+                  disabled={interviewLoading}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="company-interview-submit-btn"
+                  disabled={interviewLoading}
+                >
+                  <CalendarDays />
+
+                  {interviewLoading ? "Scheduling..." : "Schedule Interview"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -936,9 +1591,9 @@ export default function CompanyApplication() {
   );
 }
 
-// ==========================================
+// =========================================================
 // DATE FORMAT
-// ==========================================
+// =========================================================
 
 function formatDate(value) {
   if (!value) {
@@ -958,9 +1613,9 @@ function formatDate(value) {
   });
 }
 
-// ==========================================
+// =========================================================
 // TOKEN USER ID
-// ==========================================
+// =========================================================
 
 function tokenUserId(token) {
   try {

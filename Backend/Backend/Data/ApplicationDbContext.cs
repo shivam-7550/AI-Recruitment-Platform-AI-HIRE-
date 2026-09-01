@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿
+using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data;
@@ -60,8 +61,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Company>()
             .HasOne(c => c.User)
             .WithOne(u => u.Company)
-            .HasForeignKey<Company>(
-                c => c.UserId)
+            .HasForeignKey<Company>(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
 
@@ -122,12 +122,26 @@ public class ApplicationDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
 
+        // =====================================================
+        // Interview - Job Application
+        // One Application can have Many Interviews
+        //
+        // NoAction avoids SQL Server multiple cascade
+        // path problems through User / Job.
+        // =====================================================
+
+        modelBuilder.Entity<Interview>()
+            .HasOne(i => i.Application)
+            .WithMany()
+            .HasForeignKey(i => i.ApplicationId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
         // =================================================
         // Resume - Job Applications
         //
-        // IMPORTANT:
-        // NoAction is used here to avoid SQL Server
-        // multiple cascade path problem.
+        // NoAction avoids SQL Server multiple cascade
+        // path problems.
         // =================================================
 
         modelBuilder.Entity<JobApplication>()
@@ -139,8 +153,7 @@ public class ApplicationDbContext : DbContext
 
         // =================================================
         // Job Application - Unique Application
-        // One Candidate can apply only once
-        // for the same Job
+        // One Candidate can apply only once for the same Job
         // =================================================
 
         modelBuilder.Entity<JobApplication>()
@@ -290,8 +303,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<UserProfile>()
             .HasOne(profile => profile.User)
             .WithOne(user => user.Profile)
-            .HasForeignKey<UserProfile>(
-                profile => profile.UserId)
+            .HasForeignKey<UserProfile>(profile => profile.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
 
@@ -363,9 +375,9 @@ public class ApplicationDbContext : DbContext
 
             entity.HasOne(x => x.User)
                 .WithOne()
-                .HasForeignKey<UserSettings>(
-                    x => x.UserId)
+                .HasForeignKey<UserSettings>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
+

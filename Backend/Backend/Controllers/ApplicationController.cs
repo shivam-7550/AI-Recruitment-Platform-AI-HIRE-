@@ -1,4 +1,4 @@
-﻿using Backend.DTOs.Application;
+using Backend.DTOs.Application;
 using Backend.Interfaces.Repositories;
 using Backend.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -15,19 +15,22 @@ public class ApplicationController : ControllerBase
     private readonly IApplicationService _applicationService;
     private readonly IApplicationRepository _applicationRepository;
     private readonly IWebHostEnvironment _environment;
+    private readonly IResumeAIService _resumeAIService;
 
     public ApplicationController(
         IApplicationService applicationService,
         IApplicationRepository applicationRepository,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        IResumeAIService resumeAIService)
     {
         _applicationService = applicationService;
         _applicationRepository = applicationRepository;
         _environment = environment;
+        _resumeAIService = resumeAIService;
     }
 
     // =========================================================
-    // CANDIDATE - APPLY FOR JOB
+    // CANDIDATE - APPLY
     // POST: /api/Application/apply
     // =========================================================
 
@@ -45,13 +48,9 @@ public class ApplicationController : ControllerBase
             });
         }
 
-        var userIdClaim =
-            User.FindFirstValue(
-                ClaimTypes.NameIdentifier);
+        var userId = GetCurrentUserId();
 
-        if (!Guid.TryParse(
-                userIdClaim,
-                out var userId))
+        if (!userId.HasValue)
         {
             return Unauthorized(new
             {
@@ -62,11 +61,10 @@ public class ApplicationController : ControllerBase
         try
         {
             var result =
-                await _applicationService
-                    .ApplyJobAsync(
-                        userId,
-                        dto,
-                        cancellationToken);
+                await _applicationService.ApplyJobAsync(
+                    userId.Value,
+                    dto,
+                    cancellationToken);
 
             return Ok(result);
         }
@@ -96,13 +94,9 @@ public class ApplicationController : ControllerBase
     public async Task<IActionResult> MyApplications(
         CancellationToken cancellationToken)
     {
-        var userIdClaim =
-            User.FindFirstValue(
-                ClaimTypes.NameIdentifier);
+        var userId = GetCurrentUserId();
 
-        if (!Guid.TryParse(
-                userIdClaim,
-                out var userId))
+        if (!userId.HasValue)
         {
             return Unauthorized(new
             {
@@ -113,14 +107,14 @@ public class ApplicationController : ControllerBase
         var applications =
             await _applicationService
                 .GetApplicationsByUserAsync(
-                    userId,
+                    userId.Value,
                     cancellationToken);
 
         return Ok(applications);
     }
 
     // =========================================================
-    // COMPANY - VIEW APPLICATIONS FOR A JOB
+    // COMPANY - APPLICATIONS FOR ONE JOB
     // GET: /api/Application/job/{jobId}
     // =========================================================
 
@@ -138,38 +132,17 @@ public class ApplicationController : ControllerBase
             });
         }
 
-        // -----------------------------------------------------
-        // First try CompanyId claim
-        // -----------------------------------------------------
+        var companyId =
+            await GetCurrentCompanyIdAsync(
+                cancellationToken);
 
-        var companyIdClaim =
-            User.FindFirstValue("CompanyId");
-
-        if (!Guid.TryParse(
-                companyIdClaim,
-                out var companyId))
+        if (!companyId.HasValue)
         {
-            // -------------------------------------------------
-            // Fallback: NameIdentifier
-            //
-            // This is useful only when NameIdentifier
-            // represents CompanyId in your JWT.
-            // -------------------------------------------------
-
-            var nameIdentifier =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
-
-            if (!Guid.TryParse(
-                    nameIdentifier,
-                    out companyId))
+            return Unauthorized(new
             {
-                return Unauthorized(new
-                {
-                    message =
-                        "Company ID not found in token."
-                });
-            }
+                message =
+                    "Company ID not found for the logged-in company."
+            });
         }
 
         try
@@ -177,7 +150,7 @@ public class ApplicationController : ControllerBase
             var applications =
                 await _applicationService
                     .GetApplicationsByJobAsync(
-                        companyId,
+                        companyId.Value,
                         jobId,
                         cancellationToken);
 
@@ -200,7 +173,7 @@ public class ApplicationController : ControllerBase
     }
 
     // =========================================================
-    // COMPANY - DOWNLOAD A CANDIDATE RESUME
+    // COMPANY - DOWNLOAD RESUME
     // GET: /api/Application/{applicationId}/resume
     // =========================================================
 
@@ -210,47 +183,93 @@ public class ApplicationController : ControllerBase
         Guid applicationId,
         CancellationToken cancellationToken)
     {
-        var companyIdClaim = User.FindFirstValue("CompanyId");
-
-        if (!Guid.TryParse(companyIdClaim, out var companyId))
+        if (applicationId == Guid.Empty)
         {
-            return Unauthorized(new { message = "Company ID not found in token." });
+            return BadRequest(new
+            {
+                message = "Invalid application ID."
+            });
         }
 
-        var application = await _applicationRepository
-            .GetCompanyApplicationByIdAsync(
-                companyId,
-                applicationId,
+        var companyId =
+            await GetCurrentCompanyIdAsync(
                 cancellationToken);
 
-        if (application?.Resume is null ||
-            string.IsNullOrWhiteSpace(application.Resume.FilePath))
+        if (!companyId.HasValue)
         {
-            return NotFound(new { message = "Resume not found for this application." });
+            return Unauthorized(new
+            {
+                message =
+                    "Company ID not found for the logged-in company."
+            });
         }
 
-        var relativePath = application.Resume.FilePath.TrimStart('/', '\\');
-        var fullPath = Path.Combine(_environment.WebRootPath, relativePath);
+        var application =
+            await _applicationRepository
+                .GetCompanyApplicationByIdAsync(
+                    companyId.Value,
+                    applicationId,
+                    cancellationToken);
 
-        if (!System.IO.File.Exists(fullPath))
+        if (
+            application?.Resume is null ||
+            string.IsNullOrWhiteSpace(
+                application.Resume.FilePath)
+        )
         {
-            return NotFound(new { message = "Resume file is no longer available." });
+            return NotFound(new
+            {
+                message =
+                    "Resume not found for this application."
+            });
         }
 
-        var contentType = Path.GetExtension(fullPath).ToLowerInvariant() switch
+        var relativePath =
+            application.Resume.FilePath
+                .TrimStart(
+                    '/',
+                    '\\');
+
+        var fullPath =
+            Path.Combine(
+                _environment.WebRootPath,
+                relativePath);
+
+        if (
+            !System.IO.File.Exists(
+                fullPath)
+        )
         {
-            ".pdf" => "application/pdf",
-            ".doc" => "application/msword",
-            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            _ => "application/octet-stream"
-        };
+            return NotFound(new
+            {
+                message =
+                    "Resume file is no longer available."
+            });
+        }
+
+        var contentType =
+            Path.GetExtension(
+                fullPath)
+                .ToLowerInvariant() switch
+            {
+                ".pdf" =>
+                    "application/pdf",
+
+                ".doc" =>
+                    "application/msword",
+
+                ".docx" =>
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+                _ =>
+                    "application/octet-stream"
+            };
 
         return PhysicalFile(
             fullPath,
             contentType,
             application.Resume.FileName);
     }
-
 
     // =========================================================
     // COMPANY - UPDATE APPLICATION STATUS
@@ -268,37 +287,37 @@ public class ApplicationController : ControllerBase
         {
             return BadRequest(new
             {
-                message = "Invalid application ID."
+                message =
+                    "Invalid application ID."
             });
         }
 
-        var companyIdClaim =
-            User.FindFirstValue("CompanyId");
-
-        if (!Guid.TryParse(
-                companyIdClaim,
-                out var companyId))
+        if (dto is null)
         {
-            var nameIdentifier =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
-
-            if (!Guid.TryParse(
-                    nameIdentifier,
-                    out companyId))
+            return BadRequest(new
             {
-                return Unauthorized(new
-                {
-                    message =
-                        "Company ID not found in token."
-                });
-            }
+                message =
+                    "Application status is required."
+            });
+        }
+
+        var companyId =
+            await GetCurrentCompanyIdAsync(
+                cancellationToken);
+
+        if (!companyId.HasValue)
+        {
+            return Unauthorized(new
+            {
+                message =
+                    "Company ID not found for the logged-in company."
+            });
         }
 
         var result =
             await _applicationService
                 .UpdateApplicationStatusAsync(
-                    companyId,
+                    companyId.Value,
                     applicationId,
                     dto,
                     cancellationToken);
@@ -307,10 +326,205 @@ public class ApplicationController : ControllerBase
         {
             return NotFound(new
             {
-                message = "Application not found."
+                message =
+                    "Application not found."
             });
         }
 
         return Ok(result);
+    }
+
+    // =========================================================
+    // COMPANY - AI ANALYSIS
+    // POST: /api/Application/{applicationId}/ai-analysis
+    // =========================================================
+
+    [Authorize(Roles = "Company")]
+    [HttpPost("{applicationId:guid}/ai-analysis")]
+    public async Task<IActionResult> AnalyzeCandidateWithAI(
+        Guid applicationId,
+        CancellationToken cancellationToken)
+    {
+        if (applicationId == Guid.Empty)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Invalid application ID."
+            });
+        }
+
+        var companyId =
+            await GetCurrentCompanyIdAsync(
+                cancellationToken);
+
+        if (!companyId.HasValue)
+        {
+            return Unauthorized(new
+            {
+                message =
+                    "Company ID not found for the logged-in company."
+            });
+        }
+
+        try
+        {
+            var application =
+                await _applicationRepository
+                    .GetCompanyApplicationByIdAsync(
+                        companyId.Value,
+                        applicationId,
+                        cancellationToken);
+
+            if (application is null)
+            {
+                return NotFound(new
+                {
+                    message =
+                        "Application not found."
+                });
+            }
+
+            if (
+                application.Resume is null ||
+                string.IsNullOrWhiteSpace(
+                    application.Resume.ResumeText)
+            )
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Candidate resume text is not available for AI analysis."
+                });
+            }
+
+            var job =
+                application.Job;
+
+            if (job is null)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Job information is not available."
+                });
+            }
+
+            var result =
+                await _resumeAIService
+                    .AnalyzeCandidateForCompanyAsync(
+                        application.Resume.ResumeText,
+                        application.Resume.ExtractedSkills
+                            ?? application.Skills,
+                        job.Title,
+                        job.Description,
+                        job.Skills,
+                        cancellationToken);
+
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                502,
+                new
+                {
+                    message =
+                        "AI candidate analysis is temporarily unavailable.",
+                    detail =
+                        ex.Message
+                });
+        }
+    }
+
+    // =========================================================
+    // HELPER - CURRENT USER ID
+    // =========================================================
+
+    private Guid? GetCurrentUserId()
+    {
+        var claim =
+            User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+        if (
+            Guid.TryParse(
+                claim,
+                out var userId)
+        )
+        {
+            return userId;
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // HELPER - CURRENT COMPANY ID
+    // =========================================================
+
+    private async Task<Guid?>
+        GetCurrentCompanyIdAsync(
+            CancellationToken cancellationToken)
+    {
+        // -----------------------------------------------------
+        // 1. CompanyId claim
+        // -----------------------------------------------------
+
+        var companyIdClaim =
+            User.FindFirstValue(
+                "CompanyId");
+
+        if (
+            Guid.TryParse(
+                companyIdClaim,
+                out var companyId)
+        )
+        {
+            return companyId;
+        }
+
+        // -----------------------------------------------------
+        // 2. Alternative custom claim
+        // -----------------------------------------------------
+
+        var alternativeCompanyId =
+            User.FindFirstValue(
+                "companyId");
+
+        if (
+            Guid.TryParse(
+                alternativeCompanyId,
+                out companyId)
+        )
+        {
+            return companyId;
+        }
+
+        // -----------------------------------------------------
+        // 3. If NameIdentifier is actually CompanyId
+        // -----------------------------------------------------
+
+        var nameIdentifier =
+            User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+        if (
+            Guid.TryParse(
+                nameIdentifier,
+                out companyId)
+        )
+        {
+            return companyId;
+        }
+
+        return null;
     }
 }

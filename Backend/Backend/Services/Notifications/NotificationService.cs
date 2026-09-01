@@ -4,6 +4,7 @@ using Backend.DTOs.Notification;
 using Backend.Interfaces.Repositories;
 using Backend.Interfaces.Services;
 using Backend.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services.Notifications;
@@ -21,9 +22,8 @@ public sealed class NotificationService : INotificationService
         _repository = repository;
     }
 
-
     // =========================================================
-    // Job Posted Notification
+    // JOB POSTED NOTIFICATION
     // Candidate + Admin
     // =========================================================
 
@@ -71,7 +71,8 @@ public sealed class NotificationService : INotificationService
                     IsArchived = false,
 
                     CreatedAt = now
-                });
+                })
+                .ToList();
 
         await _repository.AddRangeAsync(
             notifications,
@@ -81,9 +82,8 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Application Submitted Notification
+    // APPLICATION SUBMITTED NOTIFICATION
     // Company
     // =========================================================
 
@@ -135,9 +135,8 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Application Submitted Notification By Job
+    // APPLICATION SUBMITTED NOTIFICATION BY JOB
     // Resolves Company UserId
     // =========================================================
 
@@ -180,9 +179,8 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Candidate Application Submitted Notification
+    // CANDIDATE APPLICATION SUBMITTED
     // =========================================================
 
     public async Task NotifyCandidateApplicationSubmittedAsync(
@@ -224,9 +222,8 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Candidate Application Status Changed
+    // CANDIDATE APPLICATION STATUS CHANGED
     // =========================================================
 
     public async Task NotifyCandidateApplicationStatusChangedAsync(
@@ -269,9 +266,162 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
+    // =========================================================
+    // CANDIDATE - INTERVIEW SCHEDULED
+    // =========================================================
+
+    public async Task NotifyCandidateInterviewScheduledAsync(
+        Guid candidateUserId,
+        Guid applicationId,
+        Guid jobId,
+        string candidateName,
+        string jobTitle,
+        string companyName,
+        DateTime scheduledAt,
+        string interviewType,
+        string? meetingLink,
+        CancellationToken cancellationToken)
+    {
+        var localDateTime =
+            scheduledAt.ToLocalTime();
+
+        var dateText =
+            localDateTime.ToString("dd MMM yyyy");
+
+        var timeText =
+            localDateTime.ToString("hh:mm tt");
+
+        var message =
+            $"Hello {candidateName}, your interview for " +
+            $"{jobTitle} at {companyName} has been scheduled " +
+            $"on {dateText} at {timeText}. " +
+            $"Interview type: {interviewType}.";
+
+        if (!string.IsNullOrWhiteSpace(meetingLink))
+        {
+            message +=
+                $" Meeting link: {meetingLink}";
+        }
+
+        var notification =
+            new Notification
+            {
+                Id = Guid.NewGuid(),
+
+                UserId = candidateUserId,
+
+                JobId = jobId,
+
+                Title = "Interview scheduled",
+
+                Message = message,
+
+                Type = "InterviewScheduled",
+
+                IsRead = false,
+
+                IsArchived = false,
+
+                CreatedAt = DateTime.UtcNow
+            };
+
+        await _repository.AddRangeAsync(
+            new[] { notification },
+            cancellationToken);
+
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
 
     // =========================================================
-    // Admin - Company Registered
+    // ADMIN - INTERVIEW SCHEDULED
+    // Sends notification to ALL admins
+    // =========================================================
+
+    public async Task NotifyAdminsInterviewScheduledAsync(
+        Guid candidateUserId,
+        Guid applicationId,
+        Guid jobId,
+        string candidateName,
+        string jobTitle,
+        string companyName,
+        DateTime scheduledAt,
+        string interviewType,
+        string? meetingLink,
+        CancellationToken cancellationToken)
+    {
+        var adminIds =
+            await _context.Users
+                .AsNoTracking()
+                .Where(user =>
+                    user.Role == Roles.Admin)
+                .Select(user => user.Id)
+                .ToListAsync(cancellationToken);
+
+        if (adminIds.Count == 0)
+        {
+            return;
+        }
+
+        var localDateTime =
+            scheduledAt.ToLocalTime();
+
+        var dateText =
+            localDateTime.ToString("dd MMM yyyy");
+
+        var timeText =
+            localDateTime.ToString("hh:mm tt");
+
+        var message =
+            $"{companyName} scheduled an interview with " +
+            $"{candidateName} for {jobTitle} on " +
+            $"{dateText} at {timeText}. " +
+            $"Interview type: {interviewType}.";
+
+        if (!string.IsNullOrWhiteSpace(meetingLink))
+        {
+            message +=
+                $" Meeting link: {meetingLink}";
+        }
+
+        var now =
+            DateTime.UtcNow;
+
+        var notifications =
+            adminIds
+                .Select(adminId =>
+                    new Notification
+                    {
+                        Id = Guid.NewGuid(),
+
+                        UserId = adminId,
+
+                        JobId = jobId,
+
+                        Title = "New interview scheduled",
+
+                        Message = message,
+
+                        Type = "InterviewScheduledAdmin",
+
+                        IsRead = false,
+
+                        IsArchived = false,
+
+                        CreatedAt = now
+                    })
+                .ToList();
+
+        await _repository.AddRangeAsync(
+            notifications,
+            cancellationToken);
+
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    // =========================================================
+    // ADMIN - COMPANY REGISTERED
     // =========================================================
 
     public async Task NotifyAdminsCompanyRegisteredAsync(
@@ -282,7 +432,8 @@ public sealed class NotificationService : INotificationService
         var adminIds =
             await _context.Users
                 .AsNoTracking()
-                .Where(user => user.Role == Roles.Admin)
+                .Where(user =>
+                    user.Role == Roles.Admin)
                 .Select(user => user.Id)
                 .ToListAsync(cancellationToken);
 
@@ -291,7 +442,8 @@ public sealed class NotificationService : INotificationService
             return;
         }
 
-        var now = DateTime.UtcNow;
+        var now =
+            DateTime.UtcNow;
 
         var notifications =
             adminIds.Select(adminId =>
@@ -314,7 +466,8 @@ public sealed class NotificationService : INotificationService
                     IsArchived = false,
 
                     CreatedAt = now
-                });
+                })
+                .ToList();
 
         await _repository.AddRangeAsync(
             notifications,
@@ -324,9 +477,8 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Company Approval Notification
+    // COMPANY APPROVAL
     // =========================================================
 
     public async Task NotifyCompanyApprovalAsync(
@@ -378,14 +530,14 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Get Current User Notifications
+    // GET CURRENT USER NOTIFICATIONS
     // =========================================================
 
-    public async Task<IEnumerable<NotificationDto>> GetForUserAsync(
-        Guid userId,
-        CancellationToken cancellationToken)
+    public async Task<IEnumerable<NotificationDto>>
+        GetForUserAsync(
+            Guid userId,
+            CancellationToken cancellationToken)
     {
         var items =
             await _repository.GetByUserAsync(
@@ -414,9 +566,8 @@ public sealed class NotificationService : INotificationService
                 });
     }
 
-
     // =========================================================
-    // Mark Notification As Read
+    // MARK AS READ
     // =========================================================
 
     public async Task<bool> MarkAsReadAsync(
@@ -437,7 +588,8 @@ public sealed class NotificationService : INotificationService
 
         item.IsRead = true;
 
-        item.UpdatedAt = DateTime.UtcNow;
+        item.UpdatedAt =
+            DateTime.UtcNow;
 
         await _repository.SaveChangesAsync(
             cancellationToken);
@@ -445,9 +597,8 @@ public sealed class NotificationService : INotificationService
         return true;
     }
 
-
     // =========================================================
-    // Mark All Notifications As Read
+    // MARK ALL AS READ
     // =========================================================
 
     public async Task MarkAllAsReadAsync(
@@ -464,7 +615,8 @@ public sealed class NotificationService : INotificationService
             return;
         }
 
-        var now = DateTime.UtcNow;
+        var now =
+            DateTime.UtcNow;
 
         foreach (var item in items)
         {
@@ -477,9 +629,8 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
-
     // =========================================================
-    // Clear All Notifications
+    // CLEAR ALL
     // =========================================================
 
     public async Task ClearAllAsync(
@@ -496,7 +647,8 @@ public sealed class NotificationService : INotificationService
             return;
         }
 
-        var now = DateTime.UtcNow;
+        var now =
+            DateTime.UtcNow;
 
         foreach (var item in items)
         {

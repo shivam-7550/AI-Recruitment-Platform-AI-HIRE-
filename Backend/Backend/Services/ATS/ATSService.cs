@@ -12,123 +12,29 @@ public sealed class ATSService : IATSService
 
     public double CalculateResumeScore(Resume resume)
     {
-        if (resume == null)
+        if (resume == null ||
+            string.IsNullOrWhiteSpace(resume.ResumeText))
+        {
             return 0;
+        }
 
-        var text = resume.ResumeText ?? string.Empty;
-
-        if (string.IsNullOrWhiteSpace(text))
-            return 0;
-
-        double score = 0;
-
-        // -------------------------
-        // Contact Details - 15
-        // -------------------------
-
-        var hasEmail =
-            !string.IsNullOrWhiteSpace(resume.Email) ||
-            Regex.IsMatch(
-                text,
-                @"\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b");
-
-        var hasPhone =
-            !string.IsNullOrWhiteSpace(resume.PhoneNumber) ||
-            Regex.IsMatch(
-                text,
-                @"(?:\+?\d[\d\s-]{8,}\d)");
-
-        if (hasEmail)
-            score += 8;
-
-        if (hasPhone)
-            score += 7;
-
-        // -------------------------
-        // Skills - 30
-        // -------------------------
-
+        // This is a deterministic resume ATS-readiness score.
+        // It does not call AI. Job-specific matching is handled below.
+        var text = resume.ResumeText;
         var skills = SplitSkills(resume.ExtractedSkills);
 
-        score += Math.Min(
-            skills.Count * 5,
-            30);
-
-        // -------------------------
-        // Experience - 20
-        // -------------------------
-
-        if (resume.Experience > 0)
+        if (skills.Count == 0)
         {
-            score += 20;
-        }
-        else if (HasAny(
-            text,
-            "experience",
-            "work experience",
-            "internship",
-            "employment"))
-        {
-            score += 15;
+            return 0;
         }
 
-        // -------------------------
-        // Education - 15
-        // -------------------------
+        var normalizedText = NormalizeText(text);
 
-        if (!string.IsNullOrWhiteSpace(resume.Education) ||
-            HasAny(
-                text,
-                "education",
-                "academic qualification",
-                "b.tech",
-                "bachelor",
-                "master",
-                "degree",
-                "university",
-                "college"))
-        {
-            score += 15;
-        }
-
-        // -------------------------
-        // Projects - 10
-        // -------------------------
-
-        if (HasAny(
-            text,
-            "project",
-            "projects",
-            "academic project",
-            "personal project"))
-        {
-            score += 10;
-        }
-
-        // -------------------------
-        // Certifications - 5
-        // -------------------------
-
-        if (HasAny(
-            text,
-            "certification",
-            "certifications",
-            "certificate",
-            "certified"))
-        {
-            score += 5;
-        }
-
-        // -------------------------
-        // Formatting - 5
-        // -------------------------
-
-        score += FormattingQuality(
-            text,
-            resume) * 5;
+        var matchedKeywords = skills.Count(skill =>
+            ContainsKeyword(normalizedText, skill));
 
         return Math.Round(
-            Math.Clamp(score, 0, 100),
+            (double)matchedKeywords / skills.Count * 100,
             2);
     }
 
@@ -142,75 +48,27 @@ public sealed class ATSService : IATSService
         Job job)
     {
         if (resume == null || job == null)
+        {
             return 0;
+        }
 
-        var text =
-            resume.ResumeText ?? string.Empty;
+        var requiredKeywords =
+            SplitSkills(job.Skills);
 
-        var score =
-            SkillCoverage(
-                resume.ExtractedSkills,
-                job.Skills) * 40
+        if (requiredKeywords.Count == 0 ||
+            string.IsNullOrWhiteSpace(resume.ResumeText))
+        {
+            return 0;
+        }
 
-            +
+        var normalizedResume =
+            NormalizeText(resume.ResumeText);
 
-            ExperienceCoverage(
-                resume,
-                text,
-                job.Experience) * 20
-
-            +
-
-            (HasAny(
-                text,
-                "projects",
-                "project experience",
-                "academic project",
-                "personal project")
-                ? 15
-                : 0)
-
-            +
-
-            (!string.IsNullOrWhiteSpace(resume.Education) ||
-             HasAny(
-                 text,
-                 "education",
-                 "academic qualification",
-                 "b.tech",
-                 "bachelor",
-                 "master",
-                 "degree",
-                 "university",
-                 "college")
-                ? 10
-                : 0)
-
-            +
-
-            (HasAny(
-                text,
-                "certification",
-                "certifications",
-                "certified",
-                "certificate")
-                ? 5
-                : 0)
-
-            +
-
-            FormattingQuality(
-                text,
-                resume) * 5
-
-            +
-
-            KeywordDensity(
-                text,
-                job.Skills) * 5;
+        var matched = requiredKeywords.Count(keyword =>
+            ContainsKeyword(normalizedResume, keyword));
 
         return Math.Round(
-            Math.Clamp(score, 0, 100),
+            (double)matched / requiredKeywords.Count * 100,
             2);
     }
 
@@ -410,5 +268,32 @@ public sealed class ATSService : IATSService
                     term,
                     StringComparison.OrdinalIgnoreCase));
     }
+    private static string NormalizeText(string value)
+    {
+        return Regex.Replace(
+            value.ToLowerInvariant(),
+            @"\s+",
+            " ").Trim();
+    }
+
+    private static bool ContainsKeyword(
+        string normalizedText,
+        string keyword)
+    {
+        var normalizedKeyword =
+            NormalizeText(keyword);
+
+        if (string.IsNullOrWhiteSpace(normalizedKeyword))
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(
+            normalizedText,
+            $@"(?<![\w+#.]){Regex.Escape(normalizedKeyword)}(?![\w+#.])",
+            RegexOptions.IgnoreCase);
+    }
+
+
 }
 

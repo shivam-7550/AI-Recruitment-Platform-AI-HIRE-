@@ -22,6 +22,7 @@ async function refreshSession() {
   if (!refreshPromise) {
     refreshPromise = fetch("/api/Auth/refresh", {
       method: "POST",
+      credentials: "include",
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -60,31 +61,48 @@ export async function api(path, options = {}, allowRefresh = true) {
 
   const headers = new Headers(options.headers || {});
 
-  // ---------------------------------------------------------
-  // FormData ke saath Content-Type manually set nahi karna.
-  // Browser automatically multipart boundary set karega.
-  // ---------------------------------------------------------
+  // -------------------------------------------------------
+  // Content-Type
+  // -------------------------------------------------------
+
+  /*
+   * IMPORTANT:
+   *
+   * For FormData requests, DO NOT set Content-Type manually.
+   * Browser will automatically generate:
+   *
+   * multipart/form-data; boundary=...
+   *
+   * This is required for resume/file uploads.
+   */
 
   if (!(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
+  } else {
+    headers.delete("Content-Type");
   }
 
-  // ---------------------------------------------------------
+  // -------------------------------------------------------
   // JWT
-  // ---------------------------------------------------------
+  // -------------------------------------------------------
 
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  // -------------------------------------------------------
+  // Request
+  // -------------------------------------------------------
+
   const response = await fetch(`${API_ROOT}${path}`, {
     ...options,
     headers,
+    credentials: "include",
   });
 
-  // =========================================================
+  // =======================================================
   // ACCESS TOKEN EXPIRED
-  // =========================================================
+  // =======================================================
 
   if (response.status === 401 && token && allowRefresh) {
     try {
@@ -102,9 +120,9 @@ export async function api(path, options = {}, allowRefresh = true) {
     }
   }
 
-  // =========================================================
+  // =======================================================
   // RESPONSE
-  // =========================================================
+  // =======================================================
 
   const contentType = response.headers.get("content-type") || "";
 
@@ -116,9 +134,9 @@ export async function api(path, options = {}, allowRefresh = true) {
     body = await response.text();
   }
 
-  // =========================================================
+  // =======================================================
   // ERROR
-  // =========================================================
+  // =======================================================
 
   if (!response.ok) {
     const message =
@@ -138,24 +156,9 @@ export async function api(path, options = {}, allowRefresh = true) {
 // =========================================================
 
 export const jobsApi = {
-  // ---------------------------------------------------------
-  // Get all jobs
-  // GET /api/Job
-  // ---------------------------------------------------------
-
   all: () => api("/Job"),
 
-  // ---------------------------------------------------------
-  // Get job by ID
-  // GET /api/Job/{id}
-  // ---------------------------------------------------------
-
   byId: (id) => api(`/Job/${id}`),
-
-  // ---------------------------------------------------------
-  // Create job
-  // POST /api/Job
-  // ---------------------------------------------------------
 
   create: (data) =>
     api("/Job", {
@@ -163,21 +166,11 @@ export const jobsApi = {
       body: JSON.stringify(data),
     }),
 
-  // ---------------------------------------------------------
-  // Update job
-  // PUT /api/Job/{id}
-  // ---------------------------------------------------------
-
   update: (id, data) =>
     api(`/Job/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
-
-  // ---------------------------------------------------------
-  // Delete job
-  // DELETE /api/Job/{id}
-  // ---------------------------------------------------------
 
   remove: (id) =>
     api(`/Job/${id}`, {
@@ -190,9 +183,9 @@ export const jobsApi = {
 // =========================================================
 
 export const candidateApi = {
-  // =======================================================
+  // -------------------------------------------------------
   // PROFILE
-  // =======================================================
+  // -------------------------------------------------------
 
   profile: () => api("/UserProfile"),
 
@@ -213,16 +206,58 @@ export const candidateApi = {
     });
   },
 
-  // =======================================================
+  // -------------------------------------------------------
   // RESUME
-  // =======================================================
+  // -------------------------------------------------------
 
   resume: () => api("/Resume"),
 
   uploadResume: (file) => {
+    if (!file) {
+      throw new Error("Please select a resume file.");
+    }
+
+    // =====================================================
+    // ALLOWED RESUME FORMATS
+    // =====================================================
+
+    const allowedExtensions = [".pdf", ".doc", ".docx", ".word"];
+
+    const fileName = String(file.name || "");
+
+    const extension = "." + fileName.split(".").pop().toLowerCase();
+
+    if (!allowedExtensions.includes(extension)) {
+      throw new Error("Only PDF, DOC, DOCX and WORD files are allowed.");
+    }
+
+    // =====================================================
+    // MAX FILE SIZE = 5 MB
+    // =====================================================
+
+    const maxFileSize = 5 * 1024 * 1024;
+
+    if (file.size > maxFileSize) {
+      throw new Error("Maximum resume size is 5 MB.");
+    }
+
+    // =====================================================
+    // FORM DATA
+    // =====================================================
+
     const form = new FormData();
 
-    form.append("Resume", file);
+    /*
+     * IMPORTANT:
+     *
+     * Backend DTO:
+     *
+     * public IFormFile Resume { get; set; }
+     *
+     * Therefore field name must be exactly "Resume".
+     */
+
+    form.append("Resume", file, file.name);
 
     return api("/Resume/upload", {
       method: "POST",
@@ -230,27 +265,24 @@ export const candidateApi = {
     });
   },
 
-  analyzeResume: (resumeId) => api(`/Resume/${resumeId}/analysis`),
-
   removeResume: () =>
     api("/Resume", {
       method: "DELETE",
     }),
 
-  // =======================================================
+  // -------------------------------------------------------
   // APPLICATIONS
-  // =======================================================
+  // -------------------------------------------------------
 
   applications: () => api("/Application/my-applications"),
 
-  // =======================================================
-  // APPLY FOR JOB
-  // =======================================================
+  // -------------------------------------------------------
+  // APPLY
+  // -------------------------------------------------------
 
   apply: (jobId, resumeId, applicationData) =>
     api("/Application/apply", {
       method: "POST",
-
       body: JSON.stringify({
         jobId,
         resumeId,
@@ -279,9 +311,9 @@ export const candidateApi = {
 // =========================================================
 
 export const companyApi = {
-  // =======================================================
+  // -------------------------------------------------------
   // COMPANY PROFILE
-  // =======================================================
+  // -------------------------------------------------------
 
   byUser: (userId) => api(`/Company/user/${userId}`),
 
@@ -297,44 +329,173 @@ export const companyApi = {
       body: JSON.stringify(data),
     }),
 
-  // =======================================================
-  // APPLICATIONS
-  // =======================================================
-
   // -------------------------------------------------------
-  // Applications received for a particular job
-  // GET /api/Application/job/{jobId}
+  // APPLICATIONS FOR ONE JOB
   // -------------------------------------------------------
 
   applicants: (jobId) => api(`/Application/job/${jobId}`),
 
   // -------------------------------------------------------
-  // All company applications
-  //
-  // NOTE:
-  // Current ApplicationController does NOT have
-  // /api/Application/company endpoint.
-  //
-  // Keep this only if you create that endpoint later.
+  // ALL APPLICATIONS FOR COMPANY JOBS
   // -------------------------------------------------------
 
-  applications: () => api("/Application/company"),
+  applications: async (jobIds = []) => {
+    if (!Array.isArray(jobIds) || jobIds.length === 0) {
+      return [];
+    }
 
-  // =======================================================
-  // CANDIDATE RESUME
-  // =======================================================
+    const uniqueJobIds = [
+      ...new Set(jobIds.filter(Boolean).map((id) => String(id))),
+    ];
+
+    const results = await Promise.all(
+      uniqueJobIds.map(async (jobId) => {
+        try {
+          const result = await api(`/Application/job/${jobId}`);
+
+          if (Array.isArray(result)) {
+            return result;
+          }
+
+          if (Array.isArray(result?.data)) {
+            return result.data;
+          }
+
+          if (Array.isArray(result?.applications)) {
+            return result.applications;
+          }
+
+          return [];
+        } catch (error) {
+          console.error(`Unable to load applications for job ${jobId}:`, error);
+
+          return [];
+        }
+      }),
+    );
+
+    const applications = results.flat();
+
+    // -----------------------------------------------------
+    // Remove duplicates
+    // -----------------------------------------------------
+
+    const uniqueApplications = Array.from(
+      new Map(
+        applications
+          .filter((application) => application?.id)
+          .map((application) => [
+            String(application.id).toLowerCase(),
+
+            application,
+          ]),
+      ).values(),
+    );
+
+    return uniqueApplications;
+  },
 
   // -------------------------------------------------------
-  // This endpoint will be added in backend.
-  //
-  // GET:
-  // /api/Application/{applicationId}/resume
-  //
-  // Company will use this to download candidate resume.
+  // RESUME
   // -------------------------------------------------------
 
   downloadResume: (applicationId) =>
     api(`/Application/${applicationId}/resume`),
+
+  // -------------------------------------------------------
+  // AI ANALYSIS
+  // -------------------------------------------------------
+
+  analyzeCandidateWithAI: (applicationId) =>
+    api(`/Application/${applicationId}/ai-analysis`, {
+      method: "POST",
+    }),
+
+  // -------------------------------------------------------
+  // STATUS
+  // -------------------------------------------------------
+
+  updateStatus: (applicationId, status) =>
+    api(`/Application/${applicationId}/status`, {
+      method: "PUT",
+      body: JSON.stringify({
+        status,
+      }),
+    }),
+};
+
+// =========================================================
+// APPLICATION API
+// =========================================================
+
+export const applicationApi = {
+  // Candidate
+  myApplications: () => api("/Application/my-applications"),
+
+  // Company - one job
+  byJob: (jobId) => api(`/Application/job/${jobId}`),
+
+  // Company - direct endpoint
+  company: () => api("/Application/company"),
+
+  // By ID
+  byId: (applicationId) => api(`/Application/${applicationId}`),
+
+  // Status
+  updateStatus: (applicationId, status) =>
+    api(`/Application/${applicationId}/status`, {
+      method: "PUT",
+      body: JSON.stringify({
+        status,
+      }),
+    }),
+
+  // Resume
+  downloadResume: (applicationId) =>
+    api(`/Application/${applicationId}/resume`),
+
+  // AI
+  analyzeCandidateWithAI: (applicationId) =>
+    api(`/Application/${applicationId}/ai-analysis`, {
+      method: "POST",
+    }),
+};
+
+// =========================================================
+// INTERVIEW API
+// =========================================================
+
+export const interviewApi = {
+  byId: (id) => api(`/Interview/${id}`),
+
+  company: () => api("/Interview/company"),
+
+  candidate: () => api("/Interview/user"),
+
+  create: (data) =>
+    api("/Interview", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  update: (id, data) =>
+    api(`/Interview/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  updateStatus: (id, status) =>
+    api(`/Interview/${id}/status`, {
+      method: "PUT",
+      body: JSON.stringify({
+        status,
+      }),
+    }),
+
+  remove: (id) =>
+    api(`/Interview/${id}`, {
+      method: "DELETE",
+    }),
 };
 
 // =========================================================
@@ -342,46 +503,20 @@ export const companyApi = {
 // =========================================================
 
 export const adminApi = {
-  // ---------------------------------------------------------
-  // Get all companies
-  // GET /api/Company
-  // ---------------------------------------------------------
-
   companies: () => api("/Company"),
-
-  // ---------------------------------------------------------
-  // Get all jobs
-  // GET /api/Job
-  // ---------------------------------------------------------
 
   jobs: () => api("/Job"),
 
-  // ---------------------------------------------------------
-  // Get all registered users
-  // GET /api/dashboards/admin/users
-  // ---------------------------------------------------------
-
   users: () => api("/dashboards/admin/users"),
-
-  // ---------------------------------------------------------
-  // Approve company
-  // PUT /api/Company/{id}/approve
-  // ---------------------------------------------------------
 
   approveCompany: (id) =>
     api(`/Company/${id}/approve`, {
       method: "PUT",
     }),
 
-  // ---------------------------------------------------------
-  // Reject company
-  // PUT /api/Company/{id}/reject
-  // ---------------------------------------------------------
-
   rejectCompany: (id, reason) =>
     api(`/Company/${id}/reject`, {
       method: "PUT",
-
       body: JSON.stringify({
         reason,
       }),
@@ -393,37 +528,17 @@ export const adminApi = {
 // =========================================================
 
 export const notificationApi = {
-  // ---------------------------------------------------------
-  // Get my notifications
-  // GET /api/Notification
-  // ---------------------------------------------------------
-
   mine: () => api("/Notification"),
-
-  // ---------------------------------------------------------
-  // Mark notification as read
-  // PUT /api/Notification/{id}/read
-  // ---------------------------------------------------------
 
   read: (id) =>
     api(`/Notification/${id}/read`, {
       method: "PUT",
     }),
 
-  // ---------------------------------------------------------
-  // Mark all notifications as read
-  // PUT /api/Notification/read-all
-  // ---------------------------------------------------------
-
   markAllRead: () =>
     api("/Notification/read-all", {
       method: "PUT",
     }),
-
-  // ---------------------------------------------------------
-  // Clear all notifications
-  // PUT /api/Notification/clear-all
-  // ---------------------------------------------------------
 
   clearAll: () =>
     api("/Notification/clear-all", {
@@ -436,27 +551,12 @@ export const notificationApi = {
 // =========================================================
 
 export const savedJobsApi = {
-  // ---------------------------------------------------------
-  // Get saved jobs
-  // GET /api/SavedJob
-  // ---------------------------------------------------------
-
   mine: () => api("/SavedJob"),
-
-  // ---------------------------------------------------------
-  // Save job
-  // POST /api/SavedJob/{jobId}
-  // ---------------------------------------------------------
 
   save: (jobId) =>
     api(`/SavedJob/${jobId}`, {
       method: "POST",
     }),
-
-  // ---------------------------------------------------------
-  // Remove saved job
-  // DELETE /api/SavedJob/{jobId}
-  // ---------------------------------------------------------
 
   remove: (jobId) =>
     api(`/SavedJob/${jobId}`, {

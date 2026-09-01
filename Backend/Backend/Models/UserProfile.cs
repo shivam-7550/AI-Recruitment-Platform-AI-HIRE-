@@ -54,12 +54,12 @@ public class UserProfile : BaseEntity
     [MaxLength(500)] 
     public string? Languages { get; set; }
 
-    [MaxLength(1500)] 
+    [MaxLength(1500)]
     public string? InternshipDetails { get; set; }
 
-    [MaxLength(300)] 
+    [MaxLength(300)]
     public string? LinkedInUrl { get; set; }
-    [MaxLength(300)] 
+    [MaxLength(300)]
     public string? PortfolioUrl { get; set; }
 
     [MaxLength(300)] public string? GithubUrl { get; set; }

@@ -1,0 +1,593 @@
+.schedule-interview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(0, 0, 0, 0.48);
+
+  overflow-y: auto;
+}
+
+.schedule-interview-modal {
+  width: min(680px, 100%);
+  max-height: calc(100vh - 48px);
+
+  overflow-y: auto;
+
+  background: #ffffff;
+  border: 1px solid #e4e4e4;
+  border-radius: 20px;
+
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18);
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.schedule-interview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 25px 27px 21px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.schedule-interview-header span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #999999;
+}
+
+.schedule-interview-header h2 {
+  margin: 6px 0 4px;
+  color: #111111;
+  font-size: 23px;
+  font-weight: 750;
+}
+
+.schedule-interview-header p {
+  margin: 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+.schedule-interview-close {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #444444;
+
+  cursor: pointer;
+}
+
+.schedule-interview-close:hover {
+  background: #f5f5f5;
+  color: #111111;
+}
+
+.schedule-interview-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==========================================
+   CANDIDATE
+========================================== */
+
+.schedule-interview-candidate {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  margin: 20px 27px;
+  padding: 15px;
+
+  background: #f8f8f8;
+  border: 1px solid #eeeeee;
+  border-radius: 13px;
+}
+
+.schedule-interview-candidate-avatar {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #111111;
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.schedule-interview-candidate > div:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.schedule-interview-candidate strong {
+  color: #181818;
+  font-size: 14px;
+}
+
+.schedule-interview-candidate span {
+  margin-top: 2px;
+  color: #666666;
+  font-size: 12px;
+}
+
+.schedule-interview-candidate small {
+  margin-top: 2px;
+  color: #999999;
+  font-size: 11px;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.schedule-interview-form {
+  padding: 0 27px 27px;
+}
+
+.schedule-interview-field {
+  margin-bottom: 17px;
+}
+
+.schedule-interview-field label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #333333;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.schedule-interview-field input,
+.schedule-interview-field select,
+.schedule-interview-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #222222;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.schedule-interview-field input,
+.schedule-interview-field select {
+  height: 44px;
+  padding: 0 13px;
+}
+
+.schedule-interview-field textarea {
+  min-height: 105px;
+  padding: 12px 13px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.schedule-interview-field input:focus,
+.schedule-interview-field select:focus,
+.schedule-interview-field textarea:focus {
+  border-color: #111111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================
+   FORM GRID
+========================================== */
+
+.schedule-interview-form-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.6fr;
+  gap: 14px;
+}
+
+/* ==========================================
+   INPUT ICON
+========================================== */
+
+.schedule-interview-input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.schedule-interview-input-icon > svg {
+  position: absolute;
+  left: 13px;
+  width: 17px;
+  height: 17px;
+  color: #777777;
+  pointer-events: none;
+}
+
+.schedule-interview-input-icon input {
+  padding-left: 40px;
+}
+
+.schedule-interview-input-icon span {
+  position: absolute;
+  right: 13px;
+  color: #999999;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* ==========================================
+   INTERVIEW TYPE
+========================================== */
+
+.schedule-interview-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.schedule-interview-type-grid button {
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #555555;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.schedule-interview-type-grid button:hover {
+  border-color: #999999;
+}
+
+.schedule-interview-type-grid button.active {
+  border-color: #111111;
+  background: #111111;
+  color: #ffffff;
+}
+
+.schedule-interview-type-grid svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.schedule-interview-error {
+  margin-bottom: 17px;
+  padding: 12px 14px;
+
+  border: 1px solid #f1ceca;
+  border-radius: 10px;
+
+  background: #fff5f4;
+  color: #b42318;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
+
+.schedule-interview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 23px;
+  padding-top: 20px;
+
+  border-top: 1px solid #eeeeee;
+}
+
+.schedule-interview-actions button {
+  min-height: 42px;
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.schedule-interview-cancel {
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  color: #333333;
+}
+
+.schedule-interview-cancel:hover {
+  background: #f5f5f5;
+}
+
+.schedule-interview-submit {
+  border: 1px solid #111111;
+  background: #111111;
+  color: #ffffff;
+}
+
+.schedule-interview-submit:hover {
+  background: #2c2c2c;
+}
+
+.schedule-interview-actions button:disabled,
+.schedule-interview-close:disabled,
+.schedule-interview-type-grid button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 600px) {
+  .schedule-interview-overlay {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .schedule-interview-modal {
+    max-height: calc(100vh - 20px);
+    border-radius: 16px;
+  }
+
+  .schedule-interview-header {
+    padding: 20px;
+  }
+
+  .schedule-interview-candidate {
+    margin: 15px 20px;
+  }
+
+  .schedule-interview-form {
+    padding: 0 20px 20px;
+  }
+
+  .schedule-interview-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .schedule-interview-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-interview-actions {
+    flex-direction: column-reverse;
+  }
+
+  .schedule-interview-actions button {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   APPLICATION SELECTOR
+========================================================= */
+
+.schedule-interview-application-selector {
+  margin: 0 24px 18px;
+}
+
+.schedule-interview-application-selector > label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.schedule-interview-select-wrapper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+}
+
+.schedule-interview-select-wrapper > svg {
+  position: absolute;
+  left: 13px;
+
+  width: 17px;
+  height: 17px;
+
+  color: #64748b;
+
+  pointer-events: none;
+}
+
+.schedule-interview-select-wrapper select {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 0 38px 0 40px;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #f8fafc;
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.schedule-interview-select-wrapper select:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.schedule-interview-select-wrapper select:focus {
+  background: #ffffff;
+  border-color: #111827;
+
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+.schedule-interview-select-wrapper select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.schedule-interview-no-applications {
+  margin: 7px 0 0;
+
+  color: #b91c1c;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   SELECTED CANDIDATE
+========================================================= */
+
+.schedule-interview-candidate {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 0 24px 20px;
+  padding: 13px 14px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #f8fafc;
+}
+
+.schedule-interview-candidate-avatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.schedule-interview-candidate > div:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-interview-candidate strong {
+  margin-bottom: 2px;
+
+  color: #111827;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.schedule-interview-candidate span {
+  margin-bottom: 2px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.schedule-interview-candidate small {
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .schedule-interview-application-selector {
+    margin-left: 17px;
+    margin-right: 17px;
+  }
+
+  .schedule-interview-candidate {
+    margin-left: 17px;
+    margin-right: 17px;
+  }
+
+  .schedule-interview-select-wrapper select {
+    font-size: 12px;
+  }
+}

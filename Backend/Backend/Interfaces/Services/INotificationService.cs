@@ -6,7 +6,6 @@ public interface INotificationService
 {
     // =========================================================
     // Job Posted
-    // Candidate + Admin
     // =========================================================
 
     Task NotifyJobPostedAsync(
@@ -15,10 +14,8 @@ public interface INotificationService
         string companyName,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Application Submitted
-    // Company
+    // Application Submitted - Company
     // =========================================================
 
     Task NotifyApplicationSubmittedAsync(
@@ -29,21 +26,14 @@ public interface INotificationService
         double atsScore,
         CancellationToken cancellationToken);
 
-
-    // =========================================================
-    // Application Submitted By Job
-    // Resolves Company UserId from Job
-    // =========================================================
-
     Task NotifyApplicationSubmittedAsync(
         Guid jobId,
         Guid applicantUserId,
         double atsScore,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Candidate - Application Submitted
+    // Application Submitted - Candidate
     // =========================================================
 
     Task NotifyCandidateApplicationSubmittedAsync(
@@ -53,9 +43,8 @@ public interface INotificationService
         string companyName,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Candidate - Application Status Changed
+    // Application Status Changed
     // =========================================================
 
     Task NotifyCandidateApplicationStatusChangedAsync(
@@ -66,9 +55,40 @@ public interface INotificationService
         string status,
         CancellationToken cancellationToken);
 
+    // =========================================================
+    // Interview Scheduled - Candidate
+    // =========================================================
+
+    Task NotifyCandidateInterviewScheduledAsync(
+        Guid candidateUserId,
+        Guid applicationId,
+        Guid jobId,
+        string candidateName,
+        string jobTitle,
+        string companyName,
+        DateTime scheduledAt,
+        string interviewType,
+        string? meetingLink,
+        CancellationToken cancellationToken);
 
     // =========================================================
-    // Admin - Company Registered
+    // Interview Scheduled - Admin
+    // =========================================================
+
+    Task NotifyAdminsInterviewScheduledAsync(
+        Guid candidateUserId,
+        Guid applicationId,
+        Guid jobId,
+        string candidateName,
+        string jobTitle,
+        string companyName,
+        DateTime scheduledAt,
+        string interviewType,
+        string? meetingLink,
+        CancellationToken cancellationToken);
+
+    // =========================================================
+    // Company Registered
     // =========================================================
 
     Task NotifyAdminsCompanyRegisteredAsync(
@@ -76,9 +96,8 @@ public interface INotificationService
         string companyName,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Company - Approval Status
+    // Company Approval
     // =========================================================
 
     Task NotifyCompanyApprovalAsync(
@@ -88,18 +107,16 @@ public interface INotificationService
         string? reason,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Get Current User Notifications
+    // Get Notifications
     // =========================================================
 
     Task<IEnumerable<NotificationDto>> GetForUserAsync(
         Guid userId,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Mark Single Notification As Read
+    // Mark As Read
     // =========================================================
 
     Task<bool> MarkAsReadAsync(
@@ -107,18 +124,16 @@ public interface INotificationService
         Guid userId,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Mark All Notifications As Read
+    // Mark All As Read
     // =========================================================
 
     Task MarkAllAsReadAsync(
         Guid userId,
         CancellationToken cancellationToken);
 
-
     // =========================================================
-    // Clear All Notifications
+    // Clear All
     // =========================================================
 
     Task ClearAllAsync(

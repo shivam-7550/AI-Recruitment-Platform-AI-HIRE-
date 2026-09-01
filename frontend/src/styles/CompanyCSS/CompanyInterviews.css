@@ -1,0 +1,1524 @@
+/* =========================================================
+   COMPANY INTERVIEWS PAGE
+========================================================= */
+
+.company-interviews-page {
+  min-height: 100vh;
+  margin-left: 250px;
+
+  background: #f8fafc;
+  color: #111827;
+
+  font-family: "Times New Roman", Times, serif;
+
+  box-sizing: border-box;
+}
+
+.company-interviews-main {
+  min-height: 100vh;
+}
+
+.company-interviews-content {
+  padding: 30px 34px 50px;
+}
+
+/* =========================================================
+   PAGE ACTIONS
+========================================================= */
+
+.company-interviews-heading-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.company-interviews-primary-btn,
+.company-interviews-secondary-btn {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.company-interviews-primary-btn {
+  border: 1px solid #111827;
+
+  background: #111827;
+  color: #ffffff;
+}
+
+.company-interviews-primary-btn:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+
+.company-interviews-secondary-btn {
+  border: 1px solid #dbe3ec;
+
+  background: #ffffff;
+  color: #374151;
+}
+
+.company-interviews-secondary-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #111827;
+}
+
+.company-interviews-primary-btn svg,
+.company-interviews-secondary-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.company-interviews-error {
+  margin-bottom: 20px;
+
+  padding: 12px 15px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.company-interviews-stats {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 15px;
+
+  margin-bottom: 22px;
+}
+
+.company-interviews-stat-card {
+  min-height: 95px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.company-interviews-stat-icon {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  background: #f1f5f9;
+  color: #111827;
+}
+
+.company-interviews-stat-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.company-interviews-stat-card span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.company-interviews-stat-card strong {
+  display: block;
+
+  color: #111827;
+
+  font-size: 23px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.company-interviews-toolbar {
+  margin-bottom: 18px;
+
+  padding: 20px 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.company-interviews-toolbar-title {
+  margin-bottom: 16px;
+}
+
+.company-interviews-toolbar-title h2 {
+  margin: 0 0 4px;
+
+  color: #111827;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.company-interviews-toolbar-title span {
+  color: #94a3b8;
+
+  font-size: 12px;
+}
+
+.company-interviews-toolbar-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+.company-interviews-filter,
+.company-interviews-job-filter {
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+
+  color: #374151;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.company-interviews-filter {
+  gap: 7px;
+
+  padding: 0 10px;
+}
+
+.company-interviews-filter svg {
+  width: 15px;
+  height: 15px;
+
+  color: #64748b;
+}
+
+.company-interviews-filter select,
+.company-interviews-job-filter {
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: #374151;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+.company-interviews-job-filter {
+  min-width: 180px;
+
+  padding: 0 11px;
+}
+
+.company-interviews-search {
+  height: 40px;
+
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  background: #f8fafc;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+}
+
+.company-interviews-search svg {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  color: #94a3b8;
+}
+
+.company-interviews-search input {
+  width: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.company-interviews-search input::placeholder {
+  color: #94a3b8;
+}
+
+/* =========================================================
+   INTERVIEW LIST
+========================================================= */
+
+.company-interviews-list {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
+}
+
+/* =========================================================
+   INTERVIEW CARD
+========================================================= */
+
+.company-interview-card {
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.company-interview-card:hover {
+  background: #fbfdff;
+
+  border-color: #cbd5e1;
+
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.company-interview-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.company-interview-candidate {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.company-interview-avatar {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: #f1f5f9;
+  color: #111827;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.company-interview-candidate h3 {
+  margin: 0 0 3px;
+
+  color: #111827;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.company-interview-candidate p {
+  margin: 0 0 3px;
+
+  color: #475569;
+
+  font-size: 12px;
+}
+
+.company-interview-candidate span {
+  display: block;
+
+  overflow: hidden;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.company-interview-status {
+  min-height: 25px;
+
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0 9px;
+
+  border-radius: 999px;
+
+  flex-shrink: 0;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.company-interview-status.scheduled {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.company-interview-status.completed {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.company-interview-status.cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.company-interview-status.rescheduled {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+/* =========================================================
+   CARD DETAILS
+========================================================= */
+
+.company-interview-details {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 10px;
+
+  padding: 15px 0;
+
+  border-top: 1px solid #edf2f7;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.company-interview-detail {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  min-width: 0;
+}
+
+.company-interview-detail > svg {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  color: #64748b;
+}
+
+.company-interview-detail span {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+.company-interview-detail strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   CARD FOOTER
+========================================================= */
+
+.company-interview-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding-top: 15px;
+}
+
+.company-interview-card-footer > span {
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.company-interview-card-footer button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 6px 9px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.company-interview-card-footer button:hover {
+  background: #f1f5f9;
+}
+
+.company-interview-card-footer button svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.company-interviews-empty {
+  grid-column: 1 / -1;
+
+  min-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+
+  text-align: center;
+}
+
+.company-interviews-empty-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 15px;
+
+  border-radius: 14px;
+
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.company-interviews-empty-icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.company-interviews-empty h3 {
+  margin: 0 0 6px;
+
+  color: #111827;
+
+  font-size: 17px;
+}
+
+.company-interviews-empty p {
+  max-width: 430px;
+
+  margin: 0 0 18px;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
+
+.company-interview-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  box-sizing: border-box;
+
+  background: rgba(15, 23, 42, 0.48);
+
+  backdrop-filter: blur(3px);
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.company-interview-modal {
+  width: min(720px, 100%);
+
+  max-height: calc(100vh - 50px);
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border-radius: 15px;
+
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.18);
+}
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.company-interview-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+.company-interview-modal-header span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1.4px;
+}
+
+.company-interview-modal-header h2 {
+  margin: 0 0 5px;
+
+  color: #111827;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.company-interview-modal-header p {
+  margin: 0;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+}
+
+.company-interview-modal-close {
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+.company-interview-modal-close:hover {
+  background: #f8fafc;
+  color: #111827;
+}
+
+.company-interview-modal-close svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =========================================================
+   MODAL BODY
+========================================================= */
+
+.company-interview-modal-body {
+  overflow-y: auto;
+
+  padding: 22px 24px 25px;
+}
+
+.company-interview-modal-section {
+  margin-bottom: 23px;
+}
+
+.company-interview-modal-section:last-child {
+  margin-bottom: 0;
+}
+
+.company-interview-modal-section h4 {
+  margin: 0 0 12px;
+
+  color: #111827;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   MODAL GRID
+========================================================= */
+
+.company-interview-modal-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 10px;
+}
+
+.company-interview-modal-field {
+  min-height: 65px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 11px;
+
+  box-sizing: border-box;
+
+  background: #f8fafc;
+
+  border: 1px solid #edf2f7;
+  border-radius: 9px;
+}
+
+.company-interview-modal-field > svg {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  color: #64748b;
+}
+
+.company-interview-modal-field span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+.company-interview-modal-field strong {
+  display: block;
+
+  color: #374151;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.company-interview-contact-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+.company-interview-contact-list > div {
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 11px;
+
+  background: #f8fafc;
+
+  border: 1px solid #edf2f7;
+  border-radius: 8px;
+}
+
+.company-interview-contact-list svg {
+  width: 15px;
+  height: 15px;
+
+  flex-shrink: 0;
+
+  color: #64748b;
+}
+
+.company-interview-contact-list span {
+  color: #374151;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   INTERVIEW INFO
+========================================================= */
+
+.company-interview-info-box {
+  padding: 14px;
+
+  background: #f8fafc;
+
+  border: 1px solid #edf2f7;
+  border-radius: 9px;
+}
+
+.company-interview-info-box > div:first-child {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.company-interview-info-box > div:first-child > svg {
+  width: 18px;
+  height: 18px;
+
+  color: #64748b;
+}
+
+.company-interview-info-box span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+.company-interview-info-box strong {
+  color: #374151;
+
+  font-size: 12px;
+}
+
+.company-interview-meeting-link {
+  margin-top: 12px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 8px 11px;
+
+  border-radius: 7px;
+
+  background: #111827;
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.company-interview-meeting-link:hover {
+  background: #1f2937;
+}
+
+.company-interview-meeting-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+.company-interview-location {
+  margin-top: 12px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.company-interview-location svg {
+  width: 15px;
+  height: 15px;
+
+  color: #64748b;
+}
+
+.company-interview-location span {
+  margin: 0;
+
+  color: #475569;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   INSTRUCTIONS
+========================================================= */
+
+.company-interview-instructions {
+  padding: 13px 14px;
+
+  background: #f8fafc;
+
+  border: 1px solid #edf2f7;
+  border-radius: 9px;
+
+  color: #475569;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   STATUS ACTIONS
+========================================================= */
+
+.company-interview-status-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+.company-interview-status-btn {
+  min-height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 0 11px;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.company-interview-status-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.company-interview-status-btn.scheduled {
+  border: 1px solid #bfdbfe;
+
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.company-interview-status-btn.completed {
+  border: 1px solid #bbf7d0;
+
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.company-interview-status-btn.cancelled {
+  border: 1px solid #fecaca;
+
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.company-interview-status-btn:hover {
+  filter: brightness(0.97);
+}
+
+/* =========================================================
+   SCHEDULE MODAL
+========================================================= */
+
+.company-interview-schedule-modal {
+  width: min(680px, 100%);
+}
+
+.company-interview-schedule-modal .company-interview-modal-body {
+  padding-bottom: 0;
+}
+
+/* =========================================================
+   SCHEDULE FORM
+========================================================= */
+
+.company-interview-form {
+  overflow-y: auto;
+
+  padding: 22px 24px 24px;
+}
+
+.company-interview-form-group {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.company-interview-form-group.full {
+  margin-bottom: 16px;
+}
+
+.company-interview-form-group label {
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.company-interview-form-group label span {
+  color: #dc2626;
+}
+
+.company-interview-form-group small {
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   FORM INPUTS
+========================================================= */
+
+.company-interview-form-group input,
+.company-interview-form-group select,
+.company-interview-form-group textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: #111827;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.company-interview-form-group input,
+.company-interview-form-group select {
+  height: 42px;
+
+  padding: 0 12px;
+}
+
+.company-interview-form-group textarea {
+  min-height: 95px;
+
+  padding: 11px 12px;
+
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.company-interview-form-group input:focus,
+.company-interview-form-group select:focus,
+.company-interview-form-group textarea:focus {
+  border-color: #94a3b8;
+
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.12);
+}
+
+/* =========================================================
+   APPLICATION DROPDOWN
+========================================================= */
+
+.company-interview-form-group select[name="applicationId"] {
+  height: 46px;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+.company-interview-form-group select[name="applicationId"] option {
+  padding: 8px;
+}
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.company-interview-form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-bottom: 16px;
+}
+
+/* =========================================================
+   INPUT WITH ICON
+========================================================= */
+
+.company-interview-input-icon {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+.company-interview-input-icon svg {
+  position: absolute;
+
+  left: 12px;
+
+  width: 16px;
+  height: 16px;
+
+  color: #94a3b8;
+
+  pointer-events: none;
+}
+
+.company-interview-input-icon input {
+  padding-left: 37px;
+}
+
+/* =========================================================
+   FORM ACTIONS
+========================================================= */
+
+.company-interview-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 9px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid #edf2f7;
+}
+
+.company-interview-cancel-btn {
+  min-height: 40px;
+
+  padding: 0 15px;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #475569;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.company-interview-cancel-btn:hover {
+  background: #f8fafc;
+  color: #111827;
+}
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+.company-interviews-refresh-icon {
+  animation: companyInterviewsSpin 0.8s linear infinite;
+}
+
+@keyframes companyInterviewsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.company-interviews-loading {
+  min-height: 100vh;
+
+  margin-left: 250px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14px;
+}
+
+.company-interviews-spinner {
+  width: 28px;
+  height: 28px;
+
+  border: 3px solid #e2e8f0;
+  border-top-color: #111827;
+
+  border-radius: 50%;
+
+  animation: companyInterviewsSpin 0.7s linear infinite;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+  .company-interviews-page {
+    margin-left: 220px;
+  }
+
+  .company-interviews-loading {
+    margin-left: 220px;
+  }
+
+  .company-interviews-content {
+    padding: 25px 22px 40px;
+  }
+
+  .company-interviews-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .company-interviews-list {
+    grid-template-columns: 1fr;
+  }
+
+  .company-interview-modal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .company-interviews-page {
+    margin-left: 72px;
+  }
+
+  .company-interviews-loading {
+    margin-left: 72px;
+  }
+
+  .company-interviews-content {
+    padding: 20px 16px 35px;
+  }
+
+  .company-interviews-heading-action {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .company-interviews-primary-btn,
+  .company-interviews-secondary-btn {
+    width: 100%;
+  }
+
+  .company-interviews-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .company-interviews-toolbar-row {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .company-interviews-filter,
+  .company-interviews-job-filter,
+  .company-interviews-search {
+    width: 100%;
+  }
+
+  .company-interviews-search {
+    flex: none;
+  }
+
+  .company-interview-card-header {
+    align-items: flex-start;
+  }
+
+  .company-interview-details {
+    grid-template-columns: 1fr;
+  }
+
+  .company-interview-modal-overlay {
+    padding: 12px;
+  }
+
+  .company-interview-modal {
+    max-height: calc(100vh - 24px);
+  }
+
+  .company-interview-modal-header {
+    padding: 18px;
+  }
+
+  .company-interview-modal-body {
+    padding: 18px;
+  }
+
+  .company-interview-form {
+    padding: 18px;
+  }
+
+  .company-interview-form-grid {
+    grid-template-columns: 1fr;
+
+    gap: 16px;
+  }
+
+  .company-interview-modal-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .company-interview-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .company-interview-form-actions button {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .company-interviews-page {
+    margin-left: 64px;
+  }
+
+  .company-interviews-loading {
+    margin-left: 64px;
+  }
+
+  .company-interviews-content {
+    padding: 17px 12px 30px;
+  }
+
+  .company-interview-card {
+    padding: 16px;
+  }
+
+  .company-interview-card-header {
+    flex-direction: column;
+  }
+
+  .company-interview-status {
+    align-self: flex-start;
+  }
+
+  .company-interview-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-interview-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .company-interview-status-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .company-interview-status-btn {
+    justify-content: center;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .company-interview-card,
+  .company-interviews-primary-btn,
+  .company-interviews-secondary-btn {
+    transition: none;
+  }
+
+  .company-interviews-refresh-icon,
+  .company-interviews-spinner {
+    animation: none;
+  }
+}

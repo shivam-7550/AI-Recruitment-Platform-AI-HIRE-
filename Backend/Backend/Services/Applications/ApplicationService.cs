@@ -37,24 +37,25 @@ public class ApplicationService : IApplicationService
             notificationService;
     }
 
-
     // =====================================================
-    // Apply For Job
+    // CANDIDATE - APPLY FOR JOB
     // =====================================================
 
-    public async Task<ApplicationResponseDto> ApplyJobAsync(
-        Guid userId,
-        ApplyJobDto dto,
-        CancellationToken cancellationToken)
+    public async Task<ApplicationResponseDto>
+        ApplyJobAsync(
+            Guid userId,
+            ApplyJobDto dto,
+            CancellationToken cancellationToken)
     {
-        // =================================================
+        // -------------------------------------------------
         // Validate Job
-        // =================================================
+        // -------------------------------------------------
 
         var job =
-            await _jobRepository.GetJobByIdAsync(
-                dto.JobId,
-                cancellationToken);
+            await _jobRepository
+                .GetJobByIdAsync(
+                    dto.JobId,
+                    cancellationToken);
 
         if (job is null)
         {
@@ -62,10 +63,9 @@ public class ApplicationService : IApplicationService
                 "Job not found.");
         }
 
-
-        // =================================================
+        // -------------------------------------------------
         // Validate Company
-        // =================================================
+        // -------------------------------------------------
 
         if (job.Company is null)
         {
@@ -73,16 +73,18 @@ public class ApplicationService : IApplicationService
                 "Company information for this job could not be found.");
         }
 
-        if (job.Company.UserId == Guid.Empty)
+        if (
+            job.Company.UserId ==
+            Guid.Empty
+        )
         {
             throw new InvalidOperationException(
                 "Company user information for this job could not be found.");
         }
 
-
-        // =================================================
-        // Check Active Job
-        // =================================================
+        // -------------------------------------------------
+        // Active Job
+        // -------------------------------------------------
 
         if (!job.IsActive)
         {
@@ -90,21 +92,22 @@ public class ApplicationService : IApplicationService
                 "This job is no longer active.");
         }
 
+        // -------------------------------------------------
+        // Deadline
+        // -------------------------------------------------
 
-        // =================================================
-        // Check Application Deadline
-        // =================================================
-
-        if (job.LastDateToApply < DateTime.UtcNow)
+        if (
+            job.LastDateToApply <
+            DateTime.UtcNow
+        )
         {
             throw new InvalidOperationException(
                 "The application deadline has passed.");
         }
 
-
-        // =================================================
-        // Check Duplicate Application
-        // =================================================
+        // -------------------------------------------------
+        // Duplicate Application
+        // -------------------------------------------------
 
         var existingApplication =
             await _applicationRepository
@@ -113,16 +116,17 @@ public class ApplicationService : IApplicationService
                     dto.JobId,
                     cancellationToken);
 
-        if (existingApplication is not null)
+        if (
+            existingApplication is not null
+        )
         {
             throw new InvalidOperationException(
                 "You have already applied for this job.");
         }
 
-
-        // =================================================
-        // Get Candidate Resume
-        // =================================================
+        // -------------------------------------------------
+        // Resume
+        // -------------------------------------------------
 
         var resume =
             await _resumeRepository
@@ -136,48 +140,50 @@ public class ApplicationService : IApplicationService
                 "Please upload your resume before applying for a job.");
         }
 
+        // -------------------------------------------------
+        // Skills
+        // -------------------------------------------------
 
-        // =================================================
-        // Validate Skills
-        // =================================================
-
-        if (dto.Skills is null ||
-            dto.Skills.Count == 0)
+        if (
+            dto.Skills is null ||
+            dto.Skills.Count == 0
+        )
         {
             throw new InvalidOperationException(
                 "Please select at least one skill.");
         }
 
-
-        // =================================================
-        // Calculate Job Matching / ATS Score
-        // =================================================
+        // -------------------------------------------------
+        // ATS Score
+        // -------------------------------------------------
 
         var matchingScore =
-            _atsService.CalculateJobMatchScore(
-                resume,
-                job);
+            _atsService
+                .CalculateJobMatchScore(
+                    resume,
+                    job);
 
-
-        // =================================================
-        // Prepare Skills
-        // =================================================
+        // -------------------------------------------------
+        // Skills String
+        // -------------------------------------------------
 
         var skills =
             string.Join(
                 ", ",
                 dto.Skills
-                    .Where(x =>
-                        !string.IsNullOrWhiteSpace(x))
-                    .Select(x =>
-                        x.Trim())
+                    .Where(
+                        x =>
+                            !string.IsNullOrWhiteSpace(
+                                x))
+                    .Select(
+                        x =>
+                            x.Trim())
                     .Distinct(
                         StringComparer.OrdinalIgnoreCase));
 
-
-        // =================================================
+        // -------------------------------------------------
         // Create Application
-        // =================================================
+        // -------------------------------------------------
 
         var application =
             new JobApplication
@@ -191,11 +197,6 @@ public class ApplicationService : IApplicationService
                 JobId =
                     job.Id,
 
-
-                // -----------------------------------------
-                // Candidate Information
-                // -----------------------------------------
-
                 Name =
                     dto.Name.Trim(),
 
@@ -204,11 +205,6 @@ public class ApplicationService : IApplicationService
 
                 Contact =
                     dto.Contact.Trim(),
-
-
-                // -----------------------------------------
-                // Education
-                // -----------------------------------------
 
                 Qualification =
                     dto.Qualification.Trim(),
@@ -219,26 +215,11 @@ public class ApplicationService : IApplicationService
                 CollegeName =
                     dto.CollegeName.Trim(),
 
-
-                // -----------------------------------------
-                // Skills
-                // -----------------------------------------
-
                 Skills =
                     skills,
 
-
-                // -----------------------------------------
-                // Experience
-                // -----------------------------------------
-
                 Experience =
                     dto.Experience,
-
-
-                // -----------------------------------------
-                // Application Information
-                // -----------------------------------------
 
                 Status =
                     "Applied",
@@ -249,11 +230,6 @@ public class ApplicationService : IApplicationService
                 AppliedAt =
                     DateTime.UtcNow,
 
-
-                // -----------------------------------------
-                // Resume Relationship
-                // -----------------------------------------
-
                 ResumeId =
                     resume.Id,
 
@@ -261,10 +237,9 @@ public class ApplicationService : IApplicationService
                     resume
             };
 
-
-        // =================================================
-        // Save Application
-        // =================================================
+        // -------------------------------------------------
+        // Save
+        // -------------------------------------------------
 
         await _applicationRepository
             .AddApplicationAsync(
@@ -275,10 +250,9 @@ public class ApplicationService : IApplicationService
             .SaveChangesAsync(
                 cancellationToken);
 
-
-        // =================================================
+        // -------------------------------------------------
         // Notify Company
-        // =================================================
+        // -------------------------------------------------
 
         await _notificationService
             .NotifyApplicationSubmittedAsync(
@@ -287,10 +261,9 @@ public class ApplicationService : IApplicationService
                 matchingScore,
                 cancellationToken);
 
-
-        // =================================================
+        // -------------------------------------------------
         // Notify Candidate
-        // =================================================
+        // -------------------------------------------------
 
         await _notificationService
             .NotifyCandidateApplicationSubmittedAsync(
@@ -300,22 +273,21 @@ public class ApplicationService : IApplicationService
                 job.Company.CompanyName,
                 cancellationToken);
 
-
-        // =================================================
-        // Return Response
-        // =================================================
+        // -------------------------------------------------
+        // Response
+        // -------------------------------------------------
 
         return MapToResponse(
             application,
             job);
     }
 
-
     // =====================================================
-    // Candidate - My Applications
+    // CANDIDATE - MY APPLICATIONS
     // =====================================================
 
-    public async Task<IEnumerable<ApplicationResponseDto>>
+    public async Task<
+        IEnumerable<ApplicationResponseDto>>
         GetApplicationsByUserAsync(
             Guid userId,
             CancellationToken cancellationToken)
@@ -333,83 +305,35 @@ public class ApplicationService : IApplicationService
                     application.Job));
     }
 
-
     // =====================================================
-    // Company - Update Application Status
-    // =====================================================
-
-    public async Task<ApplicationResponseDto?>
-        UpdateApplicationStatusAsync(
-            Guid companyId,
-            Guid applicationId,
-            UpdateApplicationStatusDto dto,
-            CancellationToken cancellationToken)
-    {
-        var application =
-            await _applicationRepository
-                .GetCompanyApplicationByIdAsync(
-                    companyId,
-                    applicationId,
-                    cancellationToken);
-
-        if (application is null)
-        {
-            return null;
-        }
-
-
-        var status =
-            dto.Status.ToString();
-
-
-        if (application.Status == status)
-        {
-            return MapToResponse(
-                application,
-                application.Job);
-        }
-
-
-        application.Status =
-            status;
-
-
-        await _applicationRepository
-            .SaveChangesAsync(
-                cancellationToken);
-
-
-        // =================================================
-        // Notify Candidate About Status Change
-        // =================================================
-
-        await _notificationService
-            .NotifyCandidateApplicationStatusChangedAsync(
-                application.UserId,
-                application.JobId,
-                application.Job.Title,
-                application.Job.Company?.CompanyName
-                    ?? "the company",
-                status,
-                cancellationToken);
-
-
-        return MapToResponse(
-            application,
-            application.Job);
-    }
-
-
-    // =====================================================
-    // Company - Job Applications
+    // COMPANY - JOB APPLICATIONS
     // =====================================================
 
-    public async Task<IEnumerable<ApplicationResponseDto>>
+    public async Task<
+        IEnumerable<ApplicationResponseDto>>
         GetApplicationsByJobAsync(
             Guid companyId,
             Guid jobId,
             CancellationToken cancellationToken)
     {
+        if (
+            companyId ==
+            Guid.Empty
+        )
+        {
+            throw new InvalidOperationException(
+                "Invalid company ID.");
+        }
+
+        if (
+            jobId ==
+            Guid.Empty
+        )
+        {
+            throw new InvalidOperationException(
+                "Invalid job ID.");
+        }
+
         var applications =
             await _applicationRepository
                 .GetApplicationsByJobAsync(
@@ -424,12 +348,88 @@ public class ApplicationService : IApplicationService
                     application.Job));
     }
 
+    // =====================================================
+    // COMPANY - UPDATE STATUS
+    // =====================================================
+
+    public async Task<
+        ApplicationResponseDto?>
+        UpdateApplicationStatusAsync(
+            Guid companyId,
+            Guid applicationId,
+            UpdateApplicationStatusDto dto,
+            CancellationToken cancellationToken)
+    {
+        if (
+            companyId ==
+            Guid.Empty
+        )
+        {
+            return null;
+        }
+
+        if (
+            applicationId ==
+            Guid.Empty
+        )
+        {
+            return null;
+        }
+
+        var application =
+            await _applicationRepository
+                .GetCompanyApplicationByIdAsync(
+                    companyId,
+                    applicationId,
+                    cancellationToken);
+
+        if (application is null)
+        {
+            return null;
+        }
+
+        var status =
+            dto.Status.ToString();
+
+        if (
+            application.Status ==
+            status
+        )
+        {
+            return MapToResponse(
+                application,
+                application.Job);
+        }
+
+        application.Status =
+            status;
+
+        await _applicationRepository
+            .SaveChangesAsync(
+                cancellationToken);
+
+        await _notificationService
+            .NotifyCandidateApplicationStatusChangedAsync(
+                application.UserId,
+                application.JobId,
+                application.Job.Title,
+                application.Job.Company
+                    ?.CompanyName ??
+                    "the company",
+                status,
+                cancellationToken);
+
+        return MapToResponse(
+            application,
+            application.Job);
+    }
 
     // =====================================================
-    // Mapping
+    // MAPPING
     // =====================================================
 
-    private static ApplicationResponseDto
+    private static
+        ApplicationResponseDto
         MapToResponse(
             JobApplication application,
             Job job)
@@ -445,22 +445,13 @@ public class ApplicationService : IApplicationService
             JobId =
                 application.JobId,
 
-
-            // -----------------------------------------
-            // Job Information
-            // -----------------------------------------
-
             JobTitle =
                 job.Title,
 
             CompanyName =
-                job.Company?.CompanyName
-                ?? string.Empty,
-
-
-            // -----------------------------------------
-            // Candidate Information
-            // -----------------------------------------
+                job.Company
+                    ?.CompanyName ??
+                string.Empty,
 
             Name =
                 application.Name,
@@ -471,11 +462,6 @@ public class ApplicationService : IApplicationService
             Contact =
                 application.Contact,
 
-
-            // -----------------------------------------
-            // Education
-            // -----------------------------------------
-
             Qualification =
                 application.Qualification,
 
@@ -485,35 +471,15 @@ public class ApplicationService : IApplicationService
             CollegeName =
                 application.CollegeName,
 
-
-            // -----------------------------------------
-            // Skills
-            // -----------------------------------------
-
             Skills =
                 ParseSkills(
                     application.Skills),
 
-
-            // -----------------------------------------
-            // Experience
-            // -----------------------------------------
-
             Experience =
                 application.Experience,
 
-
-            // -----------------------------------------
-            // Application Status
-            // -----------------------------------------
-
             Status =
                 application.Status,
-
-
-            // -----------------------------------------
-            // ATS
-            // -----------------------------------------
 
             ATSScore =
                 application.ATSScore,
@@ -521,14 +487,9 @@ public class ApplicationService : IApplicationService
             AppliedAt =
                 application.AppliedAt,
 
-
-            // -----------------------------------------
-            // Resume
-            // -----------------------------------------
-
             ResumeId =
-                application.Resume?.Id
-                ?? application.ResumeId,
+                application.Resume?.Id ??
+                application.ResumeId,
 
             ResumeFileName =
                 application.Resume?.FileName,
@@ -538,15 +499,18 @@ public class ApplicationService : IApplicationService
         };
     }
 
-
     // =====================================================
-    // Parse Stored Skills
+    // PARSE SKILLS
     // =====================================================
 
-    private static List<string> ParseSkills(
-        string? skills)
+    private static List<string>
+        ParseSkills(
+            string? skills)
     {
-        if (string.IsNullOrWhiteSpace(skills))
+        if (
+            string.IsNullOrWhiteSpace(
+                skills)
+        )
         {
             return new List<string>();
         }
@@ -555,10 +519,13 @@ public class ApplicationService : IApplicationService
             .Split(
                 ',',
                 StringSplitOptions.RemoveEmptyEntries)
-            .Select(x =>
-                x.Trim())
-            .Where(x =>
-                !string.IsNullOrWhiteSpace(x))
+            .Select(
+                x =>
+                    x.Trim())
+            .Where(
+                x =>
+                    !string.IsNullOrWhiteSpace(
+                        x))
             .Distinct(
                 StringComparer.OrdinalIgnoreCase)
             .ToList();

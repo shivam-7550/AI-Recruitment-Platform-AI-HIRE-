@@ -1,3 +1,4 @@
+
 using Backend.Data;
 using Backend.Helpers;
 using Backend.Interfaces.ATS;
@@ -8,19 +9,16 @@ using Backend.Interfaces.Utilities;
 using Backend.Repositories;
 using Backend.Services;
 using Backend.Services.Applications;
-
 using Backend.Services.ATS;
 using Backend.Services.Auth;
 using Backend.Services.Companies;
 using Backend.Services.Interviews;
 using Backend.Services.Jobs;
-
 using Backend.Services.Notifications;
-
 using Backend.Services.Resumes;
 using Backend.Services.SavedJobs;
-
 using Backend.Services.Users;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,15 +28,24 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // ============================================================
-// Controllers
+// CONTROLLERS
 // ============================================================
 
 builder.Services.AddControllers();
 
 
 // ============================================================
-// Swagger
+// HTTP CLIENT
+// ============================================================
+
+// Used by ResumeAIService / Gemini integration
+builder.Services.AddHttpClient();
+
+
+// ============================================================
+// SWAGGER
 // ============================================================
 
 builder.Services.AddEndpointsApiExplorer();
@@ -50,10 +57,15 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiSecurityScheme
         {
             Name = "Authorization",
+
             Type = SecuritySchemeType.Http,
+
             Scheme = "Bearer",
+
             BearerFormat = "JWT",
+
             In = ParameterLocation.Header,
+
             Description =
                 "Enter JWT Token like: Bearer eyJhbGciOiJIUzI1NiIs..."
         });
@@ -78,221 +90,334 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("ReactPolicy", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
-
-
-// ============================================================
-// Database
-// ============================================================
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions =>
+    options.AddPolicy(
+        "ReactPolicy",
+        policy =>
         {
-            sqlOptions.CommandTimeout(60);
+            policy
+                .WithOrigins(
+                    "http://localhost:5173")
 
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 3,
-                maxRetryDelay: TimeSpan.FromSeconds(5),
-                errorNumbersToAdd: null);
+                .AllowAnyHeader()
+
+                .AllowAnyMethod()
+
+                .AllowCredentials();
         });
 });
 
 
 // ============================================================
-// JWT Authentication
+// DATABASE
 // ============================================================
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options =>
     {
-        options.TokenValidationParameters =
-            new TokenValidationParameters
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString(
+                "DefaultConnection"),
+
+            sqlOptions =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
+                sqlOptions.CommandTimeout(60);
 
-                ValidIssuer =
-                    builder.Configuration["Jwt:Issuer"],
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
 
-                ValidAudience =
-                    builder.Configuration["Jwt:Audience"],
+                    maxRetryDelay:
+                        TimeSpan.FromSeconds(5),
 
-                IssuerSigningKey =
-                    new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(
-                            builder.Configuration["Jwt:Key"]!
-                        )
-                    )
-            };
+                    errorNumbersToAdd:
+                        null);
+            });
     });
 
 
 // ============================================================
-// Authorization
+// JWT AUTHENTICATION
+// ============================================================
+
+builder.Services
+    .AddAuthentication(
+        JwtBearerDefaults.AuthenticationScheme)
+
+    .AddJwtBearer(
+        options =>
+        {
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+
+                    ValidateAudience = true,
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer =
+                        builder.Configuration[
+                            "Jwt:Issuer"],
+
+                    ValidAudience =
+                        builder.Configuration[
+                            "Jwt:Audience"],
+
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(
+                                builder.Configuration[
+                                    "Jwt:Key"]!
+                            )
+                        ),
+
+                    ClockSkew =
+                        TimeSpan.Zero
+                };
+        });
+
+
+// ============================================================
+// AUTHORIZATION
 // ============================================================
 
 builder.Services.AddAuthorization();
 
 
 // ============================================================
-// Dependency Injection
+// DEPENDENCY INJECTION
 // ============================================================
 
-// -----------------------------
-// User
-// -----------------------------
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// ------------------------------------------------------------
+// USER
+// ------------------------------------------------------------
 
-
-// -----------------------------
-// Authentication
-// -----------------------------
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-builder.Services.AddScoped<PasswordHasher>();
-
-// -----------------------------
-// Job
-// -----------------------------
-
-builder.Services.AddScoped<IJobRepository, JobRepository>();
-builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<
+    IUserRepository,
+    UserRepository>();
 
 
-// -----------------------------
-// Company
-// -----------------------------
+// ------------------------------------------------------------
+// AUTHENTICATION
+// ------------------------------------------------------------
 
-builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
-builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<
+    IAuthService,
+    AuthService>();
 
-// -----------------------------
-// Interview
-// -----------------------------
+builder.Services.AddScoped<
+    IJwtTokenGenerator,
+    JwtTokenGenerator>();
 
-builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
-builder.Services.AddScoped<IInterviewService, InterviewService>();
-
-
-// -----------------------------
-// Application
-// -----------------------------
-
-builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
-builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<
+    PasswordHasher>();
 
 
-// -----------------------------
-// Resume
-// -----------------------------
+// ------------------------------------------------------------
+// JOB
+// ------------------------------------------------------------
 
-builder.Services.AddScoped<IResumeRepository, ResumeRepository>();
-builder.Services.AddScoped<IResumeService, ResumeService>();
+builder.Services.AddScoped<
+    IJobRepository,
+    JobRepository>();
 
-
-// -----------------------------
-// Resume Helpers
-// -----------------------------
-
-builder.Services.AddScoped<IPdfParser, PdfParser>();
-builder.Services.AddScoped<ISkillExtractor, SkillExtractor>();
+builder.Services.AddScoped<
+    IJobService,
+    JobService>();
 
 
-// -----------------------------
+// ------------------------------------------------------------
+// COMPANY
+// ------------------------------------------------------------
+
+builder.Services.AddScoped<
+    ICompanyRepository,
+    CompanyRepository>();
+
+builder.Services.AddScoped<
+    ICompanyService,
+    CompanyService>();
+
+
+// ------------------------------------------------------------
+// INTERVIEW
+// ------------------------------------------------------------
+
+builder.Services.AddScoped<
+    IInterviewRepository,
+    InterviewRepository>();
+
+builder.Services.AddScoped<
+    IInterviewService,
+    InterviewService>();
+
+
+// ------------------------------------------------------------
+// APPLICATION
+// ------------------------------------------------------------
+
+builder.Services.AddScoped<
+    IApplicationRepository,
+    ApplicationRepository>();
+
+builder.Services.AddScoped<
+    IApplicationService,
+    ApplicationService>();
+
+
+// ------------------------------------------------------------
+// RESUME
+// ------------------------------------------------------------
+
+builder.Services.AddScoped<
+    IResumeRepository,
+    ResumeRepository>();
+
+builder.Services.AddScoped<
+    IResumeService,
+    ResumeService>();
+
+
+// ------------------------------------------------------------
+// GEMINI / AI RESUME SERVICE
+// ------------------------------------------------------------
+
+builder.Services.AddHttpClient<
+    IResumeAIService,
+    ResumeAIService>();
+
+
+// ------------------------------------------------------------
+// RESUME HELPERS
+// ------------------------------------------------------------
+
+builder.Services.AddScoped<
+    IPdfParser,
+    PdfParser>();
+
+builder.Services.AddScoped<
+    ISkillExtractor,
+    SkillExtractor>();
+
+
+// ------------------------------------------------------------
 // ATS
-// -----------------------------
+// ------------------------------------------------------------
 
-builder.Services.AddScoped<IATSService, ATSService>();
-
-
-// -----------------------------
-// Notification
-// -----------------------------
-
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<
+    IATSService,
+    ATSService>();
 
 
-// -----------------------------
-// User Profile
-// -----------------------------
+// ------------------------------------------------------------
+// NOTIFICATION
+// ------------------------------------------------------------
 
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+// Required for:
+// 1. Candidate interview notifications
+// 2. Admin interview notifications
+// 3. Application notifications
+// 4. Job notifications
+// 5. Company approval notifications
+
+builder.Services.AddScoped<
+    INotificationRepository,
+    NotificationRepository>();
+
+builder.Services.AddScoped<
+    INotificationService,
+    NotificationService>();
 
 
-// -----------------------------
-// Saved Jobs
-// -----------------------------
+// ------------------------------------------------------------
+// USER PROFILE
+// ------------------------------------------------------------
 
-builder.Services.AddScoped<ISavedJobService, SavedJobService>();
+builder.Services.AddScoped<
+    IUserProfileService,
+    UserProfileService>();
 
 
-builder.Services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
+// ------------------------------------------------------------
+// SAVED JOB
+// ------------------------------------------------------------
 
-builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
+builder.Services.AddScoped<
+    ISavedJobService,
+    SavedJobService>();
+
+
+// ------------------------------------------------------------
+// USER SETTINGS
+// ------------------------------------------------------------
+
+builder.Services.AddScoped<
+    IUserSettingsRepository,
+    UserSettingsRepository>();
+
+builder.Services.AddScoped<
+    IUserSettingsService,
+    UserSettingsService>();
 
 
 // ============================================================
-// Build Application
+// BUILD APPLICATION
 // ============================================================
 
 var app = builder.Build();
 
 
 // ============================================================
-// Development Database Migration
+// DATABASE MIGRATION
 // ============================================================
 
 if (app.Environment.IsDevelopment())
 {
-    using var migrationScope = app.Services.CreateScope();
+    using var migrationScope =
+        app.Services.CreateScope();
 
     var migrationDbContext =
         migrationScope.ServiceProvider
-            .GetRequiredService<ApplicationDbContext>();
+            .GetRequiredService<
+                ApplicationDbContext>();
 
-    await migrationDbContext.Database.MigrateAsync();
+    await migrationDbContext
+        .Database
+        .MigrateAsync();
 
 
     // ========================================================
-    // Promote Development Admin
+    // DEVELOPMENT ADMIN
     // ========================================================
 
     var adminEmail =
-        app.Configuration["DevelopmentAdmin:Email"]
+        app.Configuration[
+            "DevelopmentAdmin:Email"]
             ?.Trim()
             .ToLowerInvariant();
 
-    if (!string.IsNullOrWhiteSpace(adminEmail))
+    if (!string.IsNullOrWhiteSpace(
+            adminEmail))
     {
-        using var scope = app.Services.CreateScope();
+        using var adminScope =
+            app.Services.CreateScope();
 
         var dbContext =
-            scope.ServiceProvider
-                .GetRequiredService<ApplicationDbContext>();
+            adminScope.ServiceProvider
+                .GetRequiredService<
+                    ApplicationDbContext>();
 
         var admin =
             await dbContext.Users
                 .FirstOrDefaultAsync(
-                    user => user.Email == adminEmail);
+                    user =>
+                        user.Email == adminEmail);
 
         if (admin != null &&
-            admin.Role != Backend.Constants.Roles.Admin)
+            admin.Role !=
+                Backend.Constants.Roles.Admin)
         {
             admin.Role =
                 Backend.Constants.Roles.Admin;
@@ -307,7 +432,7 @@ if (app.Environment.IsDevelopment())
 
 
 // ============================================================
-// Swagger
+// SWAGGER
 // ============================================================
 
 if (app.Environment.IsDevelopment())
@@ -319,10 +444,11 @@ if (app.Environment.IsDevelopment())
 
 
 // ============================================================
-// Exception Middleware
+// EXCEPTION MIDDLEWARE
 // ============================================================
 
-app.UseMiddleware<Backend.Middleware.ExceptionMiddleware>();
+app.UseMiddleware<
+    Backend.Middleware.ExceptionMiddleware>();
 
 
 // ============================================================
@@ -333,7 +459,7 @@ app.UseHttpsRedirection();
 
 
 // ============================================================
-// Static Files
+// STATIC FILES
 // ============================================================
 
 app.UseStaticFiles();
@@ -347,28 +473,30 @@ app.UseCors("ReactPolicy");
 
 
 // ============================================================
-// Authentication
+// AUTHENTICATION
 // ============================================================
 
 app.UseAuthentication();
 
 
 // ============================================================
-// Authorization
+// AUTHORIZATION
 // ============================================================
 
 app.UseAuthorization();
 
 
 // ============================================================
-// Controllers
+// CONTROLLERS
 // ============================================================
 
 app.MapControllers();
 
 
 // ============================================================
-// Run
+// RUN
 // ============================================================
 
 app.Run();
+
+

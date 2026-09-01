@@ -119,7 +119,7 @@ export default function ApplicationForm({
   async function handleResumeUpload(event) {
     const file = event.target.files?.[0];
 
-    // Allow selecting same file again
+    // Allow selecting the same file again
     event.target.value = "";
 
     if (!file) {
@@ -127,24 +127,29 @@ export default function ApplicationForm({
     }
 
     setResumeError("");
+    setSubmissionError("");
 
-    // ------------------------------------------
-    // File type validation
-    // ------------------------------------------
+    // ========================================================
+    // FILE TYPE VALIDATION
+    // ========================================================
 
-    const allowedExtensions = [".pdf", ".docx"];
+    const allowedExtensions = [".pdf", ".doc", ".docx", ".word"];
 
-    const extension = "." + file.name.split(".").pop().toLowerCase();
+    const fileName = file.name || "";
+
+    const extension = fileName.includes(".")
+      ? "." + fileName.split(".").pop().toLowerCase()
+      : "";
 
     if (!allowedExtensions.includes(extension)) {
-      setResumeError("Only PDF and DOCX files are allowed.");
+      setResumeError("Only PDF, DOC, DOCX, and WORD files are allowed.");
 
       return;
     }
 
-    // ------------------------------------------
-    // File size validation
-    // ------------------------------------------
+    // ========================================================
+    // FILE SIZE VALIDATION
+    // ========================================================
 
     const maxSize = 5 * 1024 * 1024;
 
@@ -154,16 +159,28 @@ export default function ApplicationForm({
       return;
     }
 
+    // ========================================================
+    // UPLOAD
+    // ========================================================
+
     try {
       setResumeUploading(true);
 
       const uploadedResume = await candidateApi.uploadResume(file);
 
-      setResume(uploadedResume || null);
+      if (!uploadedResume?.id) {
+        throw new Error(
+          "Resume upload completed but no resume ID was returned.",
+        );
+      }
+
+      setResume(uploadedResume);
 
       setResumeError("");
     } catch (error) {
       console.error("Resume upload failed:", error);
+
+      setResume(null);
 
       setResumeError(error?.message || "Unable to upload resume.");
     } finally {
@@ -219,7 +236,8 @@ export default function ApplicationForm({
         experienceValue < 0 ||
         experienceValue > 50
       ) {
-        newErrors.experience = "Experience must be a whole number from 0 to 50.";
+        newErrors.experience =
+          "Experience must be a whole number from 0 to 50.";
       }
     }
 
@@ -288,6 +306,7 @@ export default function ApplicationForm({
       });
     } catch (error) {
       console.error("Application submission failed:", error);
+
       setSubmissionError(
         error?.message || "Unable to submit application. Please try again.",
       );
@@ -626,7 +645,7 @@ export default function ApplicationForm({
             </section>
 
             {/* ==================================================
-                Resume Upload
+                  Resume Upload
             ================================================== */}
 
             <section className="candidate-application-section">
@@ -668,7 +687,7 @@ export default function ApplicationForm({
                   <input
                     id="candidate-application-resume"
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.doc,.docx,.word"
                     hidden
                     onChange={handleResumeUpload}
                     disabled={submitting || resumeUploading}
@@ -700,7 +719,7 @@ export default function ApplicationForm({
                 )}
 
                 <small className="candidate-application-field-hint">
-                  Accepted formats: PDF, DOC, DOCX. Maximum size: 5 MB.
+                  Accepted formats: PDF, DOC, DOCX, WORD. Maximum size: 5 MB.
                 </small>
               </div>
             </section>

@@ -1,6 +1,5 @@
 ﻿using Backend.Models;
 
-
 namespace Backend.Interfaces.Repositories;
 
 public interface IInterviewRepository
@@ -41,11 +40,29 @@ public interface IInterviewRepository
         Guid candidateId,
         CancellationToken cancellationToken);
 
+    Task<bool> ExistsForCompanyAsync(
+        Guid interviewId,
+        Guid companyId,
+        CancellationToken cancellationToken);
+
+    Task<bool> ExistsForCandidateAsync(
+        Guid interviewId,
+        Guid candidateId,
+        CancellationToken cancellationToken);
+
     // ==========================================
     // Update
     // ==========================================
 
-    void Update(Interview interview);
+    void Update(
+        Interview interview);
+
+    // ==========================================
+    // Delete
+    // ==========================================
+
+    void Delete(
+        Interview interview);
 
     // ==========================================
     // Save Changes

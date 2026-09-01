@@ -1,0 +1,58 @@
+.interview-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.interview-status-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ==========================================
+   SCHEDULED
+========================================== */
+
+.interview-status-badge.scheduled {
+  background: #f2f7ff;
+  border-color: #d8e7ff;
+  color: #2457a6;
+}
+
+/* ==========================================
+   COMPLETED
+========================================== */
+
+.interview-status-badge.completed {
+  background: #f0f8f2;
+  border-color: #d4ead8;
+  color: #28733c;
+}
+
+/* ==========================================
+   CANCELLED
+========================================== */
+
+.interview-status-badge.cancelled {
+  background: #fff4f3;
+  border-color: #f3d2cf;
+  color: #b42318;
+}
+
+/* ==========================================
+   RESCHEDULED
+========================================== */
+
+.interview-status-badge.rescheduled {
+  background: #fff8ed;
+  border-color: #f1dfbd;
+  color: #8a5a00;
+}

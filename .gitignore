@@ -56,3 +56,6 @@ Thumbs.db
 # Runtime uploaded files
 Backend/Backend/wwwroot/profile-images/*
 Backend/Backend/wwwroot/resumes/*
+
+# Environment / secrets
+Backend/Backend/appsettings.json

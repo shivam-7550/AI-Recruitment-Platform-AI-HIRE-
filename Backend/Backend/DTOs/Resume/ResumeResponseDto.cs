@@ -12,6 +12,5 @@ public sealed class ResumeResponseDto
 
     public DateTime UploadedAt { get; set; }
 
-    // General resume ATS score
     public double ATSScore { get; set; }
 }

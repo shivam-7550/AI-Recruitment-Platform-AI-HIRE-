@@ -86,15 +86,26 @@ export default function CandidateResume() {
       return;
     }
 
-    const allowedExtensions = [".pdf", ".docx"];
+    // ========================================================
+    // FILE TYPE VALIDATION
+    // Allowed:
+    // PDF, DOC, DOCX and WORD
+    // ========================================================
+
+    const allowedExtensions = [".pdf", ".doc", ".docx", ".word"];
 
     const extension = "." + selectedFile.name.split(".").pop().toLowerCase();
 
     if (!allowedExtensions.includes(extension)) {
-      setError("Please upload a PDF or DOCX file.");
+      setError("Please upload a PDF, DOC, DOCX, or WORD file.");
+
       setFile(null);
       return;
     }
+
+    // ========================================================
+    // FILE SIZE VALIDATION
+    // ========================================================
 
     if (selectedFile.size > 5 * 1024 * 1024) {
       setError("Resume size must be less than 5 MB.");
@@ -128,7 +139,7 @@ export default function CandidateResume() {
       setMessage("Resume uploaded successfully.");
 
       /*
-       * After successful upload, start AI analysis.
+       * After successful upload, calculate deterministic ATS score.
        */
       if (uploadedResume?.id) {
         await analyzeResume(uploadedResume.id);
@@ -151,25 +162,21 @@ export default function CandidateResume() {
       setError("");
       setMessage("");
 
-      /*
-       * Backend should call your AI service here.
-       *
-       * Example:
-       * candidateApi.analyzeResume(resumeId)
-       */
-      const result = await candidateApi.analyzeResume(resumeId);
+      // Candidate-side ATS is deterministic. AI is intentionally
+      // restricted to the Company portal.
+      const result = await candidateApi.resume();
 
       setAtsResult({
         atsScore: Number(result?.atsScore || 0),
-        matchedSkills: result?.matchedSkills || [],
-        missingSkills: result?.missingSkills || [],
-        strengths: result?.strengths || [],
-        suggestions: result?.suggestions || [],
+        matchedSkills: [],
+        missingSkills: [],
+        strengths: [],
+        suggestions: [],
       });
 
-      setMessage("AI resume analysis completed.");
+      setMessage("ATS keyword analysis completed.");
     } catch (err) {
-      setError(err?.message || "Unable to analyze resume using AI.");
+      setError(err?.message || "Unable to calculate ATS score.");
     } finally {
       setAnalyzing(false);
     }
@@ -192,7 +199,7 @@ export default function CandidateResume() {
       <main className="candidate-page">
         <CandidateHeader
           title="Resume"
-          subtitle="Upload your resume and get an AI-powered ATS analysis."
+          subtitle="Upload your resume and get a keyword-based ATS analysis."
         />
 
         <div className="candidate-resume-content">
@@ -203,18 +210,18 @@ export default function CandidateResume() {
           <section className="candidate-resume-intro">
             <div>
               <span className="candidate-resume-eyebrow">
-                AI Resume Analyzer
+                Resume ATS Analyzer
               </span>
 
               <h2>Build a resume that gets noticed.</h2>
 
               <p>
-                Upload your latest resume and let AI analyze its ATS
-                compatibility, skills, strengths and improvement areas.
+                Upload your latest resume and calculate its ATS compatibility,
+                skills, strengths and improvement areas.
               </p>
             </div>
 
-            <div className="candidate-resume-ai-icon">
+            <div className="candidate-resume-ats-icon">
               <Sparkles />
             </div>
           </section>
@@ -245,14 +252,15 @@ export default function CandidateResume() {
             <div className="candidate-resume-section-heading">
               <div>
                 <h3>Upload Resume</h3>
-                <p>PDF or DOCX files up to 5 MB.</p>
+
+                <p>PDF, DOC, DOCX or WORD files up to 5 MB.</p>
               </div>
             </div>
 
             <label className="candidate-resume-dropzone">
               <input
                 type="file"
-                accept=".pdf,.docx"
+                accept=".pdf,.doc,.docx,.word,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 onChange={handleFileChange}
               />
 
@@ -265,6 +273,8 @@ export default function CandidateResume() {
               </strong>
 
               <span>Drag and drop or browse your computer</span>
+
+              <small>Accepted formats: PDF, DOC, DOCX and WORD</small>
             </label>
 
             {file && (
@@ -318,12 +328,12 @@ export default function CandidateResume() {
                 {analyzing ? (
                   <>
                     <Loader2 className="candidate-resume-spin" />
-                    AI Analyzing...
+                    Calculating ATS...
                   </>
                 ) : (
                   <>
                     <Sparkles />
-                    Analyze with AI
+                    Calculate ATS
                   </>
                 )}
               </button>
@@ -338,13 +348,13 @@ export default function CandidateResume() {
             <section className="candidate-resume-analysis">
               <div className="candidate-resume-analysis-heading">
                 <div>
-                  <span className="candidate-resume-eyebrow">AI Analysis</span>
+                  <span className="candidate-resume-eyebrow">ATS Analysis</span>
 
                   <h2>Your ATS Resume Score</h2>
 
                   <p>
-                    AI analyzed your resume for ATS compatibility, skills and
-                    overall recruitment readiness.
+                    ATS keyword analysis checks your resume skills and overall
+                    recruitment readiness.
                   </p>
                 </div>
 
@@ -376,7 +386,7 @@ export default function CandidateResume() {
                   </h3>
 
                   <p>
-                    Your resume has been evaluated using AI-based resume
+                    Your resume has been evaluated using keyword-based ATS
                     analysis.
                   </p>
                 </div>
@@ -421,7 +431,7 @@ export default function CandidateResume() {
               ====================================== */}
 
               <div className="candidate-resume-analysis-card">
-                <h3>AI Detected Strengths</h3>
+                <h3>Detected Skills</h3>
 
                 {atsResult.strengths?.length > 0 ? (
                   <ul className="candidate-resume-list">
@@ -433,7 +443,7 @@ export default function CandidateResume() {
                     ))}
                   </ul>
                 ) : (
-                  <p>AI has not identified specific strengths yet.</p>
+                  <p>No detected skills available yet.</p>
                 )}
               </div>
 
@@ -444,7 +454,8 @@ export default function CandidateResume() {
               <div className="candidate-resume-analysis-card suggestions">
                 <div className="candidate-resume-suggestion-title">
                   <Sparkles />
-                  <h3>AI Improvement Suggestions</h3>
+
+                  <h3>ATS Information</h3>
                 </div>
 
                 {atsResult.suggestions?.length > 0 ? (
@@ -460,7 +471,10 @@ export default function CandidateResume() {
                     ))}
                   </ul>
                 ) : (
-                  <p>No improvement suggestions available.</p>
+                  <p>
+                    ATS score is calculated using deterministic keyword
+                    matching.
+                  </p>
                 )}
               </div>
 
@@ -473,7 +487,7 @@ export default function CandidateResume() {
                 disabled={analyzing}
               >
                 <RefreshCw />
-                Re-analyze Resume
+                Recalculate ATS
               </button>
             </section>
           )}
@@ -489,7 +503,8 @@ export default function CandidateResume() {
               <h3>No resume uploaded</h3>
 
               <p>
-                Upload your resume above to receive your AI-powered ATS score.
+                Upload your resume above to receive your keyword-based ATS
+                score.
               </p>
             </div>
           )}

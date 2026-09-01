@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   Bookmark,
   BriefcaseBusiness,
+  CalendarDays,
   FileText,
   LogOut,
   MessageSquare,
@@ -28,6 +29,11 @@ const NAVIGATION_ITEMS = [
     label: "My Applications",
     path: "/user/applications",
     icon: FileText,
+  },
+  {
+    label: "Interviews",
+    path: "/user/interviews",
+    icon: CalendarDays,
   },
   {
     label: "Resume",
@@ -73,7 +79,8 @@ export default function CandidateSidebar() {
     <aside className="candidate-sidebar">
       {/* ================================
           LOGO
-          ================================= */}
+      ================================= */}
+
       <div className="candidate-sidebar-logo">
         <NavLink to="/user/dashboard">
           <strong>AI-HIRE</strong>
@@ -82,7 +89,8 @@ export default function CandidateSidebar() {
 
       {/* ================================
           NAVIGATION
-          ================================= */}
+      ================================= */}
+
       <nav className="candidate-sidebar-nav">
         {NAVIGATION_ITEMS.map((item) => {
           const Icon = item.icon;
@@ -108,7 +116,8 @@ export default function CandidateSidebar() {
 
       {/* ================================
           LOGOUT
-          ================================= */}
+      ================================= */}
+
       <div className="candidate-sidebar-bottom">
         <button
           type="button"

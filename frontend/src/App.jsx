@@ -39,10 +39,20 @@ import CandidateProfile from "./pages/Candidates/CandidateProfile";
 import CandidateBrowseJobs from "./pages/Candidates/CandidateBrowseJobs";
 
 // ==========================================
+// Candidate Interviews
+// ==========================================
+import CandidateInterviews from "./pages/Candidates/CandidateInterviews";
+
+// ==========================================
 // Company Pages
 // ==========================================
 import CompanyPostedJobs from "./pages/Companies/CompanyPostedJobs";
 import CompanyApplication from "./pages/Companies/CompanyApplication";
+
+// ==========================================
+// Company Interviews
+// ==========================================
+import CompanyInterviews from "./pages/Companies/CompanyInterviews";
 
 // ==========================================
 // Admin Pages
@@ -102,28 +112,58 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="User" />}>
-        {/* Dashboard */}
+        {/* -----------------------------------------
+            Dashboard
+        ----------------------------------------- */}
+
         <Route path="/user/dashboard" element={<CandidateDashboard />} />
 
-        {/* Browse Jobs */}
+        {/* -----------------------------------------
+            Browse Jobs
+        ----------------------------------------- */}
+
         <Route path="/user/browse-jobs" element={<CandidateBrowseJobs />} />
 
-        {/* Applications */}
+        {/* -----------------------------------------
+            Applications
+        ----------------------------------------- */}
+
         <Route path="/user/applications" element={<CandidateApplications />} />
 
-        {/* Resume */}
+        {/* -----------------------------------------
+            Interviews
+        ----------------------------------------- */}
+
+        <Route path="/user/interviews" element={<CandidateInterviews />} />
+
+        {/* -----------------------------------------
+            Resume
+        ----------------------------------------- */}
+
         <Route path="/user/resume" element={<CandidateResume />} />
 
-        {/* Saved Jobs */}
+        {/* -----------------------------------------
+            Saved Jobs
+        ----------------------------------------- */}
+
         <Route path="/user/saved-jobs" element={<CandidateSavedJobs />} />
 
-        {/* Messages */}
+        {/* -----------------------------------------
+            Messages
+        ----------------------------------------- */}
+
         <Route path="/user/messages" element={<CandidateMessages />} />
 
-        {/* Profile */}
+        {/* -----------------------------------------
+            Profile
+        ----------------------------------------- */}
+
         <Route path="/user/profile" element={<CandidateProfile />} />
 
-        {/* Settings */}
+        {/* -----------------------------------------
+            Settings
+        ----------------------------------------- */}
+
         <Route path="/user/settings" element={<CandidateSettings />} />
       </Route>
 
@@ -132,43 +172,82 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="Company" />}>
-        {/* Dashboard */}
+        {/* -----------------------------------------
+            Dashboard
+        ----------------------------------------- */}
+
         <Route path="/company/dashboard" element={<CompanyDashboard />} />
 
-        {/* Profile */}
+        {/* -----------------------------------------
+            Profile
+        ----------------------------------------- */}
+
         <Route path="/company/profile" element={<CompanyDashboard />} />
 
-        {/* Posted Jobs */}
+        {/* -----------------------------------------
+            Posted Jobs
+        ----------------------------------------- */}
+
         <Route path="/company/posted-jobs" element={<CompanyPostedJobs />} />
 
-        {/* Create Job */}
+        {/* -----------------------------------------
+            Create Job
+        ----------------------------------------- */}
+
         <Route path="/company/jobs/new" element={<CompanyDashboard />} />
 
-        {/* Job Details */}
+        {/* -----------------------------------------
+            Job Details
+        ----------------------------------------- */}
+
         <Route path="/company/jobs/:id" element={<CompanyDashboard />} />
 
-        {/* Edit Job */}
+        {/* -----------------------------------------
+            Edit Job
+        ----------------------------------------- */}
+
         <Route path="/company/jobs/:id/edit" element={<CompanyDashboard />} />
 
-        {/* Candidates */}
+        {/* -----------------------------------------
+            Candidates
+        ----------------------------------------- */}
+
         <Route path="/company/candidates" element={<CompanyDashboard />} />
 
-        {/* Applications */}
+        {/* -----------------------------------------
+            Applications
+        ----------------------------------------- */}
+
         <Route path="/company/applications" element={<CompanyApplication />} />
 
-        {/* Interviews */}
-        <Route path="/company/interviews" element={<CompanyDashboard />} />
+        {/* -----------------------------------------
+            Interviews
+        ----------------------------------------- */}
 
-        {/* Messages */}
+        <Route path="/company/interviews" element={<CompanyInterviews />} />
+
+        {/* -----------------------------------------
+            Messages
+        ----------------------------------------- */}
+
         <Route path="/company/messages" element={<CompanyDashboard />} />
 
-        {/* Analytics */}
+        {/* -----------------------------------------
+            Analytics
+        ----------------------------------------- */}
+
         <Route path="/company/analytics" element={<CompanyDashboard />} />
 
-        {/* Team */}
+        {/* -----------------------------------------
+            Team
+        ----------------------------------------- */}
+
         <Route path="/company/team" element={<CompanyDashboard />} />
 
-        {/* Settings */}
+        {/* -----------------------------------------
+            Settings
+        ----------------------------------------- */}
+
         <Route path="/company/settings" element={<CompanyDashboard />} />
       </Route>
 
@@ -189,7 +268,15 @@ function App() {
 
         <Route path="/admin/jobs" element={<AdminJobs />} />
 
+        {/* -----------------------------------------
+            Admin Companies
+        ----------------------------------------- */}
+
         <Route path="/admin/companies" element={<AdminCompanies />} />
+
+        {/* -----------------------------------------
+            Admin Users
+        ----------------------------------------- */}
 
         <Route path="/admin/users" element={<AdminUsers />} />
 

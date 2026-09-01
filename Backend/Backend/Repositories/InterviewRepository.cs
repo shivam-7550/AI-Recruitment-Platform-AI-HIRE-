@@ -10,7 +10,8 @@ public class InterviewRepository : IInterviewRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public InterviewRepository(ApplicationDbContext context)
+    public InterviewRepository(
+        ApplicationDbContext context)
     {
         _context = context;
     }
@@ -32,28 +33,14 @@ public class InterviewRepository : IInterviewRepository
     // Get By Id
     // ==========================================
 
-    //public async Task<Interview?> GetByIdAsync(
-    //    Guid id,
-    //    CancellationToken cancellationToken)
-    //{
-    //    return await _context.Interviews
-    //        .Include(i => i.Application)
-    //        .FirstOrDefaultAsync(
-    //            i => i.Id == id,
-    //            cancellationToken);
-    //
-    //}
-
-
-    //Updated
-
     public async Task<Interview?> GetByIdAsync(
-    Guid id,
-    CancellationToken cancellationToken)
+        Guid id,
+        CancellationToken cancellationToken)
     {
         return await _context.Interviews
             .Include(i => i.Application)
                 .ThenInclude(a => a.Job)
+                    .ThenInclude(j => j.Company)
             .FirstOrDefaultAsync(
                 i => i.Id == id,
                 cancellationToken);
@@ -63,70 +50,122 @@ public class InterviewRepository : IInterviewRepository
     // Get By Application Id
     // ==========================================
 
-    //public async Task<Interview?> GetByApplicationIdAsync(
-    //    Guid applicationId,
-    //    CancellationToken cancellationToken)
-    //{
-    //    return await _context.Interviews
-    //        .Include(i => i.Application)
-    //        .Where(i => i.ApplicationId == applicationId)
-    //        .OrderByDescending(i => i.ScheduledAt)
-    //        .FirstOrDefaultAsync(cancellationToken);
-    //}
-
-    //Updated
-
     public async Task<Interview?> GetByApplicationIdAsync(
-    Guid applicationId,
-    CancellationToken cancellationToken)
+        Guid applicationId,
+        CancellationToken cancellationToken)
     {
         return await _context.Interviews
             .Include(i => i.Application)
                 .ThenInclude(a => a.Job)
-            .Where(i => i.ApplicationId == applicationId)
-            .OrderByDescending(i => i.ScheduledAt)
-            .FirstOrDefaultAsync(cancellationToken);
+                    .ThenInclude(j => j.Company)
+            .Where(i =>
+                i.ApplicationId == applicationId)
+            .OrderByDescending(
+                i => i.ScheduledAt)
+            .FirstOrDefaultAsync(
+                cancellationToken);
     }
 
     // ==========================================
     // Get By Company Id
     // ==========================================
 
-    public async Task<IEnumerable<Interview>> GetByCompanyIdAsync(
-        Guid companyId,
-        CancellationToken cancellationToken)
+    public async Task<IEnumerable<Interview>>
+        GetByCompanyIdAsync(
+            Guid companyId,
+            CancellationToken cancellationToken)
     {
         return await _context.Interviews
             .Include(i => i.Application)
-            .ThenInclude(a => a.Job)
-            .Where(i => i.Application.Job.CompanyId == companyId)
-            .OrderBy(i => i.ScheduledAt)
-            .ToListAsync(cancellationToken);
+                .ThenInclude(a => a.Job)
+                    .ThenInclude(j => j.Company)
+            .Where(i =>
+                i.Application.Job.CompanyId ==
+                companyId)
+            .OrderBy(
+                i => i.ScheduledAt)
+            .ToListAsync(
+                cancellationToken);
     }
 
     // ==========================================
     // Get By Candidate Id
     // ==========================================
 
-    public async Task<IEnumerable<Interview>> GetByCandidateIdAsync(
+    public async Task<IEnumerable<Interview>>
+        GetByCandidateIdAsync(
+            Guid candidateId,
+            CancellationToken cancellationToken)
+    {
+        return await _context.Interviews
+            .Include(i => i.Application)
+                .ThenInclude(a => a.Job)
+                    .ThenInclude(j => j.Company)
+            .Where(i =>
+                i.Application.UserId ==
+                candidateId)
+            .OrderByDescending(
+                i => i.ScheduledAt)
+            .ToListAsync(
+                cancellationToken);
+    }
+
+    // ==========================================
+    // Exists For Company
+    // ==========================================
+
+    public async Task<bool> ExistsForCompanyAsync(
+        Guid interviewId,
+        Guid companyId,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Interviews
+            .AnyAsync(
+                i =>
+                    i.Id == interviewId &&
+                    i.Application.Job.CompanyId ==
+                    companyId,
+                cancellationToken);
+    }
+
+    // ==========================================
+    // Exists For Candidate
+    // ==========================================
+
+    public async Task<bool> ExistsForCandidateAsync(
+        Guid interviewId,
         Guid candidateId,
         CancellationToken cancellationToken)
     {
         return await _context.Interviews
-            .Include(i => i.Application)
-            .ThenInclude(a => a.Job)
-            .Where(i => i.Application.UserId == candidateId)
-            .OrderByDescending(i => i.ScheduledAt)
-            .ToListAsync(cancellationToken);
+            .AnyAsync(
+                i =>
+                    i.Id == interviewId &&
+                    i.Application.UserId ==
+                    candidateId,
+                cancellationToken);
     }
 
     // ==========================================
     // Update
     // ==========================================
 
-    public void Update(Interview interview)
+    public void Update(
+        Interview interview)
     {
-        _context.Interviews.Update(interview);
+        _context.Interviews.Update(
+            interview);
+    }
+
+    // ==========================================
+    // Delete
+    // ==========================================
+
+    public void Delete(
+        Interview interview)
+    {
+        _context.Interviews.Remove(
+            interview);
     }
 
     // ==========================================
