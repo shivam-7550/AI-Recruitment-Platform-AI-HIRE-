@@ -1,14 +1,21 @@
-﻿using Backend.Models;
+﻿using Backend.DTOs.Resume;
+using Backend.Models;
 
 namespace Backend.Interfaces.ATS;
 
 public interface IATSService
 {
-    // General resume ATS score
-    double CalculateResumeScore(Resume resume);
+    // Candidate Resume Quality Score
+    double CalculateResumeScore(
+        Resume resume);
 
-    // Resume vs specific job matching score
+    // Basic Skill Match Score
     double CalculateJobMatchScore(
+        Resume resume,
+        Job job);
+
+    // Advanced ATS Breakdown
+    ATSBreakdownDto CalculateAdvancedATS(
         Resume resume,
         Job job);
 }

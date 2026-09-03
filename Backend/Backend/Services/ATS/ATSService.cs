@@ -1,6 +1,7 @@
 using Backend.Interfaces.ATS;
 using Backend.Models;
 using System.Text.RegularExpressions;
+using Backend.DTOs.Resume;
 
 namespace Backend.Services.ATS;
 
@@ -72,169 +73,95 @@ public sealed class ATSService : IATSService
             2);
     }
 
-
-    // =========================================================
-    // SKILL COVERAGE
-    // =========================================================
-
-    private static double SkillCoverage(
-        string? resumeSkills,
-        string? jobSkills)
+    public ATSBreakdownDto CalculateAdvancedATS(
+    Resume resume,
+    Job job)
     {
-        var resume =
-            SplitSkills(resumeSkills);
+        if (resume == null || job == null)
+        {
+            return new ATSBreakdownDto();
+        }
 
-        var required =
-            SplitSkills(jobSkills);
+        var skillsMatch =
+            CalculateSkillsMatch(
+                resume.ExtractedSkills,
+                job.Skills);
 
-        if (required.Count == 0)
-            return 0;
+        var experienceMatch =
+            CalculateExperienceMatch(
+                resume.ExperienceYears,
+                job.Experience);
 
-        var matched =
-            required.Count(
-                resume.Contains);
+        var educationMatch =
+            CalculateEducationMatch(
+                resume.EducationDetails,
+                job.EducationRequirements);
 
-        return (double)matched /
-               required.Count;
+        var projectMatch =
+            CalculateProjectMatch(
+                resume.Projects,
+                job.Description);
+
+        var certificationMatch =
+            CalculateCertificationMatch(
+                resume.Certifications,
+                job.CertificationRequirements);
+
+        var summaryMatch =
+            CalculateSummaryMatch(
+                resume.ProfessionalSummary);
+
+        var structureMatch =
+            CalculateStructureMatch(
+                resume);
+
+        var jobDescriptionMatch =
+            CalculateJobDescriptionMatch(
+                resume.ResumeText,
+                job.Description);
+
+        var finalScore =
+            (
+                skillsMatch * 0.30 +
+                experienceMatch * 0.20 +
+                educationMatch * 0.10 +
+                projectMatch * 0.15 +
+                certificationMatch * 0.10 +
+                summaryMatch * 0.05 +
+                structureMatch * 0.05 +
+                jobDescriptionMatch * 0.05
+            );
+
+        return new ATSBreakdownDto
+        {
+            ATSScore =
+                Math.Round(finalScore, 2),
+
+            SkillsMatch =
+                Math.Round(skillsMatch, 2),
+
+            ExperienceMatch =
+                Math.Round(experienceMatch, 2),
+
+            EducationMatch =
+                Math.Round(educationMatch, 2),
+
+            ProjectMatch =
+                Math.Round(projectMatch, 2),
+
+            CertificationMatch =
+                Math.Round(certificationMatch, 2),
+
+            SummaryMatch =
+                Math.Round(summaryMatch, 2),
+
+            StructureMatch =
+                Math.Round(structureMatch, 2),
+
+            JobDescriptionMatch =
+                Math.Round(jobDescriptionMatch, 2)
+        };
     }
-
-
-    // =========================================================
-    // EXPERIENCE COVERAGE
-    // =========================================================
-
-    private static double ExperienceCoverage(
-        Resume resume,
-        string text,
-        int requiredYears)
-    {
-        if (requiredYears <= 0)
-            return 1;
-
-        var detected =
-            resume.Experience;
-
-        foreach (Match match in Regex.Matches(
-            text,
-            @"\b(\d{1,2})\s*\+?\s*(?:years?|yrs?)\b",
-            RegexOptions.IgnoreCase))
-        {
-            if (int.TryParse(
-                match.Groups[1].Value,
-                out var years))
-            {
-                detected =
-                    Math.Max(
-                        detected,
-                        years);
-            }
-        }
-
-        return Math.Clamp(
-            (double)detected / requiredYears,
-            0,
-            1);
-    }
-
-
-    // =========================================================
-    // FORMATTING QUALITY
-    // =========================================================
-
-    private static double FormattingQuality(
-        string text,
-        Resume resume)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return 0;
-
-        var checks = 0;
-
-        var words =
-            Regex.Matches(
-                text,
-                @"\b\w+\b").Count;
-
-        if (words is >= 150 and <= 1500)
-            checks++;
-
-        if (!string.IsNullOrWhiteSpace(resume.Email) ||
-            Regex.IsMatch(
-                text,
-                @"\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b"))
-        {
-            checks++;
-        }
-
-        if (!string.IsNullOrWhiteSpace(resume.PhoneNumber) ||
-            Regex.IsMatch(
-                text,
-                @"(?:\+?\d[\d\s-]{8,}\d)"))
-        {
-            checks++;
-        }
-
-        if (HasAny(
-            text,
-            "skills",
-            "experience",
-            "education",
-            "projects"))
-        {
-            checks++;
-        }
-
-        if (text.Split(
-                '\n',
-                StringSplitOptions.RemoveEmptyEntries)
-            .Length >= 8)
-        {
-            checks++;
-        }
-
-        return checks / 5d;
-    }
-
-
-    // =========================================================
-    // KEYWORD DENSITY
-    // =========================================================
-
-    private static double KeywordDensity(
-        string text,
-        string? jobSkills)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return 0;
-
-        var keywords =
-            SplitSkills(jobSkills);
-
-        if (keywords.Count == 0)
-            return 0;
-
-        var words =
-            Math.Max(
-                Regex.Matches(
-                    text,
-                    @"\b\w+\b").Count,
-                1);
-
-        var occurrences =
-            keywords.Sum(
-                keyword =>
-                    Regex.Matches(
-                        text,
-                        Regex.Escape(keyword),
-                        RegexOptions.IgnoreCase)
-                    .Count);
-
-        return Math.Clamp(
-            ((double)occurrences / words) / 0.02,
-            0,
-            1);
-    }
-
 
     // =========================================================
     // SPLIT SKILLS
@@ -253,28 +180,17 @@ public sealed class ATSService : IATSService
             .ToHashSet();
     }
 
-
-    // =========================================================
-    // SEARCH TEXT
-    // =========================================================
-
-    private static bool HasAny(
-        string text,
-        params string[] terms)
-    {
-        return terms.Any(
-            term =>
-                text.Contains(
-                    term,
-                    StringComparison.OrdinalIgnoreCase));
-    }
-    private static string NormalizeText(string value)
+    private static string NormalizeText(
+    string value)
     {
         return Regex.Replace(
             value.ToLowerInvariant(),
             @"\s+",
-            " ").Trim();
+            " ")
+            .Trim();
     }
+
+
 
     private static bool ContainsKeyword(
         string normalizedText,
@@ -294,6 +210,197 @@ public sealed class ATSService : IATSService
             RegexOptions.IgnoreCase);
     }
 
+    private static double CalculateSkillsMatch(
+    string? resumeSkills,
+    string? jobSkills)
+    {
+        var resume =
+            SplitSkills(resumeSkills);
 
+        var required =
+            SplitSkills(jobSkills);
+
+        if (required.Count == 0)
+        {
+            return 0;
+        }
+
+        var matched =
+            required.Count(
+                resume.Contains);
+
+        return Math.Round(
+            (double)matched /
+            required.Count * 100,
+            2);
+    }
+
+    private static double CalculateExperienceMatch(
+    int candidateYears,
+    int requiredYears)
+    {
+        if (requiredYears <= 0)
+        {
+            return 100;
+        }
+
+        return Math.Min(
+            100,
+            (double)candidateYears /
+            requiredYears * 100);
+    }
+
+
+    private static double CalculateEducationMatch(
+    string? education,
+    string? requirements)
+    {
+        if (string.IsNullOrWhiteSpace(requirements))
+        {
+            return 100;
+        }
+
+        if (string.IsNullOrWhiteSpace(education))
+        {
+            return 0;
+        }
+
+        return education.Contains(
+            requirements,
+            StringComparison.OrdinalIgnoreCase)
+                ? 100
+                : 50;
+    }
+
+    private static double CalculateProjectMatch(
+    string? projects,
+    string? description)
+    {
+        if (string.IsNullOrWhiteSpace(projects))
+        {
+            return 0;
+        }
+
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return 50;
+        }
+
+        var matches =
+            projects.Split(
+                    ',',
+                    StringSplitOptions.RemoveEmptyEntries)
+                .Count(project =>
+                    description.Contains(
+                        project.Trim(),
+                        StringComparison.OrdinalIgnoreCase));
+
+        return Math.Min(
+            100,
+            matches * 25);
+    }
+
+    private static double CalculateCertificationMatch(
+    string? certifications,
+    string? requirements)
+    {
+        if (string.IsNullOrWhiteSpace(requirements))
+        {
+            return 100;
+        }
+
+        if (string.IsNullOrWhiteSpace(certifications))
+        {
+            return 0;
+        }
+
+        return certifications.Contains(
+            requirements,
+            StringComparison.OrdinalIgnoreCase)
+                ? 100
+                : 0;
+    }
+
+    private static double CalculateSummaryMatch(
+    string? summary)
+    {
+        if (string.IsNullOrWhiteSpace(summary))
+        {
+            return 0;
+        }
+
+        return summary.Length switch
+        {
+            >= 300 => 100,
+            >= 150 => 80,
+            >= 75 => 60,
+            _ => 30
+        };
+    }
+
+    private static double CalculateStructureMatch(
+    Resume resume)
+    {
+        var score = 0;
+
+        if (!string.IsNullOrWhiteSpace(
+                resume.ProfessionalSummary))
+        {
+            score += 20;
+        }
+
+        if (!string.IsNullOrWhiteSpace(
+                resume.EducationDetails))
+        {
+            score += 20;
+        }
+
+        if (!string.IsNullOrWhiteSpace(
+                resume.Projects))
+        {
+            score += 20;
+        }
+
+        if (!string.IsNullOrWhiteSpace(
+                resume.Certifications))
+        {
+            score += 20;
+        }
+
+        if (!string.IsNullOrWhiteSpace(
+                resume.ExtractedSkills))
+        {
+            score += 20;
+        }
+
+        return score;
+    }
+
+    private static double CalculateJobDescriptionMatch(
+    string resumeText,
+    string description)
+    {
+        if (string.IsNullOrWhiteSpace(resumeText) ||
+            string.IsNullOrWhiteSpace(description))
+        {
+            return 0;
+        }
+
+        var words =
+            description.Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
+
+        var matched =
+            words.Count(word =>
+                resumeText.Contains(
+                    word,
+                    StringComparison.OrdinalIgnoreCase));
+
+        return Math.Round(
+            (double)matched /
+            words.Length * 100,
+            2);
+    }
 }
 

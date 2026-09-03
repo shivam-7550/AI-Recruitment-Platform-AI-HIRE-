@@ -180,8 +180,8 @@ public class ApplicationController : ControllerBase
     [Authorize(Roles = "Company")]
     [HttpGet("{applicationId:guid}/resume")]
     public async Task<IActionResult> DownloadResume(
-        Guid applicationId,
-        CancellationToken cancellationToken)
+    Guid applicationId,
+    CancellationToken cancellationToken)
     {
         if (applicationId == Guid.Empty)
         {
@@ -211,34 +211,86 @@ public class ApplicationController : ControllerBase
                     applicationId,
                     cancellationToken);
 
-        if (
-            application?.Resume is null ||
-            string.IsNullOrWhiteSpace(
-                application.Resume.FilePath)
-        )
+        if (application is null)
+        {
+            return NotFound(new
+            {
+                message = "Application not found."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(
+                application.ResumeFilePath))
         {
             return NotFound(new
             {
                 message =
-                    "Resume not found for this application."
+                    "Resume file is not attached to this application."
             });
         }
 
-        var relativePath =
-            application.Resume.FilePath
-                .TrimStart(
+        // =====================================================
+        // RESUME PATH
+        // =====================================================
+
+        var webRootPath =
+            _environment.WebRootPath;
+
+        if (string.IsNullOrWhiteSpace(webRootPath))
+        {
+            webRootPath =
+                Path.Combine(
+                    _environment.ContentRootPath,
+                    "wwwroot");
+        }
+
+        // =====================================================
+        // NORMALIZE STORED PATH
+        // =====================================================
+
+        var storedPath =
+            application.ResumeFilePath
+                .Replace(
                     '/',
-                    '\\');
+                    Path.DirectorySeparatorChar)
+                .Replace(
+                    '\\',
+                    Path.DirectorySeparatorChar)
+                .TrimStart(
+                    Path.DirectorySeparatorChar);
+
+        // =====================================================
+        // SECURITY - PREVENT PATH TRAVERSAL
+        // =====================================================
 
         var fullPath =
-            Path.Combine(
-                _environment.WebRootPath,
-                relativePath);
+            Path.GetFullPath(
+                Path.Combine(
+                    webRootPath,
+                    storedPath));
 
-        if (
-            !System.IO.File.Exists(
-                fullPath)
-        )
+        var fullWebRootPath =
+            Path.GetFullPath(
+                webRootPath)
+                .TrimEnd(
+                    Path.DirectorySeparatorChar)
+            + Path.DirectorySeparatorChar;
+
+        if (!fullPath.StartsWith(
+                fullWebRootPath,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest(new
+            {
+                message = "Invalid resume file path."
+            });
+        }
+
+        // =====================================================
+        // FILE EXISTS
+        // =====================================================
+
+        if (!System.IO.File.Exists(fullPath))
         {
             return NotFound(new
             {
@@ -247,10 +299,16 @@ public class ApplicationController : ControllerBase
             });
         }
 
+        // =====================================================
+        // CONTENT TYPE
+        // =====================================================
+
+        var extension =
+            Path.GetExtension(fullPath)
+                .ToLowerInvariant();
+
         var contentType =
-            Path.GetExtension(
-                fullPath)
-                .ToLowerInvariant() switch
+            extension switch
             {
                 ".pdf" =>
                     "application/pdf",
@@ -261,14 +319,27 @@ public class ApplicationController : ControllerBase
                 ".docx" =>
                     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 
+                ".word" =>
+                    "application/msword",
+
                 _ =>
                     "application/octet-stream"
             };
 
+        // =====================================================
+        // DOWNLOAD FILE
+        // =====================================================
+
+        var downloadFileName =
+            !string.IsNullOrWhiteSpace(
+                application.ResumeFileName)
+                    ? application.ResumeFileName
+                    : Path.GetFileName(fullPath);
+
         return PhysicalFile(
             fullPath,
             contentType,
-            application.Resume.FileName);
+            downloadFileName);
     }
 
     // =========================================================
@@ -385,11 +456,20 @@ public class ApplicationController : ControllerBase
                 });
             }
 
-            if (
-                application.Resume is null ||
-                string.IsNullOrWhiteSpace(
-                    application.Resume.ResumeText)
-            )
+            //if (
+            //    application.Resume is null ||
+            //    string.IsNullOrWhiteSpace(
+            //        application.ResumeText)
+            //)
+            //{
+            //    return BadRequest(new
+            //    {
+            //        message =
+            //            "Candidate resume text is not available for AI analysis."
+            //    });
+            //}
+            if (string.IsNullOrWhiteSpace(
+                application.ResumeText))
             {
                 return BadRequest(new
                 {
@@ -413,8 +493,8 @@ public class ApplicationController : ControllerBase
             var result =
                 await _resumeAIService
                     .AnalyzeCandidateForCompanyAsync(
-                        application.Resume.ResumeText,
-                        application.Resume.ExtractedSkills
+                        application.ResumeText,
+                        application.ResumeExtractedSkills
                             ?? application.Skills,
                         job.Title,
                         job.Description,

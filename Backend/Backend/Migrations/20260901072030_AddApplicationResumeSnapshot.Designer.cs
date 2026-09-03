@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260901072030_AddApplicationResumeSnapshot")]
+    partial class AddApplicationResumeSnapshot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,11 +163,6 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CertificationRequirements")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<Guid>("CompanyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -175,11 +173,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(3000)
                         .HasColumnType("nvarchar(3000)");
-
-                    b.Property<string>("EducationRequirements")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("EmploymentType")
                         .IsRequired()
@@ -199,14 +192,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("PreferredSkills")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("RequiresPortfolio")
-                        .HasColumnType("bit");
 
                     b.Property<decimal>("Salary")
                         .HasPrecision(18, 2)
@@ -247,9 +232,6 @@ namespace Backend.Migrations
                     b.Property<DateTime>("AppliedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("CertificationMatch")
-                        .HasColumnType("float");
-
                     b.Property<string>("CollegeName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -265,9 +247,6 @@ namespace Backend.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<double>("EducationMatch")
-                        .HasColumnType("float");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -276,12 +255,6 @@ namespace Backend.Migrations
                     b.Property<int>("Experience")
                         .HasColumnType("int");
 
-                    b.Property<double>("ExperienceMatch")
-                        .HasColumnType("float");
-
-                    b.Property<double>("JobDescriptionMatch")
-                        .HasColumnType("float");
-
                     b.Property<Guid>("JobId")
                         .HasColumnType("uniqueidentifier");
 
@@ -289,9 +262,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<double>("ProjectMatch")
-                        .HasColumnType("float");
 
                     b.Property<string>("Qualification")
                         .IsRequired()
@@ -321,19 +291,10 @@ namespace Backend.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<double>("SkillsMatch")
-                        .HasColumnType("float");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<double>("StructureMatch")
-                        .HasColumnType("float");
-
-                    b.Property<double>("SummaryMatch")
-                        .HasColumnType("float");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -448,15 +409,23 @@ namespace Backend.Migrations
                     b.Property<double>("ATSScore")
                         .HasColumnType("float");
 
-                    b.Property<string>("Certifications")
+                    b.Property<string>("CandidateName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EducationDetails")
+                    b.Property<string>("CurrentDesignation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ExperienceYears")
+                    b.Property<string>("Education")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Experience")
                         .HasColumnType("int");
 
                     b.Property<string>("ExtractedSkills")
@@ -471,15 +440,15 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProfessionalSummary")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Projects")
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResumeText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Summary")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

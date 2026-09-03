@@ -11,6 +11,8 @@ public sealed class ApplyJobDto
     [Required]
     public Guid JobId { get; set; }
 
+    public Guid ResumeId { get; set; }
+
     // ==========================================
     // Candidate Information
     // ==========================================

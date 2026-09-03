@@ -29,6 +29,15 @@ public class JobApplication
 
     public Resume? Resume { get; set; }
 
+    public string? ResumeFileName { get; set; }
+
+    public string? ResumeFilePath { get; set; }
+
+    public string? ResumeText { get; set; }
+
+    public string? ResumeExtractedSkills { get; set; }
+    public DateTime? ResumeUploadedAt { get; set; }
+
 
     // =====================================================
     // Application Form Details
@@ -92,6 +101,22 @@ public class JobApplication
 
 
     public double ATSScore { get; set; }
+
+    public double SkillsMatch { get; set; }
+
+    public double ExperienceMatch { get; set; }
+
+    public double EducationMatch { get; set; }
+
+    public double ProjectMatch { get; set; }
+
+    public double CertificationMatch { get; set; }
+
+    public double SummaryMatch { get; set; }
+
+    public double StructureMatch { get; set; }
+
+    public double JobDescriptionMatch { get; set; }
 
 
     public DateTime AppliedAt { get; set; }

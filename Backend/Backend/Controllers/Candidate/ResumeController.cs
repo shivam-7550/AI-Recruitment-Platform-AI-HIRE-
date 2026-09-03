@@ -177,6 +177,8 @@
 //}
 
 
+
+
 using Backend.DTOs.Resume;
 using Backend.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -193,6 +195,10 @@ public sealed class ResumeController : ControllerBase
     private readonly IResumeService _resumeService;
     private readonly IResumeAIService _resumeAIService;
 
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+
     public ResumeController(
         IResumeService resumeService,
         IResumeAIService resumeAIService)
@@ -204,25 +210,69 @@ public sealed class ResumeController : ControllerBase
     // =====================================================
     // AI TEST
     // =====================================================
+    // Temporary protected endpoint for testing Gemini.
+    // This endpoint should NOT be anonymous.
+    // =====================================================
 
     [HttpGet("test-ai")]
-    [AllowAnonymous]
-    public async Task<IActionResult> TestAI()
+    public async Task<IActionResult> TestAI(
+        CancellationToken cancellationToken)
     {
-        var result =
-            await _resumeAIService
-                .AnalyzeResumeAsync(
-                    """
-                    I have 3 years of experience in ASP.NET Core,
-                    SQL Server, C#, REST APIs and Entity Framework.
-                    """,
-                    "ASP.NET Core,C#,SQL Server,Docker,Azure");
+        try
+        {
+            var result =
+                await _resumeAIService
+                    .AnalyzeResumeAsync(
+                        """
+                        I have 3 years of experience in ASP.NET Core,
+                        SQL Server, C#, REST APIs and Entity Framework.
+                        I have worked on backend API development
+                        and database-driven applications.
+                        """,
+                        "ASP.NET Core,C#,SQL Server,REST API,Entity Framework",
+                        cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(
+                StatusCodes.Status499ClientClosedRequest,
+                new
+                {
+                    message = "The AI request was cancelled."
+                });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(
+                StatusCodes.Status502BadGateway,
+                new
+                {
+                    message = ex.Message
+                });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    message = "An error occurred while testing the AI service.",
+                    detail = ex.Message
+                });
+        }
     }
 
     // =====================================================
-    // Upload Resume
+    // UPLOAD RESUME
     // =====================================================
 
     [HttpPost("upload")]
@@ -231,11 +281,15 @@ public sealed class ResumeController : ControllerBase
         [FromForm] UploadResumeDto dto,
         CancellationToken cancellationToken)
     {
-        var userId =
-            GetUserId();
+        var userId = GetUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Unauthorized(new
+            {
+                message = "User authentication is required."
+            });
+        }
 
         try
         {
@@ -250,45 +304,98 @@ public sealed class ResumeController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(
+                StatusCodes.Status499ClientClosedRequest,
                 new
                 {
-                    message = ex.Message
+                    message = "Resume upload was cancelled."
+                });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    message = "An error occurred while uploading the resume.",
+                    detail = ex.Message
                 });
         }
     }
 
     // =====================================================
-    // Get Resume
+    // GET CURRENT USER RESUME
     // =====================================================
 
     [HttpGet]
     public async Task<IActionResult> GetResume(
         CancellationToken cancellationToken)
     {
-        var userId =
-            GetUserId();
+        var userId = GetUserId();
 
         if (userId == null)
-            return Unauthorized();
-
-        var result =
-            await _resumeService
-                .GetResumeAsync(
-                    userId.Value,
-                    cancellationToken);
-
-        if (result == null)
         {
-            return NotFound(
-                "Resume not found.");
+            return Unauthorized(new
+            {
+                message = "User authentication is required."
+            });
         }
 
-        return Ok(result);
+        try
+        {
+            var result =
+                await _resumeService
+                    .GetResumeAsync(
+                        userId.Value,
+                        cancellationToken);
+
+            if (result == null)
+            {
+                return NotFound(new
+                {
+                    message = "Resume not found."
+                });
+            }
+
+            return Ok(result);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(
+                StatusCodes.Status499ClientClosedRequest,
+                new
+                {
+                    message = "Request was cancelled."
+                });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    message = "An error occurred while retrieving the resume.",
+                    detail = ex.Message
+                });
+        }
     }
 
     // =====================================================
-    // Analyze Resume
+    // ANALYZE CURRENT USER RESUME
     // =====================================================
 
     [HttpGet("{resumeId:guid}/analysis")]
@@ -296,11 +403,15 @@ public sealed class ResumeController : ControllerBase
         Guid resumeId,
         CancellationToken cancellationToken)
     {
-        var userId =
-            GetUserId();
+        var userId = GetUserId();
 
         if (userId == null)
-            return Unauthorized();
+        {
+            return Unauthorized(new
+            {
+                message = "User authentication is required."
+            });
+        }
 
         try
         {
@@ -320,44 +431,105 @@ public sealed class ResumeController : ControllerBase
                 message = ex.Message
             });
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(
+                StatusCodes.Status502BadGateway,
+                new
+                {
+                    message = ex.Message
+                });
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(
+                StatusCodes.Status499ClientClosedRequest,
+                new
+                {
+                    message = "Resume analysis was cancelled."
+                });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    message = "An error occurred while analyzing the resume.",
+                    detail = ex.Message
+                });
+        }
     }
 
     // =====================================================
-    // Delete Resume
+    // DELETE RESUME
     // =====================================================
 
     [HttpDelete]
     public async Task<IActionResult> DeleteResume(
         CancellationToken cancellationToken)
     {
-        var userId =
-            GetUserId();
+        var userId = GetUserId();
 
         if (userId == null)
-            return Unauthorized();
-
-        var deleted =
-            await _resumeService
-                .DeleteResumeAsync(
-                    userId.Value,
-                    cancellationToken);
-
-        if (!deleted)
         {
-            return NotFound(
-                "Resume not found.");
+            return Unauthorized(new
+            {
+                message = "User authentication is required."
+            });
         }
 
-        return Ok(
-            new
+        try
+        {
+            var deleted =
+                await _resumeService
+                    .DeleteResumeAsync(
+                        userId.Value,
+                        cancellationToken);
+
+            if (!deleted)
             {
-                message =
-                    "Resume deleted successfully."
+                return NotFound(new
+                {
+                    message = "Resume not found."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Resume deleted successfully."
             });
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(
+                StatusCodes.Status499ClientClosedRequest,
+                new
+                {
+                    message = "Resume deletion was cancelled."
+                });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    message = "An error occurred while deleting the resume.",
+                    detail = ex.Message
+                });
+        }
     }
 
     // =====================================================
-    // Current User ID
+    // CURRENT USER ID
     // =====================================================
 
     private Guid? GetUserId()
@@ -373,3 +545,5 @@ public sealed class ResumeController : ControllerBase
             : null;
     }
 }
+
+

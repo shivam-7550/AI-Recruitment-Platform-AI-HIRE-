@@ -1,6 +1,10 @@
-﻿namespace Backend.Interfaces.Auth
+﻿namespace Backend.Interfaces.Auth;
+
+public interface IPasswordHasher
 {
-    public interface IPasswordHasher
-    {
-    }
+    string HashPassword(string password);
+
+    bool VerifyPassword(
+        string password,
+        string passwordHash);
 }

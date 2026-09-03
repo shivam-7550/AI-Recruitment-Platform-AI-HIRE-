@@ -19,7 +19,7 @@ public sealed class AuthService : IAuthService
     private readonly INotificationService _notificationService;
     private readonly ApplicationDbContext _dbContext;
     private readonly IConfiguration _configuration;
-    private readonly PasswordHasher _passwordHasher;
+    private readonly IPasswordHasher _passwordHasher;
 
 
     public AuthService(
@@ -29,7 +29,7 @@ public sealed class AuthService : IAuthService
         INotificationService notificationService,
         ApplicationDbContext dbContext,
         IConfiguration configuration,
-        PasswordHasher passwordHasher)
+        IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
         _jwtTokenGenerator = jwtTokenGenerator;
@@ -38,7 +38,7 @@ public sealed class AuthService : IAuthService
         _dbContext = dbContext;
         _configuration = configuration;
         _passwordHasher = passwordHasher;
-        _passwordHasher = passwordHasher;
+        
     }
 
 

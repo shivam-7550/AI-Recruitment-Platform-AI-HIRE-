@@ -212,8 +212,8 @@ builder.Services.AddScoped<
     JwtTokenGenerator>();
 
 builder.Services.AddScoped<
+    IPasswordHasher,
     PasswordHasher>();
-
 
 // ------------------------------------------------------------
 // JOB

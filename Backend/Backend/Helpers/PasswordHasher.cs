@@ -1,15 +1,17 @@
-﻿
+﻿using Backend.Interfaces.Auth;
 
 namespace Backend.Helpers;
 
-public sealed class PasswordHasher
+public sealed class PasswordHasher : IPasswordHasher
 {
     public string HashPassword(string password)
     {
         if (string.IsNullOrWhiteSpace(password))
+        {
             throw new ArgumentException(
                 "Password cannot be empty.",
                 nameof(password));
+        }
 
         return BCrypt.Net.BCrypt.HashPassword(password);
     }

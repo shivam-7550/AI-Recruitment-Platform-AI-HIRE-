@@ -30,6 +30,16 @@ public sealed class ResumeRepository : IResumeRepository
                 cancellationToken);
     }
 
+    public async Task<Resume?> GetResumeByIdAsync(
+    Guid resumeId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.Resumes
+            .FirstOrDefaultAsync(
+                x => x.Id == resumeId,
+                cancellationToken);
+    }
+
     // =====================================================
     // Add Resume
     // =====================================================

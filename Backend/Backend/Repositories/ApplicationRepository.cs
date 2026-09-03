@@ -83,7 +83,7 @@ public class ApplicationRepository : IApplicationRepository
     .Include(x => x.Job)
         .ThenInclude(x => x.Company)
 
-    .Include(x => x.Resume)
+    //.Include(x => x.Resume)
 
     .Where(
         x =>

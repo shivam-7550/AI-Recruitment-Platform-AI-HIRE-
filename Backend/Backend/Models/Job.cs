@@ -33,6 +33,19 @@ namespace Backend.Models
         public string Skills { get; set; } = string.Empty;
         // Example: C#, ASP.NET Core, SQL Server, React
 
+        [MaxLength(500)]
+        public string PreferredSkills { get; set; } = string.Empty;
+        //Preferred Skills: Azure, Docker, Kubernetes
+
+        [MaxLength(500)]
+        public string EducationRequirements { get; set; } = string.Empty;
+        //EducationRequirements: B.Tech Computer Science, MCA, BCA
+
+        [MaxLength(500)]
+        public string CertificationRequirements { get; set; } = string.Empty;
+
+        public bool RequiresPortfolio { get; set; }
+
         [Required]
         public int Vacancies { get; set; }
 

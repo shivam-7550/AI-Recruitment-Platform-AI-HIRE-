@@ -1,27 +1,29 @@
 ﻿namespace Backend.DTOs.Resume;
 
-public class ResumeAIAnalysisDto
+public sealed class ResumeAIAnalysisDto
 {
-    // =====================================================
-    // AI Resume Analysis
-    // =====================================================
+    // ==========================================
+    // AI Analysis
+    // ==========================================
 
-    public string Summary { get; set; } =
-        string.Empty;
+    public string Summary { get; set; }
+        = string.Empty;
 
-    public List<string> Strengths { get; set; } =
-        new();
+    public List<string> Strengths { get; set; }
+        = new();
 
-    public List<string> MissingSkills { get; set; } =
-        new();
+    public List<string> MatchedSkills { get; set; }
+        = new();
 
-    public List<string> Suggestions { get; set; } =
-        new();
+    public List<string> MissingSkills { get; set; }
+        = new();
 
+    public List<string> Suggestions { get; set; }
+        = new();
 
-    // =====================================================
-    // ATS SCORE
-    // =====================================================
+    // ==========================================
+    // AI ATS Evaluation
+    // ==========================================
 
     public double ATSScore { get; set; }
 
@@ -33,13 +35,7 @@ public class ResumeAIAnalysisDto
 
     public double ProjectMatch { get; set; }
 
+    public double CertificationMatch { get; set; }
+
     public double JobDescriptionMatch { get; set; }
-
-
-    // =====================================================
-    // MATCHED SKILLS
-    // =====================================================
-
-    public List<string> MatchedSkills { get; set; } =
-        new();
 }

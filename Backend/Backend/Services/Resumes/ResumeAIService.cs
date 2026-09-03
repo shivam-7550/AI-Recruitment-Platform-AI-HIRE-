@@ -5,17 +5,23 @@ using Backend.Interfaces.Services;
 
 namespace Backend.Services.Resumes;
 
-public class ResumeAIService : IResumeAIService
+public sealed class ResumeAIService : IResumeAIService
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
 
-    private const string GeminiUrl =
-        "https://generativelanguage.googleapis.com/v1beta/interactions";
+    // =========================================================
+    // GEMINI INTERACTIONS API
+    // =========================================================
 
-    private const string GeminiModel =
-        "gemini-3.6-flash";
+    private const string GeminiUrl = "https://generativelanguage.googleapis.com/v1beta/interactions";
 
+    private const string ApiRevision = "2026-05-20";
+
+
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
 
     public ResumeAIService(
         IConfiguration configuration,
@@ -25,6 +31,173 @@ public class ResumeAIService : IResumeAIService
         _httpClient = httpClient;
     }
 
+    public async Task<ResumeParsedDataDto> ExtractResumeDataAsync(
+        string resumeText,
+        CancellationToken cancellationToken)
+    {
+        ValidateResumeText(resumeText);
+
+        var apiKey =
+            GetApiKey();
+
+        var prompt = $"""
+    You are an expert resume parsing engine.
+
+    Extract ONLY the information that is explicitly
+    present in the resume.
+
+    ================= RESUME =================
+
+    {resumeText}
+
+    ================= TASK =================
+
+    Extract:
+
+    1. Skills
+    2. Total Experience Years
+    3. Education
+    4. Projects
+    5. Certifications
+    6. Professional Summary
+
+    ================= RULES =================
+
+    - Do not invent information.
+    - Do not assume missing experience.
+    - Do not assume certifications.
+    - Do not create projects.
+    - Use only information present in the resume.
+    - ExperienceYears must be an integer.
+    - If something is missing return an empty list.
+    - ProfessionalSummary should be concise.
+
+    Return ONLY valid JSON matching the schema.
+    """;
+
+        var body = new
+        {
+            model = GetModel(),
+
+            input = prompt,
+
+            store = false,
+
+            response_format =
+                BuildJsonResponseFormat(
+                    BuildResumeExtractionSchema())
+        };
+
+        var data =
+            await SendGeminiRequestAsync<
+                ResumeParsedDataDto>(
+                    apiKey,
+                    body,
+                    cancellationToken);
+
+        NormalizeResumeData(data);
+
+        return data;
+    }
+
+    private static void NormalizeResumeData(
+    ResumeParsedDataDto data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+
+        data.Skills ??=
+            new List<string>();
+
+        data.Education ??=
+            new List<string>();
+
+        data.Projects ??=
+            new List<string>();
+
+        data.Certifications ??=
+            new List<string>();
+
+        data.ProfessionalSummary ??=
+            string.Empty;
+
+        if (data.ExperienceYears < 0)
+        {
+            data.ExperienceYears = 0;
+        }
+    }
+    private static object BuildResumeExtractionSchema()
+    {
+        return new
+        {
+            type = "object",
+
+            properties = new
+            {
+                skills = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                experienceYears = new
+                {
+                    type = "integer"
+                },
+
+                education = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                projects = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                certifications = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                professionalSummary = new
+                {
+                    type = "string"
+                }
+            },
+
+            required = new[]
+            {
+            "skills",
+            "experienceYears",
+            "education",
+            "projects",
+            "certifications",
+            "professionalSummary"
+        }
+        };
+    }
 
     // =========================================================
     // GENERAL RESUME AI ANALYSIS
@@ -32,184 +205,88 @@ public class ResumeAIService : IResumeAIService
 
     public async Task<ResumeAIAnalysisDto> AnalyzeResumeAsync(
         string resumeText,
-        string skills)
+        string skills,
+        CancellationToken cancellationToken = default)
     {
-        var apiKey =
-            GetApiKey();
+        ValidateResumeText(resumeText);
 
-        ValidateResumeText(
-            resumeText);
-
-
-        // =====================================================
-        // PROMPT
-        // =====================================================
+        var apiKey = GetApiKey();
 
         var prompt = $"""
         You are an expert AI recruitment assistant.
 
-        Analyze the following candidate resume carefully.
+        Analyze the candidate resume using ONLY the information
+        provided below.
 
-        =====================================================
-        CANDIDATE RESUME
-        =====================================================
+        ================= CANDIDATE RESUME =================
 
         {resumeText}
 
-        =====================================================
-        DETECTED SKILLS
-        =====================================================
+        ================= DETECTED SKILLS =================
 
         {skills}
 
-        =====================================================
-        TASK
-        =====================================================
-
-        Analyze ONLY the information available in the resume.
+        ================= TASK =================
 
         Provide:
 
-        1. Resume Summary
-        2. Top Strengths
-        3. Missing Skills
-        4. Suggestions for Improvement
+        1. Professional resume summary.
+        2. Candidate strengths.
+        3. Relevant skills that are missing or could improve the profile.
+        4. Practical suggestions for improving the resume.
 
-        =====================================================
-        IMPORTANT RULES
-        =====================================================
+        ================= RULES =================
 
-        - Be specific to this candidate.
-        - Do NOT give generic statements.
-        - Consider education.
-        - Consider work experience.
-        - Consider projects.
-        - Consider technical skills.
-        - Consider soft skills.
-        - Consider certifications.
-        - Consider technologies.
-        - Consider the overall candidate profile.
-        - Do NOT invent experience.
-        - Do NOT invent skills.
-        - Do NOT invent certifications.
-        - Do NOT assume technologies that are not present.
-        - Missing skills should contain skills that would realistically
-          improve the candidate's profile.
-        - Suggestions should be practical and actionable.
+        - Analyze only the supplied information.
+        - Do not invent experience.
+        - Do not invent education.
+        - Do not invent certifications.
+        - Do not invent projects.
+        - Do not invent technologies.
+        - Do not assume a skill exists if it is not present.
+        - Be specific to the candidate.
+        - Avoid generic statements.
+        - Suggestions must be practical and actionable.
 
-        Return ONLY valid JSON matching the requested schema.
+        Return ONLY valid JSON matching the supplied schema.
         """;
-
-
-        // =====================================================
-        // REQUEST BODY
-        // =====================================================
 
         var body = new
         {
-            model = GeminiModel,
+            model = GetModel(),
 
             input = prompt,
 
             store = false,
 
-            response_format = new
-            {
-                type = "text",
-
-                mime_type = "application/json",
-
-                schema = new
-                {
-                    type = "object",
-
-                    properties = new
-                    {
-                        summary = new
-                        {
-                            type = "string",
-
-                            description =
-                                "Concise professional summary of the candidate."
-                        },
-
-                        strengths = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Candidate's strongest skills, experience and qualifications."
-                        },
-
-                        missingSkills = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Relevant skills missing from the candidate profile."
-                        },
-
-                        suggestions = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Practical suggestions for improving the resume."
-                        }
-                    },
-
-                    required = new[]
-                    {
-                        "summary",
-                        "strengths",
-                        "missingSkills",
-                        "suggestions"
-                    }
-                }
-            }
+            response_format = BuildJsonResponseFormat(
+                BuildGeneralAnalysisSchema())
         };
-
 
         return await SendGeminiRequestAsync<ResumeAIAnalysisDto>(
             apiKey,
-            body);
+            body,
+            cancellationToken);
     }
 
 
     // =========================================================
-    // JOB-SPECIFIC ATS ANALYSIS
+    // JOB-SPECIFIC RESUME AI ANALYSIS
     // =========================================================
 
-    public async Task<ResumeAIAnalysisDto>
-        AnalyzeResumeForJobAsync(
-            string resumeText,
-            string skills,
-            string jobTitle,
-            string jobDescription,
-            string jobSkills,
-            int requiredExperience)
+    public async Task<ResumeAIAnalysisDto> AnalyzeResumeForJobAsync(
+        string resumeText,
+        string skills,
+        string jobTitle,
+        string jobDescription,
+        string jobSkills,
+        string preferredSkills,
+        string educationRequirements,
+        string certificationRequirements,
+        int requiredExperience,
+        CancellationToken cancellationToken = default)
     {
-        var apiKey =
-            GetApiKey();
-
-        ValidateResumeText(
-            resumeText);
-
+        ValidateResumeText(resumeText);
 
         if (string.IsNullOrWhiteSpace(jobTitle))
         {
@@ -217,32 +294,28 @@ public class ResumeAIService : IResumeAIService
                 "Job title is required for ATS analysis.");
         }
 
+        if (requiredExperience < 0)
+        {
+            throw new ArgumentException(
+                "Required experience cannot be negative.");
+        }
 
-        // =====================================================
-        // PROMPT
-        // =====================================================
+        var apiKey = GetApiKey();
 
-        var prompt = $"""
+        var prompt = $$"""
         You are an expert AI recruitment and ATS evaluation system.
 
-        Your task is to evaluate ONE candidate resume against
-        ONE SPECIFIC JOB.
+        Evaluate ONE candidate resume against ONE specific job.
 
-        =====================================================
-        CANDIDATE RESUME
-        =====================================================
+        ================= CANDIDATE RESUME =================
 
         {resumeText}
 
-        =====================================================
-        CANDIDATE DETECTED SKILLS
-        =====================================================
+        ================= CANDIDATE DETECTED SKILLS =================
 
         {skills}
 
-        =====================================================
-        JOB INFORMATION
-        =====================================================
+        ================= JOB INFORMATION =================
 
         Job Title:
         {jobTitle}
@@ -253,242 +326,110 @@ public class ResumeAIService : IResumeAIService
         Required Skills:
         {jobSkills}
 
+        Preferred Skills:
+        {preferredSkills}
+
+        Education Requirements:
+        {educationRequirements}
+
+        Certification Requirements:
+        {certificationRequirements}
+
         Job Description:
         {jobDescription}
 
-        =====================================================
-        ATS EVALUATION
-        =====================================================
+        ================= EVALUATION =================
 
         Calculate an ATS score from 0 to 100.
 
-        Evaluate the candidate using:
+        Evaluate:
 
         1. Skills Match
         2. Experience Match
         3. Education Match
-        4. Project Match
-        5. Job Description Match
+        4. Certification Match
+        5. Project Match
+        6. Job Description Match
 
         Also provide:
 
-        - Overall candidate summary
-        - Candidate strengths relevant to THIS JOB
-        - Skills from the job that are present in the resume
-        - Skills required by the job but missing from the resume
+        - Candidate summary for THIS job.
+        - Candidate strengths relevant to THIS job.
+        - Required job skills found in the resume.
+        - Important job skills missing from the resume.
         - Practical suggestions for improving the candidate's
-          chances for THIS JOB
+          match for THIS job.
 
-        =====================================================
-        SCORING GUIDELINES
-        =====================================================
+        ================= SCORING RULES =================
 
         Skills Match:
-        - Required job skills should have significant influence.
-        - Exact and clearly equivalent skills should count.
-        - Unrelated skills should not receive significant credit.
+        - Required skills must have significant influence.
+        - Exact skills should receive credit.
+        - Clearly equivalent technologies may receive reasonable credit.
+        - Unrelated skills should receive little or no credit.
+
+        Preferred Skills:
+        - Matching preferred skills should improve the score.
+        - Missing preferred skills should have less impact than missing required skills.
 
         Experience Match:
-        - Compare candidate experience with required experience.
+        - Compare actual candidate experience with required experience.
         - Relevant experience should receive higher credit.
-        - Do not invent experience.
+        - Never invent experience.
 
         Education Match:
-        - Consider the candidate's actual education.
-        - Do not assume a degree that is not present.
+        - Use only actual education present in the resume.
+        - Do not assume a degree.
+
+        Certification Match:
+        - Compare candidate certifications with job certification requirements.
+        - Relevant certifications should increase the score.
 
         Project Match:
         - Relevant projects should increase the score.
         - Unrelated projects should have limited impact.
 
         Job Description Match:
-        - Compare actual resume content with the job description.
-        - Relevant responsibilities and technologies should increase
-          the score.
+        - Compare actual resume responsibilities and technologies
+          against the supplied job description.
 
-        =====================================================
-        IMPORTANT RULES
-        =====================================================
+        ================= IMPORTANT RULES =================
 
-        - Evaluate the candidate against THIS JOB ONLY.
-        - Do NOT give every resume the same score.
-        - Do NOT invent candidate experience.
-        - Do NOT invent candidate skills.
-        - Do NOT assume a skill exists.
-        - Required skills must have significant influence.
+        - Evaluate THIS candidate against THIS job only.
+        - Do not give every candidate the same score.
+        - Do not invent information.
         - Missing important required skills must reduce the score.
         - Relevant experience should increase the score.
         - Relevant projects should increase the score.
         - Relevant education should influence the score.
         - Relevant job-description keywords should influence the score.
-        - Unrelated skills should not receive significant credit.
-        - Be objective and consistent.
         - ATSScore must be between 0 and 100.
         - SkillsMatch must be between 0 and 100.
         - ExperienceMatch must be between 0 and 100.
         - EducationMatch must be between 0 and 100.
+        - CertificationMatch must be between 0 and 100.
         - ProjectMatch must be between 0 and 100.
         - JobDescriptionMatch must be between 0 and 100.
 
-        Return ONLY valid JSON matching the requested schema.
+        Return ONLY valid JSON matching the supplied schema.
         """;
-
-
-        // =====================================================
-        // REQUEST BODY
-        // =====================================================
 
         var body = new
         {
-            model = GeminiModel,
+            model = GetModel(),
 
             input = prompt,
 
             store = false,
 
-            response_format = new
-            {
-                type = "text",
-
-                mime_type = "application/json",
-
-                schema = new
-                {
-                    type = "object",
-
-                    properties = new
-                    {
-                        atsScore = new
-                        {
-                            type = "number",
-
-                            description =
-                                "Overall ATS score between 0 and 100."
-                        },
-
-                        skillsMatch = new
-                        {
-                            type = "number",
-
-                            description =
-                                "Percentage match between candidate skills and job skills."
-                        },
-
-                        experienceMatch = new
-                        {
-                            type = "number",
-
-                            description =
-                                "Percentage match between candidate experience and required experience."
-                        },
-
-                        educationMatch = new
-                        {
-                            type = "number",
-
-                            description =
-                                "Percentage relevance of candidate education to the job."
-                        },
-
-                        projectMatch = new
-                        {
-                            type = "number",
-
-                            description =
-                                "Percentage relevance of candidate projects to the job."
-                        },
-
-                        jobDescriptionMatch = new
-                        {
-                            type = "number",
-
-                            description =
-                                "Percentage relevance between resume and job description."
-                        },
-
-                        summary = new
-                        {
-                            type = "string",
-
-                            description =
-                                "Candidate summary specifically for this job."
-                        },
-
-                        strengths = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Candidate strengths relevant to this job."
-                        },
-
-                        matchedSkills = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Job skills that are present in the candidate resume."
-                        },
-
-                        missingSkills = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Important job skills missing from the candidate resume."
-                        },
-
-                        suggestions = new
-                        {
-                            type = "array",
-
-                            items = new
-                            {
-                                type = "string"
-                            },
-
-                            description =
-                                "Practical suggestions for improving candidate-job match."
-                        }
-                    },
-
-                    required = new[]
-                    {
-                        "atsScore",
-                        "skillsMatch",
-                        "experienceMatch",
-                        "educationMatch",
-                        "projectMatch",
-                        "jobDescriptionMatch",
-                        "summary",
-                        "strengths",
-                        "matchedSkills",
-                        "missingSkills",
-                        "suggestions"
-                    }
-                }
-            }
+            response_format = BuildJsonResponseFormat(
+                BuildJobAnalysisSchema())
         };
-
 
         return await SendGeminiRequestAsync<ResumeAIAnalysisDto>(
             apiKey,
-            body);
+            body,
+            cancellationToken);
     }
 
 
@@ -503,10 +444,8 @@ public class ResumeAIService : IResumeAIService
             string jobTitle,
             string jobDescription,
             string jobSkills,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
     {
-        var apiKey = GetApiKey();
-
         ValidateResumeText(resumeText);
 
         if (string.IsNullOrWhiteSpace(jobTitle))
@@ -515,101 +454,82 @@ public class ResumeAIService : IResumeAIService
                 "Job title is required for candidate AI analysis.");
         }
 
+        var apiKey = GetApiKey();
+
         var prompt = $"""
         You are an AI recruitment assistant used by a hiring company.
 
-        Analyze ONE candidate for ONE specific job using only the supplied information.
+        Analyze ONE candidate for ONE specific job.
+
         This is an employer-side candidate insight feature.
 
-        IMPORTANT:
-        - Do NOT calculate or invent an ATS score.
+        ================= IMPORTANT =================
+
+        - Do NOT calculate an ATS score.
         - Do NOT replace the deterministic ATS keyword score.
-        - Do NOT invent skills, experience, education, certifications, or projects.
-        - Only identify missing skills when they are relevant to the supplied job.
-        - Keep the recommendation objective and evidence-based.
+        - Do NOT invent skills.
+        - Do NOT invent experience.
+        - Do NOT invent education.
+        - Do NOT invent certifications.
+        - Do NOT invent projects.
+        - Do NOT assume missing information.
+        - Keep the analysis objective and evidence-based.
+        - Missing skills must be relevant to the supplied job.
 
         ================= CANDIDATE RESUME =================
+
         {resumeText}
 
         ================= CANDIDATE DETECTED SKILLS =================
+
         {candidateSkills}
 
         ================= JOB =================
-        Title: {jobTitle}
-        Required Skills: {jobSkills}
-        Job Description: {jobDescription}
+
+        Job Title:
+        {jobTitle}
+
+        Required Skills:
+        {jobSkills}
+
+        Job Description:
+        {jobDescription}
 
         ================= TASK =================
-        Provide:
-        1. A concise candidate summary for this job.
-        2. Candidate strengths relevant to this job.
-        3. Important job skills that appear to be missing from the resume.
-        4. Practical hiring/resume suggestions.
-        5. Specific technical or role-related topics the interviewer should focus on.
 
-        Return ONLY valid JSON matching the requested schema.
+        Provide:
+
+        1. Concise candidate summary for this job.
+        2. Candidate strengths relevant to this job.
+        3. Important job skills missing from the resume.
+        4. Practical suggestions.
+        5. Technical or role-specific topics the interviewer
+           should focus on.
+
+        Do NOT provide an ATS score.
+
+        Return ONLY valid JSON matching the supplied schema.
         """;
 
         var body = new
         {
-            model = GeminiModel,
+            model = GetModel(),
+
             input = prompt,
+
             store = false,
-            response_format = new
-            {
-                type = "text",
-                mime_type = "application/json",
-                schema = new
-                {
-                    type = "object",
-                    properties = new
-                    {
-                        summary = new { type = "string" },
-                        strengths = new
-                        {
-                            type = "array",
-                            items = new { type = "string" }
-                        },
-                        missingSkills = new
-                        {
-                            type = "array",
-                            items = new { type = "string" }
-                        },
-                        suggestions = new
-                        {
-                            type = "array",
-                            items = new { type = "string" }
-                        },
-                        interviewFocus = new
-                        {
-                            type = "array",
-                            items = new { type = "string" }
-                        }
-                    },
-                    required = new[]
-                    {
-                        "summary",
-                        "strengths",
-                        "missingSkills",
-                        "suggestions",
-                        "interviewFocus"
-                    }
-                }
-            }
+
+            response_format = BuildJsonResponseFormat(
+                BuildCompanyAnalysisSchema())
         };
 
-        // The current HttpClient implementation does not need a request-specific
-        // cancellation overload, but honour cancellation before making the call.
-        cancellationToken.ThrowIfCancellationRequested();
+        var analysis =
+            await SendGeminiRequestAsync<CompanyCandidateAIAnalysisDto>(
+                apiKey,
+                body,
+                cancellationToken);
 
-        var analysis = await SendGeminiRequestAsync<CompanyCandidateAIAnalysisDto>(
-            apiKey,
-            body);
-
-        analysis.Strengths ??= new List<string>();
-        analysis.MissingSkills ??= new List<string>();
-        analysis.Suggestions ??= new List<string>();
-        analysis.InterviewFocus ??= new List<string>();
+        NormalizeCompanyAnalysis(analysis);
 
         return analysis;
     }
@@ -619,56 +539,56 @@ public class ResumeAIService : IResumeAIService
     // COMMON GEMINI REQUEST
     // =========================================================
 
-    private async Task<T>
-        SendGeminiRequestAsync<T>(
-            string apiKey,
-            object body)
+    private async Task<T> SendGeminiRequestAsync<T>(
+        string apiKey,
+        object body,
+        CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         using var request =
             new HttpRequestMessage(
                 HttpMethod.Post,
                 GeminiUrl);
 
-
         // =====================================================
-        // API KEY
+        // HEADERS
         // =====================================================
 
         request.Headers.Add(
             "x-goog-api-key",
             apiKey);
 
-
-        // =====================================================
-        // REQUEST BODY
-        // =====================================================
+        request.Headers.Add(
+            "Api-Revision",
+            ApiRevision);
 
         request.Content =
             JsonContent.Create(body);
-
 
         // =====================================================
         // SEND REQUEST
         // =====================================================
 
         using var response =
-            await _httpClient.SendAsync(request);
-
+            await _httpClient.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken);
 
         var result =
-            await response.Content.ReadAsStringAsync();
-
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
 
         // =====================================================
-        // GEMINI ERROR
+        // API ERROR
         // =====================================================
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception(
+            throw new InvalidOperationException(
                 $"Gemini API Error ({(int)response.StatusCode}): {result}");
         }
-
 
         // =====================================================
         // PARSE RESPONSE
@@ -676,36 +596,23 @@ public class ResumeAIService : IResumeAIService
 
         try
         {
-            using var jsonDocument =
+            using var document =
                 JsonDocument.Parse(result);
 
             var root =
-                jsonDocument.RootElement;
-
+                document.RootElement;
 
             var outputText =
                 ExtractOutputText(root);
 
-
             if (string.IsNullOrWhiteSpace(outputText))
             {
-                throw new Exception(
-                    $"Gemini returned an empty response. Raw response: {result}");
+                throw new InvalidOperationException(
+                    "Gemini returned an empty model response.");
             }
 
-
-            // =================================================
-            // CLEAN JSON
-            // =================================================
-
             outputText =
-                CleanJsonResponse(
-                    outputText);
-
-
-            // =================================================
-            // DESERIALIZE
-            // =================================================
+                CleanJsonResponse(outputText);
 
             var data =
                 JsonSerializer.Deserialize<T>(
@@ -715,30 +622,39 @@ public class ResumeAIService : IResumeAIService
                         PropertyNameCaseInsensitive = true
                     });
 
-
             if (data == null)
             {
-                throw new Exception(
-                    $"Unable to deserialize Gemini response. Raw response: {result}");
+                throw new InvalidOperationException(
+                    "Gemini response could not be deserialized.");
             }
 
-
             // =================================================
-            // SPECIAL HANDLING FOR RESUME ANALYSIS
+            // NORMALIZATION
             // =================================================
 
-            if (data is ResumeAIAnalysisDto analysis)
+            if (data is ResumeAIAnalysisDto resumeAnalysis)
             {
-                NormalizeAnalysis(
-                    analysis);
+                NormalizeAnalysis(resumeAnalysis);
             }
 
+            if (data is ResumeParsedDataDto parsedData)
+            {
+                NormalizeResumeData(parsedData);
+            }
+
+            if (data is CompanyCandidateAIAnalysisDto companyAnalysis)
+            {
+                NormalizeCompanyAnalysis(companyAnalysis);
+            }
 
             return data;
+
+
+           
         }
         catch (JsonException ex)
         {
-            throw new Exception(
+            throw new InvalidOperationException(
                 $"Failed to parse Gemini response. Raw response: {result}",
                 ex);
         }
@@ -752,13 +668,8 @@ public class ResumeAIService : IResumeAIService
     private static string ExtractOutputText(
         JsonElement root)
     {
-        var outputText =
-            string.Empty;
-
-
         // =====================================================
-        // OPTION 1
-        // output_text
+        // OPTION 1 - output_text
         // =====================================================
 
         if (root.TryGetProperty(
@@ -768,22 +679,18 @@ public class ResumeAIService : IResumeAIService
             if (outputTextProperty.ValueKind ==
                 JsonValueKind.String)
             {
-                outputText =
-                    outputTextProperty.GetString()
-                    ?? string.Empty;
+                var outputText =
+                    outputTextProperty.GetString();
+
+                if (!string.IsNullOrWhiteSpace(outputText))
+                {
+                    return outputText;
+                }
             }
         }
 
-
-        if (!string.IsNullOrWhiteSpace(outputText))
-        {
-            return outputText;
-        }
-
-
         // =====================================================
-        // OPTION 2
-        // steps
+        // OPTION 2 - steps
         // =====================================================
 
         if (!root.TryGetProperty(
@@ -793,31 +700,28 @@ public class ResumeAIService : IResumeAIService
             return string.Empty;
         }
 
-
         if (steps.ValueKind !=
             JsonValueKind.Array)
         {
             return string.Empty;
         }
 
-
-        foreach (var step in
-                 steps.EnumerateArray())
+        foreach (var step in steps.EnumerateArray())
         {
             if (!step.TryGetProperty(
                     "type",
-                    out var type))
+                    out var stepType))
             {
                 continue;
             }
 
-
-            if (type.GetString() !=
-                "model_output")
+            if (!string.Equals(
+                    stepType.GetString(),
+                    "model_output",
+                    StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
-
 
             if (!step.TryGetProperty(
                     "content",
@@ -826,16 +730,13 @@ public class ResumeAIService : IResumeAIService
                 continue;
             }
 
-
             if (content.ValueKind !=
                 JsonValueKind.Array)
             {
                 continue;
             }
 
-
-            foreach (var item in
-                     content.EnumerateArray())
+            foreach (var item in content.EnumerateArray())
             {
                 if (!item.TryGetProperty(
                         "type",
@@ -844,27 +745,31 @@ public class ResumeAIService : IResumeAIService
                     continue;
                 }
 
-
-                if (itemType.GetString() !=
-                    "text")
+                if (!string.Equals(
+                        itemType.GetString(),
+                        "text",
+                        StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-
-                if (item.TryGetProperty(
+                if (!item.TryGetProperty(
                         "text",
                         out var textProperty))
                 {
-                    outputText +=
-                        textProperty.GetString()
-                        ?? string.Empty;
+                    continue;
+                }
+
+                if (textProperty.ValueKind ==
+                    JsonValueKind.String)
+                {
+                    return textProperty.GetString()
+                           ?? string.Empty;
                 }
             }
         }
 
-
-        return outputText;
+        return string.Empty;
     }
 
 
@@ -878,61 +783,304 @@ public class ResumeAIService : IResumeAIService
         outputText =
             outputText.Trim();
 
-
-        // =====================================================
-        // Remove ```json
-        // =====================================================
-
         if (outputText.StartsWith(
                 "```json",
                 StringComparison.OrdinalIgnoreCase))
         {
             outputText =
-                outputText.Substring(7);
+                outputText[7..].Trim();
         }
         else if (outputText.StartsWith(
-                     "```"))
+                     "```",
+                     StringComparison.OrdinalIgnoreCase))
         {
             outputText =
-                outputText.Substring(3);
+                outputText[3..].Trim();
         }
-
-
-        // =====================================================
-        // Remove ```
-        // =====================================================
 
         if (outputText.EndsWith(
-                "```"))
+                "```",
+                StringComparison.OrdinalIgnoreCase))
         {
             outputText =
-                outputText.Substring(
-                    0,
-                    outputText.Length - 3);
+                outputText[..^3].Trim();
         }
 
-
-        return outputText.Trim();
+        return outputText;
     }
 
 
     // =========================================================
-    // NORMALIZE ANALYSIS
+    // GENERAL ANALYSIS SCHEMA
+    // =========================================================
+
+    private static object BuildGeneralAnalysisSchema()
+    {
+        return new
+        {
+            type = "object",
+
+            properties = new
+            {
+                summary = new
+                {
+                    type = "string"
+                },
+
+                strengths = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                missingSkills = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                suggestions = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                }
+            },
+
+            required = new[]
+            {
+                "summary",
+                "strengths",
+                "missingSkills",
+                "suggestions"
+            }
+        };
+    }
+
+
+    // =========================================================
+    // JOB ANALYSIS SCHEMA
+    // =========================================================
+
+    private static object BuildJobAnalysisSchema()
+    {
+        return new
+        {
+            type = "object",
+
+            properties = new
+            {
+                atsScore = new
+                {
+                    type = "number"
+                },
+
+                skillsMatch = new
+                {
+                    type = "number"
+                },
+
+                experienceMatch = new
+                {
+                    type = "number"
+                },
+
+                educationMatch = new
+                {
+                    type = "number"
+                },
+
+                certificationMatch = new
+                {
+                    type = "number"
+                },
+
+                projectMatch = new
+                {
+                    type = "number"
+                },
+
+                jobDescriptionMatch = new
+                {
+                    type = "number"
+                },
+
+                summary = new
+                {
+                    type = "string"
+                },
+
+                strengths = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                matchedSkills = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                missingSkills = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                suggestions = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                }
+            },
+
+            required = new[]
+            {
+                "atsScore",
+                "skillsMatch",
+                "experienceMatch",
+                "educationMatch",
+                "certificationMatch",
+                "projectMatch",
+                "jobDescriptionMatch",
+                "summary",
+                "strengths",
+                "matchedSkills",
+                "missingSkills",
+                "suggestions"
+            }
+        };
+    }
+
+
+    // =========================================================
+    // COMPANY ANALYSIS SCHEMA
+    // =========================================================
+
+    private static object BuildCompanyAnalysisSchema()
+    {
+        return new
+        {
+            type = "object",
+
+            properties = new
+            {
+                summary = new
+                {
+                    type = "string"
+                },
+
+                strengths = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                missingSkills = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                suggestions = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
+
+                interviewFocus = new
+                {
+                    type = "array",
+
+                    items = new
+                    {
+                        type = "string"
+                    }
+                }
+            },
+
+            required = new[]
+            {
+                "summary",
+                "strengths",
+                "missingSkills",
+                "suggestions",
+                "interviewFocus"
+            }
+        };
+    }
+
+
+    // =========================================================
+    // RESPONSE FORMAT
+    // =========================================================
+
+    private static object BuildJsonResponseFormat(
+        object schema)
+    {
+        return new
+        {
+            type = "text",
+
+            mime_type = "application/json",
+
+            schema
+        };
+    }
+
+
+    // =========================================================
+    // NORMALIZE RESUME ANALYSIS
     // =========================================================
 
     private static void NormalizeAnalysis(
         ResumeAIAnalysisDto analysis)
     {
-        // =====================================================
-        // SCORE LIMITS
-        // =====================================================
-
         analysis.ATSScore =
             Math.Clamp(
                 analysis.ATSScore,
                 0,
                 100);
-
 
         analysis.SkillsMatch =
             Math.Clamp(
@@ -940,20 +1088,22 @@ public class ResumeAIService : IResumeAIService
                 0,
                 100);
 
-
         analysis.ExperienceMatch =
             Math.Clamp(
                 analysis.ExperienceMatch,
                 0,
                 100);
 
-
         analysis.EducationMatch =
             Math.Clamp(
                 analysis.EducationMatch,
                 0,
                 100);
-
+        analysis.CertificationMatch =
+            Math.Clamp(
+                analysis.CertificationMatch,
+                0,
+                100);
 
         analysis.ProjectMatch =
             Math.Clamp(
@@ -961,31 +1111,48 @@ public class ResumeAIService : IResumeAIService
                 0,
                 100);
 
-
         analysis.JobDescriptionMatch =
             Math.Clamp(
                 analysis.JobDescriptionMatch,
                 0,
                 100);
 
-
-        // =====================================================
-        // NULL-SAFE COLLECTIONS
-        // =====================================================
-
         analysis.Strengths ??=
             new List<string>();
-
 
         analysis.MatchedSkills ??=
             new List<string>();
 
+        analysis.MissingSkills ??=
+            new List<string>();
+
+        analysis.Suggestions ??=
+            new List<string>();
+    }
+
+
+    // =========================================================
+    // NORMALIZE COMPANY ANALYSIS
+    // =========================================================
+
+    private static void NormalizeCompanyAnalysis(
+        CompanyCandidateAIAnalysisDto analysis)
+    {
+        if (analysis == null)
+        {
+            return;
+        }
+
+        analysis.Strengths ??=
+            new List<string>();
 
         analysis.MissingSkills ??=
             new List<string>();
 
-
         analysis.Suggestions ??=
+            new List<string>();
+
+        analysis.InterviewFocus ??=
             new List<string>();
     }
 
@@ -997,23 +1164,43 @@ public class ResumeAIService : IResumeAIService
     private string GetApiKey()
     {
         var apiKey =
-            _configuration["Gemini:ApiKey"]
-            ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY");
-
+            _configuration[
+                "GeminiSettings:ApiKey"];
 
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            throw new Exception(
-                "Gemini API key not configured.");
+            throw new InvalidOperationException(
+                "Gemini API key is not configured. " +
+                "Run: dotnet user-secrets set \"GeminiSettings:ApiKey\" \"YOUR_API_KEY\"");
         }
-
 
         return apiKey.Trim();
     }
 
 
     // =========================================================
-    // VALIDATE RESUME
+    // MODEL
+    // =========================================================
+
+    private string GetModel()
+    {
+        var model =
+            _configuration[
+                "GeminiSettings:Model"];
+
+        if (string.IsNullOrWhiteSpace(model))
+        {
+            throw new InvalidOperationException(
+                "Gemini model is not configured. " +
+                "Configure GeminiSettings:Model in appsettings.json.");
+        }
+
+        return model.Trim();
+    }
+
+
+    // =========================================================
+    // RESUME VALIDATION
     // =========================================================
 
     private static void ValidateResumeText(

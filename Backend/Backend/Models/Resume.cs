@@ -2,15 +2,17 @@
 
 public class Resume
 {
-    public Guid Id { get; set; }
+    // =====================================================
+    // Primary Key
+    // =====================================================
 
+    public Guid Id { get; set; }
 
     // =====================================================
     // User Reference
     // =====================================================
 
     public Guid UserId { get; set; }
-
 
     // =====================================================
     // Resume File Details
@@ -20,24 +22,11 @@ public class Resume
 
     public string FilePath { get; set; } = string.Empty;
 
-
     // =====================================================
-    // Extracted Resume Content
+    // Full Extracted Resume Content
     // =====================================================
 
     public string ResumeText { get; set; } = string.Empty;
-
-
-    // =====================================================
-    // Candidate Information
-    // =====================================================
-
-    public string CandidateName { get; set; } = string.Empty;
-
-    public string Email { get; set; } = string.Empty;
-
-    public string PhoneNumber { get; set; } = string.Empty;
-
 
     // =====================================================
     // Skills
@@ -45,34 +34,35 @@ public class Resume
 
     public string ExtractedSkills { get; set; } = string.Empty;
 
-
     // =====================================================
-    // Candidate Summary
+    // Professional Summary
     // =====================================================
 
-    public string Summary { get; set; } = string.Empty;
-
+    public string ProfessionalSummary { get; set; } = string.Empty;
 
     // =====================================================
     // Experience
     // =====================================================
 
-    public int Experience { get; set; }
-
+    public int ExperienceYears { get; set; }
 
     // =====================================================
     // Education
     // =====================================================
 
-    public string Education { get; set; } = string.Empty;
-
+    public string EducationDetails { get; set; } = string.Empty;
 
     // =====================================================
-    // Current Job
+    // Projects
     // =====================================================
 
-    public string CurrentDesignation { get; set; } = string.Empty;
+    public string Projects { get; set; } = string.Empty;
 
+    // =====================================================
+    // Certifications
+    // =====================================================
+
+    public string Certifications { get; set; } = string.Empty;
 
     // =====================================================
     // General Resume ATS Score
@@ -80,14 +70,12 @@ public class Resume
 
     public double ATSScore { get; set; }
 
-
     // =====================================================
     // Metadata
     // =====================================================
 
     public DateTime UploadedAt { get; set; } =
         DateTime.UtcNow;
-
 
     // =====================================================
     // Navigation

@@ -7,6 +7,9 @@ public interface IResumeRepository
     Task<Resume?> GetResumeByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken);
+    Task<Resume?> GetResumeByIdAsync(
+    Guid resumeId,
+    CancellationToken cancellationToken);
 
     Task AddResumeAsync(
         Resume resume,

@@ -300,6 +300,7 @@
     box-shadow 0.2s ease,
     transform 0.2s ease;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .company-application-card:hover {
@@ -1100,7 +1101,6 @@
     max-width: 220px;
   }
 }
-
 
 /* =========================================================
    COMPANY AI CANDIDATE ANALYSIS

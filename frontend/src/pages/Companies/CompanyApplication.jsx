@@ -9,26 +9,32 @@ import {
   Clock3,
   Download,
   FileText,
-  Mail,
-  Phone,
+  MapPin,
   RefreshCw,
   Search,
   Sparkles,
   Users,
-  X,
   Video,
-  MapPin,
+  X,
 } from "lucide-react";
 
 import CompanySidebar from "../../components/Company/CompanySidebar";
 import CompanyHeader from "../../components/Company/CompanyHeader";
 
-import { companyApi, jobsApi, interviewApi } from "../../services/api.js";
+import { companyApi, interviewApi, jobsApi } from "../../services/api.js";
 
 import "../../styles/CompanyCSS/CompanyApplication.css";
 
 export default function CompanyApplication() {
+  // =========================================================
+  // SESSION
+  // =========================================================
+
   const session = JSON.parse(sessionStorage.getItem("user") || "null");
+
+  // =========================================================
+  // STATE
+  // =========================================================
 
   const [company, setCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
@@ -39,7 +45,6 @@ export default function CompanyApplication() {
 
   const [loading, setLoading] = useState(true);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
-
   const [refreshing, setRefreshing] = useState(false);
 
   const [error, setError] = useState("");
@@ -49,6 +54,10 @@ export default function CompanyApplication() {
 
   const [downloadingResumeId, setDownloadingResumeId] = useState(null);
 
+  // =========================================================
+  // AI ANALYSIS STATE
+  // =========================================================
+
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -57,7 +66,6 @@ export default function CompanyApplication() {
   // =========================================================
 
   const [showInterviewModal, setShowInterviewModal] = useState(false);
-
   const [interviewLoading, setInterviewLoading] = useState(false);
 
   const [interviewForm, setInterviewForm] = useState({
@@ -147,7 +155,19 @@ export default function CompanyApplication() {
           try {
             const result = await companyApi.applicants(job.id);
 
-            return Array.isArray(result) ? result : [];
+            if (Array.isArray(result)) {
+              return result;
+            }
+
+            if (Array.isArray(result?.data)) {
+              return result.data;
+            }
+
+            if (Array.isArray(result?.applications)) {
+              return result.applications;
+            }
+
+            return [];
           } catch (err) {
             console.error(
               `Applications loading failed for job ${job.id}:`,
@@ -165,7 +185,19 @@ export default function CompanyApplication() {
           (a, b) => new Date(b.appliedAt || 0) - new Date(a.appliedAt || 0),
         );
 
-      setApplications(combined);
+      // Remove duplicate applications
+      const uniqueApplications = Array.from(
+        new Map(
+          combined
+            .filter((application) => application?.id)
+            .map((application) => [
+              String(application.id).toLowerCase(),
+              application,
+            ]),
+        ).values(),
+      );
+
+      setApplications(uniqueApplications);
     } catch (err) {
       console.error("Applications loading error:", err);
 
@@ -313,7 +345,8 @@ export default function CompanyApplication() {
       application?.resumeId ||
       application?.resumeFileName ||
       application?.resumeUrl ||
-      application?.resumePath,
+      application?.resumePath ||
+      application?.resume,
     );
   }
 
@@ -324,6 +357,10 @@ export default function CompanyApplication() {
 
     if (application?.resumeName) {
       return application.resumeName;
+    }
+
+    if (application?.resume?.fileName) {
+      return application.resume.fileName;
     }
 
     if (application?.resumePath) {
@@ -338,42 +375,58 @@ export default function CompanyApplication() {
   // =========================================================
 
   async function handleDownloadResume(application) {
-    if (!application) {
+    if (!application?.id) {
+      setError("Application ID not found.");
       return;
     }
 
     try {
       setDownloadingResumeId(application.id);
+      setError("");
 
-      const token = session?.token;
+      const sessionUser = JSON.parse(sessionStorage.getItem("user") || "null");
+
+      const token =
+        sessionUser?.token || sessionUser?.accessToken || sessionUser?.jwtToken;
+
+      if (!token) {
+        throw new Error("Authentication token not found.");
+      }
 
       const response = await fetch(
         `/api/Application/${application.id}/resume`,
         {
-          headers: token
-            ? {
-                Authorization: `Bearer ${token}`,
-              }
-            : {},
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
         },
       );
 
       if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
+        let message = "Unable to download resume.";
 
-        throw new Error(
-          body?.message || "Unable to download candidate resume.",
-        );
+        try {
+          const errorData = await response.json();
+
+          message = errorData?.message || errorData?.title || message;
+        } catch {
+          // Response was not JSON.
+        }
+
+        throw new Error(message);
       }
 
-      const file = await response.blob();
+      const blob = await response.blob();
 
-      const downloadUrl = URL.createObjectURL(file);
+      const downloadUrl = window.URL.createObjectURL(blob);
 
       const link = document.createElement("a");
 
       link.href = downloadUrl;
-      link.download = getResumeName(application);
+
+      link.download = getResumeName(application) || "candidate-resume";
 
       document.body.appendChild(link);
 
@@ -381,11 +434,11 @@ export default function CompanyApplication() {
 
       link.remove();
 
-      URL.revokeObjectURL(downloadUrl);
+      window.URL.revokeObjectURL(downloadUrl);
     } catch (err) {
-      console.error("Resume download failed:", err);
+      console.error("Resume download error:", err);
 
-      setError(err?.message || "Unable to download candidate resume.");
+      setError(err?.message || "Unable to download resume.");
     } finally {
       setDownloadingResumeId(null);
     }
@@ -397,6 +450,7 @@ export default function CompanyApplication() {
 
   async function handleAIAnalysis(application) {
     if (!application?.id) {
+      setError("Application ID not found.");
       return;
     }
 
@@ -405,11 +459,32 @@ export default function CompanyApplication() {
       setAiAnalysis(null);
       setError("");
 
+      /*
+       * Backend endpoint:
+       *
+       * POST /api/Application/{applicationId}/ai-analysis
+       *
+       * No request body is required.
+       *
+       * Backend resolves:
+       * Application
+       *      ↓
+       * Candidate
+       *      ↓
+       * Resume
+       *      ↓
+       * Resume text
+       *      ↓
+       * Gemini AI
+       */
+
       const result = await companyApi.analyzeCandidateWithAI(application.id);
 
-      setAiAnalysis(result);
+      setAiAnalysis(result?.data || result?.analysis || result);
     } catch (err) {
       console.error("AI candidate analysis failed:", err);
+
+      setAiAnalysis(null);
 
       setError(err?.message || "Unable to analyze candidate with AI.");
     } finally {
@@ -423,6 +498,7 @@ export default function CompanyApplication() {
 
   function openInterviewModal() {
     if (!selectedApplication?.id) {
+      setError("No application selected.");
       return;
     }
 
@@ -500,10 +576,26 @@ export default function CompanyApplication() {
       return;
     }
 
+    const selectedDate = new Date(interviewForm.scheduledAt);
+
+    if (Number.isNaN(selectedDate.getTime())) {
+      setError("Invalid interview date and time.");
+      return;
+    }
+
+    if (selectedDate <= new Date()) {
+      setError("Interview date and time must be in the future.");
+      return;
+    }
+
     try {
       setInterviewLoading(true);
       setError("");
       setSuccess("");
+
+      // =====================================================
+      // BACKEND DTO
+      // =====================================================
 
       const payload = {
         applicationId: selectedApplication.id,
@@ -512,7 +604,7 @@ export default function CompanyApplication() {
 
         interviewType: interviewForm.interviewType,
 
-        scheduledAt: new Date(interviewForm.scheduledAt).toISOString(),
+        scheduledAt: selectedDate.toISOString(),
 
         durationMinutes: Number(interviewForm.durationMinutes),
 
@@ -523,10 +615,12 @@ export default function CompanyApplication() {
         instructions: interviewForm.instructions.trim() || null,
       };
 
+      console.log("Creating interview:", payload);
+
       await interviewApi.create(payload);
 
       // =====================================================
-      // Update local application status
+      // UPDATE LOCAL APPLICATION STATUS
       // =====================================================
 
       const updatedApplication = {
@@ -538,7 +632,8 @@ export default function CompanyApplication() {
 
       setApplications((previous) =>
         previous.map((application) =>
-          application.id === selectedApplication.id
+          String(application.id).toLowerCase() ===
+          String(selectedApplication.id).toLowerCase()
             ? {
                 ...application,
                 status: "Interview",
@@ -546,6 +641,10 @@ export default function CompanyApplication() {
             : application,
         ),
       );
+
+      // =====================================================
+      // CLOSE MODAL
+      // =====================================================
 
       setShowInterviewModal(false);
 
@@ -557,6 +656,21 @@ export default function CompanyApplication() {
     } finally {
       setInterviewLoading(false);
     }
+  }
+
+  // =========================================================
+  // CLOSE APPLICATION MODAL
+  // =========================================================
+
+  function closeApplicationModal() {
+    if (aiLoading || interviewLoading) {
+      return;
+    }
+
+    setSelectedApplication(null);
+    setAiAnalysis(null);
+    setError("");
+    setSuccess("");
   }
 
   // =========================================================
@@ -1010,11 +1124,7 @@ export default function CompanyApplication() {
       {selectedApplication && (
         <div
           className="company-application-modal-overlay"
-          onClick={() => {
-            setSelectedApplication(null);
-            setAiAnalysis(null);
-            setError("");
-          }}
+          onClick={closeApplicationModal}
         >
           <div
             className="company-application-modal"
@@ -1032,12 +1142,9 @@ export default function CompanyApplication() {
               <button
                 type="button"
                 className="company-application-modal-close"
-                onClick={() => {
-                  setSelectedApplication(null);
-                  setAiAnalysis(null);
-                  setError("");
-                }}
+                onClick={closeApplicationModal}
                 aria-label="Close candidate profile"
+                disabled={aiLoading || interviewLoading}
               >
                 <X />
               </button>
@@ -1199,7 +1306,7 @@ export default function CompanyApplication() {
 
                       {downloadingResumeId === selectedApplication.id
                         ? "Downloading..."
-                        : "Download"}
+                        : ""}
                     </button>
                   )}
                 </div>
@@ -1219,7 +1326,7 @@ export default function CompanyApplication() {
 
                   <div className="company-application-ats-details">
                     <span>Resume / Job Match</span>
-
+                    {/**/}
                     <strong>
                       {Number(selectedApplication.atsScore || 0)}%
                     </strong>
@@ -1254,7 +1361,19 @@ export default function CompanyApplication() {
                   </button>
                 </div>
 
-                {aiAnalysis && (
+                {/* AI LOADING */}
+
+                {aiLoading && (
+                  <div className="company-applications-loading">
+                    <div className="company-applications-spinner" />
+
+                    <span>Analyzing candidate resume...</span>
+                  </div>
+                )}
+
+                {/* AI RESULT */}
+
+                {aiAnalysis && !aiLoading && (
                   <div className="company-application-ai-result">
                     <div className="company-application-ai-block">
                       <span>Summary</span>
@@ -1266,7 +1385,8 @@ export default function CompanyApplication() {
                       <div className="company-application-ai-block">
                         <span>Strengths</span>
 
-                        {aiAnalysis.strengths?.length ? (
+                        {Array.isArray(aiAnalysis.strengths) &&
+                        aiAnalysis.strengths.length > 0 ? (
                           <ul>
                             {aiAnalysis.strengths.map((item, index) => (
                               <li key={`strength-${index}`}>{item}</li>
@@ -1280,7 +1400,8 @@ export default function CompanyApplication() {
                       <div className="company-application-ai-block">
                         <span>Missing Job Skills</span>
 
-                        {aiAnalysis.missingSkills?.length ? (
+                        {Array.isArray(aiAnalysis.missingSkills) &&
+                        aiAnalysis.missingSkills.length > 0 ? (
                           <ul>
                             {aiAnalysis.missingSkills.map((item, index) => (
                               <li key={`missing-${index}`}>{item}</li>
@@ -1296,7 +1417,8 @@ export default function CompanyApplication() {
                       <div className="company-application-ai-block">
                         <span>Suggestions</span>
 
-                        {aiAnalysis.suggestions?.length ? (
+                        {Array.isArray(aiAnalysis.suggestions) &&
+                        aiAnalysis.suggestions.length > 0 ? (
                           <ul>
                             {aiAnalysis.suggestions.map((item, index) => (
                               <li key={`suggestion-${index}`}>{item}</li>
@@ -1310,7 +1432,8 @@ export default function CompanyApplication() {
                       <div className="company-application-ai-block">
                         <span>Interview Focus</span>
 
-                        {aiAnalysis.interviewFocus?.length ? (
+                        {Array.isArray(aiAnalysis.interviewFocus) &&
+                        aiAnalysis.interviewFocus.length > 0 ? (
                           <ul>
                             {aiAnalysis.interviewFocus.map((item, index) => (
                               <li key={`focus-${index}`}>{item}</li>
@@ -1449,7 +1572,7 @@ export default function CompanyApplication() {
                 </select>
               </div>
 
-              {/* DATE TIME */}
+              {/* DATE TIME + DURATION */}
 
               <div className="company-interview-form-row">
                 <div className="company-interview-form-group">
@@ -1468,8 +1591,6 @@ export default function CompanyApplication() {
                     />
                   </div>
                 </div>
-
-                {/* DURATION */}
 
                 <div className="company-interview-form-group">
                   <label htmlFor="durationMinutes">Duration</label>

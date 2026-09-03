@@ -1,5 +1,5 @@
 using Backend.DTOs.Resume;
-using Backend.Interfaces;
+
 using Backend.Interfaces.ATS;
 using Backend.Interfaces.Repositories;
 using Backend.Interfaces.Services;
@@ -18,6 +18,7 @@ public sealed class ResumeService : IResumeService
     private readonly IPdfParser _pdfParser;
     private readonly ISkillExtractor _skillExtractor;
     private readonly IATSService _atsService;
+    private readonly IResumeAIService _resumeAIService;
 
     // =====================================================
     // CONSTRUCTOR
@@ -28,13 +29,15 @@ public sealed class ResumeService : IResumeService
         IWebHostEnvironment environment,
         IPdfParser pdfParser,
         ISkillExtractor skillExtractor,
-        IATSService atsService)
+        IATSService atsService,
+        IResumeAIService resumeAIService)
     {
         _resumeRepository = resumeRepository;
         _environment = environment;
         _pdfParser = pdfParser;
         _skillExtractor = skillExtractor;
         _atsService = atsService;
+        _resumeAIService = resumeAIService;
     }
 
     // =====================================================
@@ -84,13 +87,13 @@ public sealed class ResumeService : IResumeService
         // SERVER FILE NAME
         // =================================================
 
-        var newFileName =
-            $"{Guid.NewGuid():N}{extension}";
+        var physicalFileName =
+    $"{Guid.NewGuid():N}{extension}";
 
         var newFilePath =
-            Path.Combine(
-                uploadFolder,
-                newFileName);
+              Path.Combine(
+            uploadFolder,
+            physicalFileName);
 
         // =================================================
         // SAVE PHYSICAL FILE
@@ -132,6 +135,12 @@ public sealed class ResumeService : IResumeService
                     extension,
                     cancellationToken);
 
+            var parsedData =
+                await _resumeAIService
+                    .ExtractResumeDataAsync(
+                    resumeText,
+                    cancellationToken);
+
             if (string.IsNullOrWhiteSpace(resumeText))
             {
                 throw new ArgumentException(
@@ -154,20 +163,41 @@ public sealed class ResumeService : IResumeService
 
             if (existingResume != null)
             {
-                var oldFileName =
-                    existingResume.FileName;
+                var oldFilePath =
+                existingResume.FilePath;
 
                 existingResume.FileName =
-                    newFileName;
+                    dto.Resume.FileName;
 
                 existingResume.FilePath =
-                    $"resumes/{newFileName}";
+                    $"resumes/{physicalFileName}";
 
                 existingResume.ResumeText =
                     resumeText;
 
                 existingResume.ExtractedSkills =
                     extractedSkills;
+
+                existingResume.ProfessionalSummary =
+                    parsedData.ProfessionalSummary;
+
+                existingResume.EducationDetails =
+                    string.Join(
+                        ", ",
+                        parsedData.Education);
+
+                existingResume.Projects =
+                    string.Join(
+                        ", ",
+                        parsedData.Projects);
+
+                existingResume.Certifications =
+                    string.Join(
+                        ", ",
+                        parsedData.Certifications);
+
+                existingResume.ExperienceYears =
+                    parsedData.ExperienceYears;
 
                 existingResume.UploadedAt =
                     DateTime.UtcNow;
@@ -191,12 +221,11 @@ public sealed class ResumeService : IResumeService
                 // DELETE OLD FILE
                 // =================================================
 
-                if (!string.Equals(
-                    oldFileName,
-                    newFileName,
-                    StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrWhiteSpace(
+                        oldFilePath))
                 {
-                    DeletePhysicalFile(oldFileName);
+                    DeletePhysicalFileByRelativePath(
+                        oldFilePath);
                 }
 
                 return MapToResponse(existingResume);
@@ -213,10 +242,10 @@ public sealed class ResumeService : IResumeService
                 UserId = userId,
 
                 FileName =
-                    newFileName,
+                   dto.Resume.FileName,
 
                 FilePath =
-                    $"resumes/{newFileName}",
+                    $"resumes/{physicalFileName}",
 
                 ResumeText =
                     resumeText,
@@ -224,12 +253,32 @@ public sealed class ResumeService : IResumeService
                 ExtractedSkills =
                     extractedSkills,
 
+                ProfessionalSummary =
+                    parsedData.ProfessionalSummary,
+
+                EducationDetails =
+                    string.Join(
+                        ", ",
+                    parsedData.Education),
+
+                Projects =
+                    string.Join(
+                        ", ",
+                    parsedData.Projects),
+
+                Certifications =
+                    string.Join(
+                        ", ",
+                    parsedData.Certifications),
+
+                ExperienceYears =
+                    parsedData.ExperienceYears,
+
                 UploadedAt =
                     DateTime.UtcNow,
 
                 ATSScore = 0
             };
-
             // =================================================
             // GENERAL ATS SCORE
             // =================================================
@@ -253,11 +302,8 @@ public sealed class ResumeService : IResumeService
         }
         catch
         {
-            // =================================================
-            // CLEANUP NEW FILE IF ANY ERROR OCCURS
-            // =================================================
-
-            DeletePhysicalFile(newFileName);
+            DeletePhysicalFileByRelativePath(
+                $"resumes/{physicalFileName}");
 
             throw;
         }
@@ -394,12 +440,8 @@ public sealed class ResumeService : IResumeService
             return false;
         }
 
-        var fileName =
-            resume.FileName;
-
-        // =================================================
-        // DELETE DATABASE RECORD
-        // =================================================
+        var filePath =
+            resume.FilePath;
 
         await _resumeRepository.DeleteResumeAsync(
             resume,
@@ -408,13 +450,44 @@ public sealed class ResumeService : IResumeService
         await _resumeRepository.SaveChangesAsync(
             cancellationToken);
 
-        // =================================================
-        // DELETE PHYSICAL FILE
-        // =================================================
-
-        DeletePhysicalFile(fileName);
+        DeletePhysicalFileByRelativePath(
+            filePath);
 
         return true;
+    }
+
+    private void DeletePhysicalFileByRelativePath(
+    string? relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativePath))
+        {
+            return;
+        }
+
+        var webRoot =
+            _environment.WebRootPath ?? "wwwroot";
+
+        var normalizedPath =
+            relativePath
+                .TrimStart('/', '\\')
+                .Replace('/', Path.DirectorySeparatorChar)
+                .Replace('\\', Path.DirectorySeparatorChar);
+
+        var fullPath =
+            Path.Combine(
+                webRoot,
+                normalizedPath);
+
+        try
+        {
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+        }
+        catch
+        {
+        }
     }
 
     // =====================================================
@@ -459,15 +532,15 @@ public sealed class ResumeService : IResumeService
                 StringComparer.OrdinalIgnoreCase)
             {
                 ".pdf",
-                ".doc",
+                
                 ".docx",
-                ".word"
+               
             };
 
         if (!allowedExtensions.Contains(extension))
         {
             throw new ArgumentException(
-                "Only PDF, DOC, DOCX and WORD files are allowed.");
+                "Only PDF and DOCX files are allowed.");
         }
 
         // =================================================
@@ -487,22 +560,22 @@ public sealed class ResumeService : IResumeService
         // BASIC CONTENT TYPE VALIDATION
         // =================================================
 
-        var contentType =
-            dto.Resume.ContentType?
-                .ToLowerInvariant();
+        //var contentType =
+        //    dto.Resume.ContentType?
+        //        .ToLowerInvariant();
 
-        var allowedContentTypes =
-            new HashSet<string>(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                "application/pdf",
+        //var allowedContentTypes =
+        //    new HashSet<string>(
+        //        StringComparer.OrdinalIgnoreCase)
+        //    {
+        //        "application/pdf",
 
-                "application/msword",
+        //        "application/msword",
 
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        //        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 
-                "application/octet-stream"
-            };
+        //        "application/octet-stream"
+        //    };
 
         /*
          * Some browsers send DOC/DOCX as
@@ -542,49 +615,6 @@ public sealed class ResumeService : IResumeService
         if (extension == ".docx")
         {
             return await ExtractDocxTextAsync(
-                filePath,
-                cancellationToken);
-        }
-
-        // =================================================
-        // DOC
-        // =================================================
-
-        if (extension == ".doc")
-        {
-            /*
-             * Old Microsoft Word .DOC files use the
-             * legacy binary Word format.
-             *
-             * They cannot be parsed using ZipFile /
-             * document.xml like DOCX.
-             *
-             * For now the file is allowed and stored.
-             *
-             * DOC parser support should be added through
-             * a dedicated library/service.
-             */
-            return await ExtractLegacyWordTextAsync(
-                filePath,
-                cancellationToken);
-        }
-
-        // =================================================
-        // WORD
-        // =================================================
-
-        if (extension == ".word")
-        {
-            /*
-             * .word is not the normal Microsoft Word
-             * extension. We still allow it according to
-             * the application requirement.
-             *
-             * If the actual file is DOC/DOCX content,
-             * a dedicated binary/document parser is needed
-             * to extract the text safely.
-             */
-            return await ExtractLegacyWordTextAsync(
                 filePath,
                 cancellationToken);
         }
@@ -653,42 +683,14 @@ public sealed class ResumeService : IResumeService
         }
     }
 
-    // =====================================================
-    // LEGACY WORD TEXT EXTRACTION
-    // =====================================================
-
-    private static async Task<string> ExtractLegacyWordTextAsync(
-        string filePath,
-        CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        /*
-         * .DOC is a binary Word format and cannot be read
-         * using the DOCX XML approach.
-         *
-         * We keep this method separate so a dedicated
-         * Word parser can be plugged in without changing
-         * the complete upload flow.
-         *
-         * At this stage, returning empty text means the
-         * upload will fail validation after saving.
-         *
-         * The next required change is to add a proper
-         * .DOC parser.
-         */
-
-        await Task.CompletedTask;
-
-        return string.Empty;
-    }
+   
 
     // =====================================================
     // EXTRACTION ERROR MESSAGE
     // =====================================================
 
     private static string GetExtractionErrorMessage(
-        string extension)
+    string extension)
     {
         return extension switch
         {
@@ -698,51 +700,12 @@ public sealed class ResumeService : IResumeService
             ".docx" =>
                 "Unable to extract text from the DOCX file. Please upload a valid Word document.",
 
-            ".doc" =>
-                "The DOC file was received, but text extraction from legacy DOC format is not configured yet.",
-
-            ".word" =>
-                "The WORD file was received, but text extraction for this format is not configured yet.",
-
             _ =>
                 "Unable to extract text from the resume."
         };
     }
 
-    // =====================================================
-    // DELETE PHYSICAL FILE
-    // =====================================================
-
-    private void DeletePhysicalFile(
-        string fileName)
-    {
-        if (string.IsNullOrWhiteSpace(fileName))
-        {
-            return;
-        }
-
-        var path =
-            Path.Combine(
-                _environment.WebRootPath ?? "wwwroot",
-                "resumes",
-                fileName);
-
-        try
-        {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
-        }
-        catch
-        {
-            /*
-             * File deletion failure should not hide
-             * the main upload/database operation result.
-             */
-        }
-    }
-
+   
     // =====================================================
     // MAP RESPONSE
     // =====================================================
