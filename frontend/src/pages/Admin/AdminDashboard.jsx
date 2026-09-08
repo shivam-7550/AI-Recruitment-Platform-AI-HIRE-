@@ -1,29 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate, Link } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 
 import {
   BriefcaseBusiness,
   Building2,
   CheckCircle2,
-  FileText,
   Users,
 } from "lucide-react";
 
 import { adminApi } from "../../services/api";
 
-import AdminSidebar from "../../components/Admin/AdminSidebar";
-import AdminHeader from "../../components/Admin/AdminHeader";
+import AdminSidebar from "../../components/admin/AdminSidebar";
+import AdminHeader from "../../components/admin/AdminHeader";
 
 import "../../styles/AdminCSS/AdminDashboard.css";
 
 export default function AdminDashboard() {
-  const navigate = useNavigate();
-
   const session = JSON.parse(sessionStorage.getItem("user") || "null");
 
   const [companies, setCompanies] = useState([]);
   const [jobs, setJobs] = useState([]);
-  const [notifications, setNotifications] = useState([]);
 
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
@@ -44,6 +40,7 @@ export default function AdminDashboard() {
       })
       .catch((error) => {
         console.error("Admin dashboard loading failed:", error);
+
         setMessage(error?.message || "Unable to load admin dashboard data.");
       });
   }, [session?.role]);
@@ -65,8 +62,6 @@ export default function AdminDashboard() {
   );
 
   const activeJobs = jobs.filter((job) => job.isActive);
-
-  const unread = notifications.filter((item) => !item.isRead).length;
 
   /* =========================================================
      SEARCH
@@ -115,6 +110,7 @@ export default function AdminDashboard() {
   async function refreshCompanies() {
     try {
       const data = await adminApi.companies();
+
       setCompanies(data || []);
     } catch (error) {
       setMessage(error?.message || "Unable to refresh companies.");
@@ -157,7 +153,7 @@ export default function AdminDashboard() {
           SIDEBAR
       ====================================================== */}
 
-      <AdminSidebar unread={unread} />
+      <AdminSidebar />
 
       {/* =====================================================
           MAIN
@@ -169,8 +165,6 @@ export default function AdminDashboard() {
           subtitle="Welcome back, Admin! Here's what's happening today."
           query={query}
           onQueryChange={setQuery}
-          notifications={notifications}
-          onNotificationsChange={setNotifications}
         />
 
         <div className="admin-dashboard-content">
@@ -212,14 +206,6 @@ export default function AdminDashboard() {
               value={pending.length}
               detail="Company verification"
               tone="green"
-            />
-
-            <AdminMetric
-              icon={FileText}
-              label="Notifications"
-              value={notifications.length}
-              detail={`${unread} unread alerts`}
-              tone="orange"
             />
 
             <AdminMetric
@@ -454,43 +440,6 @@ export default function AdminDashboard() {
                 Rejected
                 <b>{rejected.length}</b>
               </p>
-            </article>
-
-            {/* =================================================
-                RECENT ACTIVITY
-            ================================================= */}
-
-            <article className="admin-card admin-activity">
-              <div className="admin-card-title">
-                <div>
-                  <span>Activity</span>
-                  <h2>Recent Activity</h2>
-                </div>
-
-                <span>Notifications</span>
-              </div>
-
-              {notifications.slice(0, 6).map((item) => (
-                <div key={item.id} className="admin-activity-item">
-                  <FileText size={17} />
-
-                  <p>
-                    <strong>{item.title || "Notification"}</strong>
-
-                    {item.message}
-                  </p>
-
-                  <small>
-                    {item.createdAt
-                      ? new Date(item.createdAt).toLocaleDateString()
-                      : "—"}
-                  </small>
-                </div>
-              ))}
-
-              {!notifications.length && (
-                <p className="admin-empty">No recent activity.</p>
-              )}
             </article>
           </section>
         </div>

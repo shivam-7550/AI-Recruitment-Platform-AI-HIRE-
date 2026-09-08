@@ -1317,7 +1317,7 @@ export default function CompanyApplication() {
               ================================================= */}
 
               <section className="company-application-modal-section">
-                <h4>ATS Score</h4>
+                <h4>Job Match Score</h4>
 
                 <div className="company-application-ats">
                   <div className="company-application-ats-circle">

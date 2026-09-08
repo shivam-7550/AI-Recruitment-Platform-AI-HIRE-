@@ -654,6 +654,26 @@ export const adminApi = {
   users: () => api("/dashboards/admin/users"),
 
   // -------------------------------------------------------
+  // ADMIN REPORTS
+  // -------------------------------------------------------
+
+  reports: (from, to) => {
+    const params = new URLSearchParams();
+
+    if (from) {
+      params.set("from", from);
+    }
+
+    if (to) {
+      params.set("to", to);
+    }
+
+    const query = params.toString();
+
+    return api(`/Admin/reports${query ? `?${query}` : ""}`);
+  },
+
+  // -------------------------------------------------------
   // APPROVE COMPANY
   // -------------------------------------------------------
 

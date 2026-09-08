@@ -21,11 +21,13 @@ import CandidateDashboard from "./pages/Candidates/CandidateDashboard";
 // Company Dashboard
 // ==========================================
 import CompanyDashboard from "./pages/Companies/CompanyDashboard";
+import CompanyProfile from "./pages/Companies/CompanyProfile";
 
 // ==========================================
 // Admin Dashboard
 // ==========================================
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminReports from "./pages/Admin/AdminReports";
 
 // ==========================================
 // Candidate Pages
@@ -182,7 +184,7 @@ function App() {
             Profile
         ----------------------------------------- */}
 
-        <Route path="/company/profile" element={<CompanyDashboard />} />
+        <Route path="/company/profile" element={<CompanyProfile />} />
 
         {/* -----------------------------------------
             Posted Jobs
@@ -284,19 +286,7 @@ function App() {
             Admin Reports
         ----------------------------------------- */}
 
-        <Route
-          path="/admin/reports"
-          element={<Navigate to="/admin/dashboard#jobs" replace />}
-        />
-
-        {/* -----------------------------------------
-            AI Insights
-        ----------------------------------------- */}
-
-        <Route
-          path="/admin/ai-insights"
-          element={<Navigate to="/admin/dashboard#insights" replace />}
-        />
+        <Route path="/admin/reports" element={<AdminReports />} />
 
         {/* -----------------------------------------
             Notifications

@@ -1,21 +1,18 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  Bell,
   BriefcaseBusiness,
   Building2,
   FileText,
   Grid2X2,
-  Lightbulb,
   LogOut,
-  Settings,
   ShieldCheck,
   Users,
 } from "lucide-react";
 
 import "../../styles/AdminCSS/AdminSidebar.css";
 
-export default function AdminSidebar({ unread = 0 }) {
+export default function AdminSidebar() {
   const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -34,56 +31,16 @@ export default function AdminSidebar({ unread = 0 }) {
   };
 
   const navigationItems = [
-    {
-      label: "Dashboard",
-      icon: Grid2X2,
-      to: "/admin/dashboard",
-    },
-    {
-      label: "Companies",
-      icon: Building2,
-      to: "/admin/companies",
-    },
-    {
-      label: "Jobs",
-      icon: BriefcaseBusiness,
-      to: "/admin/jobs",
-    },
-    {
-      label: "Users",
-      icon: Users,
-      to: "/admin/users",
-    },
-    {
-      label: "Reports",
-      icon: FileText,
-      to: "/admin/reports",
-    },
-    {
-      label: "AI Insights",
-      icon: Lightbulb,
-      to: "/admin/ai-insights",
-    },
-    {
-      label: "Notifications",
-      icon: Bell,
-      to: "/admin/notifications",
-      badge: unread,
-    },
-    {
-      label: "Settings",
-      icon: Settings,
-      to: "/admin/settings",
-    },
+    { label: "Dashboard", icon: Grid2X2, to: "/admin/dashboard" },
+    { label: "Companies", icon: Building2, to: "/admin/companies" },
+    { label: "Jobs", icon: BriefcaseBusiness, to: "/admin/jobs" },
+    { label: "Users", icon: Users, to: "/admin/users" },
+    { label: "Reports", icon: FileText, to: "/admin/reports" },
   ];
 
   return (
     <>
       <aside className="admin-sidebar">
-        {/* =====================================================
-            LOGO
-        ====================================================== */}
-
         <NavLink to="/admin/dashboard" className="admin-sidebar-logo">
           <div className="admin-sidebar-logo-icon">
             <ShieldCheck size={22} />
@@ -94,10 +51,6 @@ export default function AdminSidebar({ unread = 0 }) {
             <span>Admin Panel</span>
           </div>
         </NavLink>
-
-        {/* =====================================================
-            NAVIGATION
-        ====================================================== */}
 
         <nav className="admin-sidebar-navigation">
           <div className="admin-sidebar-section-label">Workspace</div>
@@ -116,40 +69,11 @@ export default function AdminSidebar({ unread = 0 }) {
                 }
               >
                 <Icon size={19} />
-
                 <span>{item.label}</span>
-
-                {item.badge > 0 && (
-                  <small className="admin-sidebar-badge">
-                    {item.badge > 9 ? "9+" : item.badge}
-                  </small>
-                )}
               </NavLink>
             );
           })}
         </nav>
-
-        {/* =====================================================
-            PLATFORM INSIGHT
-        ====================================================== */}
-
-        {/* <div className="admin-sidebar-insight">
-          <div className="admin-sidebar-insight-icon">✦</div>
-
-          <div>
-            <strong>Platform overview</strong>
-
-            <p>
-              Manage companies, jobs and recruitment activity from one place.
-            </p>
-
-            <NavLink to="/admin/companies">Review companies →</NavLink>
-          </div>
-        </div> */}
-
-        {/* =====================================================
-            LOGOUT
-        ====================================================== */}
 
         <button
           type="button"
@@ -160,10 +84,6 @@ export default function AdminSidebar({ unread = 0 }) {
           <span>Logout</span>
         </button>
       </aside>
-
-      {/* =====================================================
-          LOGOUT MODAL
-      ====================================================== */}
 
       {showLogoutConfirm && (
         <div className="admin-logout-overlay">

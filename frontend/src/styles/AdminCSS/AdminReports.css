@@ -1,0 +1,825 @@
+.admin-reports-layout {
+  min-height: 100vh;
+  display: flex;
+  background: #f7f7f7;
+  color: #111;
+}
+
+.admin-reports-main {
+  flex: 1;
+  min-width: 0;
+  background: #f7f7f7;
+}
+
+.admin-reports-content {
+  padding: 28px;
+  max-width: 1700px;
+  margin: 0 auto;
+}
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.reports-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.reports-page-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+}
+
+.reports-page-header p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.reports-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reports-refresh-button:hover {
+  background: #292929;
+}
+
+.reports-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: reportSpin 1s linear infinite;
+}
+
+@keyframes reportSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================
+   FILTERS
+========================================== */
+
+.reports-filter-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.reports-filter-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.reports-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.reports-presets button {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  border-radius: 7px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.reports-presets button:hover {
+  border-color: #111;
+  color: #111;
+}
+
+.reports-date-fields {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.reports-date-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reports-date-fields label span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+}
+
+.reports-date-fields input {
+  min-width: 170px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  background: #fff;
+  color: #111;
+  outline: none;
+}
+
+.reports-date-fields input:focus {
+  border-color: #111;
+}
+
+.reports-apply-button,
+.reports-reset-button {
+  height: 38px;
+  border-radius: 7px;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.reports-apply-button {
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+}
+
+.reports-reset-button {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+}
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.reports-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-left: 3px solid #111;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  color: #333;
+  font-size: 13px;
+}
+
+/* ==========================================
+   TABS
+========================================== */
+
+.reports-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 5px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.reports-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  color: #666;
+  padding: 10px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.reports-tabs button:hover {
+  background: #f2f2f2;
+  color: #111;
+}
+
+.reports-tabs button.active {
+  background: #111;
+  color: #fff;
+}
+
+/* ==========================================
+   SECTION
+========================================== */
+
+.reports-section {
+  animation: reportFadeIn 0.18s ease;
+}
+
+@keyframes reportFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.report-section-header {
+  margin-bottom: 18px;
+}
+
+.report-section-header h2 {
+  margin: 0 0 5px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.report-section-header p {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+}
+
+/* ==========================================
+   STAT CARDS
+========================================== */
+
+.report-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.report-stat-grid-small {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.report-stat-card {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 11px;
+  padding: 17px;
+  min-height: 125px;
+}
+
+.report-stat-card-top {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.report-stat-icon {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f2f2;
+  border-radius: 8px;
+  color: #111;
+}
+
+.report-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #111;
+  margin-bottom: 5px;
+}
+
+.report-stat-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+}
+
+.report-stat-subtitle {
+  margin-top: 4px;
+  font-size: 10px;
+  color: #888;
+}
+
+/* ==========================================
+   PERIOD
+========================================== */
+
+.report-period-heading {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0 13px;
+}
+
+.report-period-heading h3 {
+  margin: 0 0 3px;
+  font-size: 15px;
+}
+
+.report-period-heading span {
+  color: #888;
+  font-size: 11px;
+}
+
+/* ==========================================
+   CARDS
+========================================== */
+
+.report-grid-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.report-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 11px;
+  padding: 18px;
+  margin-bottom: 18px;
+  min-width: 0;
+}
+
+.report-grid-two .report-card {
+  margin-bottom: 0;
+}
+
+.report-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 17px;
+}
+
+.report-card-header h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.report-card-header span {
+  font-size: 11px;
+  color: #888;
+}
+
+/* ==========================================
+   TREND
+========================================== */
+
+.report-trend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.report-trend-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 45px;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-trend-date {
+  font-size: 11px;
+  color: #666;
+}
+
+.report-trend-bar-wrapper {
+  height: 9px;
+  background: #eeeeee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.report-trend-bar {
+  height: 100%;
+  background: #111;
+  border-radius: 10px;
+  transition: width 0.25s ease;
+}
+
+.report-trend-count {
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   DISTRIBUTION
+========================================== */
+
+.report-distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-distribution-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #eee;
+  font-size: 12px;
+}
+
+.report-distribution-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* ==========================================
+   FUNNEL
+========================================== */
+
+.report-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.report-funnel-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-funnel-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.report-funnel-track {
+  height: 28px;
+  background: #f0f0f0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.report-funnel-fill {
+  height: 100%;
+  min-width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 9px;
+  background: #111;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+/* ==========================================
+   PROGRESS
+========================================== */
+
+.report-progress-group {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.report-progress-row > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.report-progress-row strong {
+  font-size: 12px;
+}
+
+.report-progress-track {
+  height: 9px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.report-progress-fill {
+  height: 100%;
+  background: #111;
+  border-radius: 10px;
+}
+
+.report-progress-fill.secondary {
+  background: #777;
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.report-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+}
+
+.report-table th {
+  text-align: left;
+  padding: 11px 12px;
+  background: #f7f7f7;
+  color: #555;
+  border-bottom: 1px solid #ddd;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.report-table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+  font-size: 12px;
+}
+
+.report-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.report-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================
+   PERFORMANCE SEARCH
+========================================== */
+
+.report-performance-header {
+  align-items: center;
+}
+
+.report-search {
+  width: 240px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.report-search svg {
+  color: #777;
+  flex-shrink: 0;
+}
+
+.report-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  background: transparent;
+  color: #111;
+}
+
+/* ==========================================
+   SCORE
+========================================== */
+
+.report-score-distribution {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.report-score-item {
+  padding: 17px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.report-score-item span {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 7px;
+}
+
+.report-score-item strong {
+  font-size: 22px;
+}
+
+/* ==========================================
+   NOTES
+========================================== */
+
+.report-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.report-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #333;
+}
+
+/* ==========================================
+   EMPTY / LOADING
+========================================== */
+
+.report-empty-state {
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #888;
+  font-size: 12px;
+}
+
+.reports-loading {
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: #777;
+  font-size: 13px;
+}
+
+.reports-loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #ddd;
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: reportSpin 0.8s linear infinite;
+}
+
+.reports-empty {
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #777;
+}
+
+.reports-empty h3 {
+  margin: 5px 0 0;
+  color: #222;
+}
+
+.reports-empty p {
+  margin: 0;
+  font-size: 12px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1250px) {
+  .report-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .report-stat-grid-small {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 950px) {
+  .report-grid-two {
+    grid-template-columns: 1fr;
+  }
+
+  .report-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .report-stat-grid-small {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reports-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-reports-content {
+    padding: 18px 14px;
+  }
+
+  .report-stat-grid,
+  .report-stat-grid-small {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-date-fields {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reports-date-fields label,
+  .reports-date-fields input {
+    width: 100%;
+  }
+
+  .reports-apply-button,
+  .reports-reset-button {
+    width: 100%;
+  }
+
+  .reports-tabs {
+    scrollbar-width: thin;
+  }
+
+  .report-score-distribution {
+    grid-template-columns: 1fr;
+  }
+
+  .report-performance-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .report-search {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .reports-page-header h1 {
+    font-size: 23px;
+  }
+
+  .report-stat-card {
+    min-height: 110px;
+  }
+
+  .report-stat-value {
+    font-size: 21px;
+  }
+
+  .report-trend-row {
+    grid-template-columns: 70px 1fr 35px;
+    gap: 7px;
+  }
+
+  .report-funnel-row {
+    grid-template-columns: 85px 1fr;
+  }
+}

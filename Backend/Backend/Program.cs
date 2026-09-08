@@ -18,7 +18,7 @@ using Backend.Services.Notifications;
 using Backend.Services.Resumes;
 using Backend.Services.SavedJobs;
 using Backend.Services.Users;
-
+using Backend.Services.AdminReports;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -197,6 +197,12 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<
     IUserRepository,
     UserRepository>();
+
+//-------------------------------------------------------------
+// ADMIN REPORTS
+//-------------------------------------------------------------
+
+builder.Services.AddScoped <IAdminReportsService, AdminReportsService>();
 
 
 // ------------------------------------------------------------

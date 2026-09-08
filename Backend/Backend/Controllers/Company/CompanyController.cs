@@ -15,7 +15,7 @@ public sealed class CompanyController : ControllerBase
     private readonly ICompanyRepository _companyRepository;
     private readonly INotificationService _notificationService;
 
-
+    //Dependency Injection
     public CompanyController(
         ICompanyService companyService,
         ICompanyRepository companyRepository,

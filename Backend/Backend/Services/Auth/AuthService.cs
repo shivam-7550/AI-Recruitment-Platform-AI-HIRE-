@@ -258,7 +258,7 @@ public sealed class AuthService : IAuthService
         if (user == null)
         {
             return Failure(
-                "Invalid email or password.");
+                "User does not exist");
         }
 
 
@@ -273,7 +273,7 @@ public sealed class AuthService : IAuthService
         if (!passwordValid)
         {
             return Failure(
-                "Invalid email or password.");
+                "Invalid password.");
         }
 
 
