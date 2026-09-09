@@ -1,1066 +1,1555 @@
 /* =========================================================
-   CANDIDATE MESSAGES PAGE
-   ========================================================= */
+   CANDIDATE MESSAGE PAGE
+========================================================= */
 
-.candidate-messages-page {
+.candidate-message-page {
   min-height: 100vh;
-  background: #f6f7f9;
-  color: #111827;
-}
-
-.candidate-utility {
-  min-height: 100vh;
-  display: flex;
-  background: #f6f7f9;
-}
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-.candidate-utility-sidebar {
-  width: 250px;
-  min-height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-
-  padding: 26px 16px 18px;
-
-  z-index: 20;
-}
-
-.candidate-utility-logo {
-  display: flex;
-  flex-direction: column;
-
-  text-decoration: none;
-  color: #111827;
-
-  padding: 4px 14px 28px;
-}
-
-.candidate-utility-logo strong {
-  font-size: 24px;
-  font-weight: 800;
-  font-family: "Times New Roman", Times, serif;
-  letter-spacing: -0.6px;
-}
-
-.candidate-utility-logo small {
-  margin-top: 3px;
-  font-family: "Times New Roman", Times, serif;
-
-  font-size: 11px;
-  color: #8a919d;
-}
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-.candidate-utility-navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-navigation a {
-  min-height: 46px;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: "Times New Roman", Times, serif;
-
-  padding: 0 13px;
-
-  border-radius: 10px;
-
-  color: #69717d;
-  text-decoration: none;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.candidate-utility-navigation a svg {
-  width: 19px;
-  height: 19px;
-  flex-shrink: 0;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-navigation a:hover {
-  background: #f3f4f6;
-  color: #111827;
-}
-
-.candidate-utility-navigation-active {
-  background: #111827 !important;
-  color: #ffffff !important;
-}
-
-.candidate-utility-navigation-badge {
-  min-width: 20px;
-  height: 20px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-left: auto;
-
-  padding: 0 6px;
-
-  border-radius: 20px;
-
-  background: #ffffff;
-  color: #111827;
-
-  font-size: 10px;
-  font-weight: 800;
-  font-family: "Times New Roman", Times, serif;
-}
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
-.candidate-utility-logout {
   width: 100%;
-  min-height: 45px;
+
+  background: #ffffff;
+  color: #171717;
 
   display: flex;
-  align-items: center;
-  gap: 12px;
 
-  margin-top: auto;
-  padding: 0 13px;
-
-  border: 0;
-  border-radius: 10px;
-
-  background: transparent;
-  color: #69717d;
-
-  font-size: 14px;
-  font-weight: 600;
   font-family: "Times New Roman", Times, serif;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  box-sizing: border-box;
 }
 
-.candidate-utility-logout svg {
-  width: 19px;
-  height: 19px;
-}
-
-.candidate-utility-logout:hover {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-/* =========================================================
-   MAIN
-   ========================================================= */
-
-.candidate-utility-main {
-  width: calc(100% - 250px);
+.candidate-message-main {
+  flex: 1;
+  min-width: 0;
   min-height: 100vh;
 
   margin-left: 250px;
-}
-
-.candidate-utility-topbar {
-  min-height: 82px;
-
-  display: flex;
-  align-items: center;
-
-  padding: 18px 42px;
 
   background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  box-sizing: border-box;
 }
 
-.candidate-utility-topbar > div:first-child {
-  flex: 1;
-}
-
-.candidate-utility-topbar h1 {
-  margin: 0;
-
-  font-size: 24px;
-  font-weight: 800;
-  font-family: "Times New Roman", Times, serif;
-  color: #111827;
-}
-
-.candidate-utility-topbar p {
-  margin: 4px 0 0;
-
-  color: #8a919d;
-  font-size: 13px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-notification {
-  width: 40px;
-  height: 40px;
-
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-right: 22px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-
-  background: #ffffff;
-  color: #596170;
-
-  cursor: pointer;
-}
-
-.candidate-utility-notification svg {
-  width: 19px;
-  height: 19px;
-}
-
-.candidate-utility-notification i {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-
-  min-width: 18px;
-  height: 18px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0 4px;
-
-  border-radius: 20px;
-
-  background: #111827;
-  color: #ffffff;
-
-  font-size: 9px;
-  font-style: normal;
-  font-weight: 800;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.candidate-utility-user > span {
-  width: 38px;
-  height: 38px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: hidden;
-
-  border-radius: 50%;
-
-  background: #111827;
-  color: #ffffff;
-
-  font-size: 14px;
-  font-weight: 800;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-user img {
+.candidate-message-content {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  max-width: 1500px;
 
-.candidate-utility-user div {
-  display: flex;
-  flex-direction: column;
-}
-
-.candidate-utility-user strong {
-  color: #111827;
-  font-size: 13px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-user small {
-  margin-top: 2px;
-  color: #8a919d;
-  font-size: 11px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-utility-content {
-  max-width: 1300px;
   margin: 0 auto;
-  padding: 38px 42px 60px;
+  padding: 32px 36px 48px;
+
+  box-sizing: border-box;
 }
 
 /* =========================================================
-   PAGE HEADER
-   ========================================================= */
+   PAGE HEADING
+========================================================= */
 
-.candidate-messages-header {
+.candidate-message-heading {
+  width: 100%;
+
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
 
-  gap: 25px;
+  gap: 30px;
+
   margin-bottom: 28px;
 }
 
-.candidate-messages-eyebrow {
-  display: block;
+.candidate-message-heading > div:first-child {
+  min-width: 0;
+}
+
+.candidate-message-eyebrow {
+  display: inline-block;
 
   margin-bottom: 7px;
 
-  color: #7b8491;
+  color: #777777;
 
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
+
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: "Times New Roman", Times, serif;
+  letter-spacing: 0.8px;
 }
 
-.candidate-messages-header h2 {
+.candidate-message-heading h1 {
   margin: 0;
 
-  color: #111827;
+  color: #111111;
 
   font-size: 30px;
   line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: -0.7px;
-  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+
+  letter-spacing: -0.5px;
 }
 
-.candidate-messages-header p {
+.candidate-message-heading p {
+  margin: 8px 0 0;
+
   max-width: 650px;
 
-  margin: 9px 0 0;
-
-  color: #747d89;
+  color: #777777;
 
   font-size: 14px;
   line-height: 1.6;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-messages-mark-read {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  padding: 10px 15px;
-
-  border: 1px solid #e1e4e8;
-  border-radius: 9px;
-
-  background: #ffffff;
-  color: #303744;
-
-  font-size: 12px;
-  font-weight: 700;
-  font-family: "Times New Roman", Times, serif;
-
-  cursor: pointer;
-
-  transition: 0.2s ease;
-}
-
-.candidate-messages-mark-read svg {
-  width: 16px;
-  height: 16px;
-}
-
-.candidate-messages-mark-read:hover {
-  border-color: #111827;
-  color: #111827;
 }
 
 /* =========================================================
-   TOOLBAR
-   ========================================================= */
+   TOTAL CONVERSATIONS
+========================================================= */
 
-.candidate-messages-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.candidate-message-total {
+  flex-shrink: 0;
 
-  gap: 18px;
+  min-width: 135px;
 
-  margin-bottom: 20px;
-}
+  padding: 12px 15px;
 
-.candidate-messages-search {
-  width: min(500px, 100%);
-
-  height: 46px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 0 14px;
-
-  border: 1px solid #e2e5e9;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
 
   background: #ffffff;
-}
-
-.candidate-messages-search svg {
-  width: 18px;
-  height: 18px;
-  color: #9299a4;
-}
-
-.candidate-messages-search input {
-  width: 100%;
-
-  border: 0;
-  outline: 0;
-
-  background: transparent;
-
-  color: #111827;
-
-  font-size: 13px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-messages-search input::placeholder {
-  color: #a0a6ae;
-}
-
-.candidate-messages-filters {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.candidate-messages-filters button {
-  height: 38px;
-
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  padding: 0 13px;
-
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-
-  background: #ffffff;
-  color: #707884;
-
-  font-size: 12px;
-  font-weight: 700;
-  font-family: "Times New Roman", Times, serif;
-
-  cursor: pointer;
-}
-
-.candidate-messages-filters button.active {
-  background: #111827;
-  border-color: #111827;
-  color: #ffffff;
-}
-
-.candidate-messages-filters span {
-  min-width: 18px;
-  height: 18px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 20px;
+  gap: 8px;
 
-  background: #ffffff;
-  color: #111827;
+  box-sizing: border-box;
+}
 
-  font-size: 9px;
-  font-family: "Times New Roman", Times, serif;
+.candidate-message-total svg {
+  color: #555555;
+}
+
+.candidate-message-total span {
+  color: #111111;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.candidate-message-total small {
+  color: #777777;
+
+  font-size: 12px;
 }
 
 /* =========================================================
-   ERROR
-   ========================================================= */
+   MESSAGE WORKSPACE
+========================================================= */
 
-.candidate-messages-error {
+.candidate-message-workspace {
+  width: 100%;
+  min-width: 0;
+  min-height: 650px;
+
+  display: grid;
+  grid-template-columns: 350px minmax(0, 1fr);
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CONVERSATION PANEL
+========================================================= */
+
+.candidate-conversation-panel {
+  min-width: 0;
+  min-height: 650px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e5e7eb;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CONVERSATION HEADER
+========================================================= */
+
+.candidate-conversation-header {
+  min-height: 76px;
+
+  padding: 15px 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border-bottom: 1px solid #eeeeee;
+
+  box-sizing: border-box;
+}
+
+.candidate-conversation-header > div {
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
 
   gap: 4px;
-
-  margin-bottom: 20px;
-  padding: 13px 15px;
-
-  border: 1px solid #fecaca;
-  border-radius: 10px;
-
-  background: #fef2f2;
-  color: #991b1b;
 }
 
-.candidate-messages-error strong {
-  font-size: 12px;
-  font-family: "Times New Roman", Times, serif;
+.candidate-conversation-header h2 {
+  margin: 0;
+
+  color: #111111;
+
+  font-size: 16px;
+  font-weight: 700;
 }
 
-.candidate-messages-error span {
-  font-size: 12px;
-  font-family: "Times New Roman", Times, serif;
+.candidate-conversation-header span {
+  color: #888888;
+
+  font-size: 11px;
+}
+
+.candidate-unread-total {
+  min-width: 25px;
+  height: 25px;
+
+  padding: 0 7px;
+
+  border-radius: 999px;
+
+  background: #111111;
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+
+  box-sizing: border-box;
 }
 
 /* =========================================================
-   SUMMARY
-   ========================================================= */
+   SEARCH
+========================================================= */
 
-.candidate-messages-summary {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.candidate-message-search {
+  position: relative;
 
-  gap: 14px;
+  margin: 14px 14px 10px;
 
-  margin-bottom: 22px;
-}
-
-.candidate-messages-summary > div {
-  min-height: 80px;
+  height: 40px;
 
   display: flex;
   align-items: center;
-  gap: 13px;
 
-  padding: 15px 18px;
+  box-sizing: border-box;
+}
 
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+.candidate-message-search svg {
+  position: absolute;
+  left: 12px;
+
+  color: #8a8a8a;
+
+  pointer-events: none;
+}
+
+.candidate-message-search input {
+  width: 100%;
+  height: 100%;
+
+  padding: 0 12px 0 38px;
+
+  border: 1px solid #e1e5e9;
+  border-radius: 9px;
+
+  outline: none;
 
   background: #ffffff;
+  color: #222222;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
-.candidate-messages-summary svg {
-  width: 20px;
-  height: 20px;
-
-  color: #5e6673;
+.candidate-message-search input::placeholder {
+  color: #a0a0a0;
 }
 
-.candidate-messages-summary span {
-  display: flex;
-  flex-direction: column;
-
-  gap: 2px;
-
-  color: #8a919d;
-
-  font-size: 11px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-messages-summary strong {
-  color: #111827;
-  font-size: 20px;
-  font-family: "Times New Roman", Times, serif;
+.candidate-message-search input:focus {
+  border-color: #bdbdbd;
+  background: #fafafa;
 }
 
 /* =========================================================
-   MESSAGE PANEL
-   ========================================================= */
+   FILTERS
+========================================================= */
 
-.candidate-messages-panel {
-  overflow: hidden;
+.candidate-message-filters {
+  display: flex;
 
-  border: 1px solid #e2e5e9;
-  border-radius: 14px;
+  gap: 6px;
+
+  padding: 0 14px 12px;
+
+  border-bottom: 1px solid #eeeeee;
+
+  box-sizing: border-box;
+}
+
+.candidate-message-filters button {
+  min-height: 30px;
+
+  padding: 0 11px;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #777777;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.candidate-message-filters button:hover {
+  background: #f6f6f6;
+  color: #222222;
+}
+
+.candidate-message-filters button.active {
+  border-color: #111111;
+
+  background: #111111;
+  color: #ffffff;
+}
+
+/* =========================================================
+   CONVERSATION LIST
+========================================================= */
+
+.candidate-conversation-list {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
 
   background: #ffffff;
 }
 
-.candidate-messages-panel-header {
-  min-height: 78px;
+.candidate-conversation-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.candidate-conversation-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.candidate-conversation-list::-webkit-scrollbar-thumb {
+  background: #dddddd;
+  border-radius: 999px;
+}
+
+/* =========================================================
+   CONVERSATION ITEM
+========================================================= */
+
+.candidate-conversation-item {
+  width: 100%;
+  min-height: 82px;
+
+  padding: 12px 14px;
+
+  border: 0;
+  border-bottom: 1px solid #f0f0f0;
+
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  text-align: left;
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.candidate-conversation-item:hover {
+  background: #fafafa;
+}
+
+.candidate-conversation-item.active {
+  background: #f5f5f5;
+
+  box-shadow: inset 3px 0 0 #111111;
+}
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.candidate-message-avatar {
+  position: relative;
+
+  flex: 0 0 42px;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  background: #111111;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  box-sizing: border-box;
+}
+
+.candidate-message-avatar img {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  z-index: 2;
+}
+
+.candidate-message-avatar span {
+  position: relative;
+
+  z-index: 1;
+}
+
+.candidate-message-avatar-fallback {
+  background: #111111;
+  color: #ffffff;
+}
+
+/* =========================================================
+   CONVERSATION COPY
+========================================================= */
+
+.candidate-conversation-copy {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.candidate-conversation-top {
+  min-width: 0;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 16px 20px;
-
-  border-bottom: 1px solid #edf0f2;
+  gap: 8px;
 }
 
-.candidate-messages-panel-header span {
-  color: #8a919d;
-
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-.candidate-messages-panel-header h3 {
-  margin: 3px 0 0;
-
-  color: #111827;
-  font-family: "Times New Roman", Times, serif;
-
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.candidate-messages-panel-header small {
-  color: #8a919d;
-  font-size: 11px;
-  font-family: "Times New Roman", Times, serif;
-}
-
-/* =========================================================
-   MESSAGE LIST
-   ========================================================= */
-
-.candidate-messages-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.candidate-message-item {
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  gap: 15px;
-
-  padding: 18px 20px;
-
-  border: 0;
-  border-bottom: 1px solid #edf0f2;
-
-  background: #ffffff;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition: background 0.2s ease;
-}
-
-.candidate-message-item:last-child {
-  border-bottom: 0;
-}
-
-.candidate-message-item:hover {
-  background: #fafafa;
-}
-
-.candidate-message-item-unread {
-  background: #fcfcfd;
-}
-
-.candidate-message-item-icon {
-  width: 44px;
-  height: 44px;
-
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 11px;
-
-  background: #f0f1f3;
-  color: #303744;
-}
-
-.candidate-message-item-icon svg {
-  width: 19px;
-  height: 19px;
-}
-
-.candidate-message-item-unread .candidate-message-item-icon {
-  background: #111827;
-  color: #ffffff;
-}
-
-.candidate-message-item-content {
+.candidate-conversation-top strong {
   min-width: 0;
-  flex: 1;
-}
 
-.candidate-message-item-top {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.candidate-message-item-top strong {
   overflow: hidden;
 
-  color: #20252d;
+  color: #171717;
 
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
 
-  text-overflow: ellipsis;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.candidate-message-new {
+.candidate-conversation-top time {
   flex-shrink: 0;
 
-  padding: 3px 7px;
-
-  border-radius: 20px;
-
-  background: #111827;
-  color: #ffffff;
-
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.candidate-message-item-content p {
-  overflow: hidden;
-
-  margin: 5px 0;
-
-  color: #727a86;
-
-  font-size: 12px;
-  line-height: 1.5;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.candidate-message-item-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  color: #9aa1aa;
+  color: #999999;
 
   font-size: 10px;
 }
 
-.candidate-message-job {
-  padding: 3px 7px;
+.candidate-conversation-copy > small {
+  overflow: hidden;
 
-  border-radius: 20px;
+  color: #777777;
 
-  background: #f1f2f4;
-  color: #68717e;
+  font-size: 11px;
 
-  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.candidate-message-item-arrow {
+.candidate-conversation-bottom {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.candidate-conversation-bottom em {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #999999;
+
+  font-size: 11px;
+  font-style: normal;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.candidate-conversation-bottom b {
   flex-shrink: 0;
 
-  color: #a1a7b0;
+  min-width: 19px;
+  height: 19px;
 
-  font-size: 18px;
-}
+  padding: 0 5px;
 
-.candidate-message-item:hover .candidate-message-item-arrow {
-  color: #111827;
+  border-radius: 999px;
+
+  background: #111111;
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 9px;
+
+  box-sizing: border-box;
 }
 
 /* =========================================================
-   EMPTY STATE
-   ========================================================= */
+   LIST STATE
+========================================================= */
 
-.candidate-messages-empty {
-  min-height: 310px;
+.candidate-message-list-state {
+  min-height: 260px;
+
+  padding: 30px 20px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  padding: 40px 20px;
-
   text-align: center;
+
+  box-sizing: border-box;
 }
 
-.candidate-messages-empty-icon {
-  width: 58px;
-  height: 58px;
+.candidate-message-list-state svg {
+  margin-bottom: 10px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-bottom: 14px;
-
-  border-radius: 50%;
-
-  background: #f0f1f3;
-  color: #737b87;
+  color: #999999;
 }
 
-.candidate-messages-empty-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.candidate-messages-empty h3 {
-  margin: 0;
-
-  color: #20252d;
-
-  font-size: 17px;
-}
-
-.candidate-messages-empty p {
-  max-width: 400px;
-
-  margin: 7px 0 17px;
-
-  color: #858d98;
-
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.candidate-messages-empty a {
-  padding: 9px 15px;
-
-  border-radius: 8px;
-
-  background: #111827;
-  color: #ffffff;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  text-decoration: none;
-}
-
-/* =========================================================
-   FUTURE CHAT NOTE
-   ========================================================= */
-
-.candidate-messages-chat-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-
-  margin-top: 20px;
-  padding: 18px 20px;
-
-  border: 1px dashed #d7dbe0;
-  border-radius: 12px;
-
-  background: #fafafa;
-}
-
-.candidate-messages-chat-icon {
-  width: 40px;
-  height: 40px;
-
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 9px;
-
-  background: #eceef1;
-  color: #626a76;
-}
-
-.candidate-messages-chat-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.candidate-messages-chat-info span {
-  color: #8a919d;
-
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.candidate-messages-chat-info h3 {
-  margin: 3px 0 5px;
-
-  color: #242932;
+.candidate-message-list-state strong {
+  color: #333333;
 
   font-size: 14px;
 }
 
-.candidate-messages-chat-info p {
-  max-width: 850px;
+.candidate-message-list-state p {
+  max-width: 230px;
 
-  margin: 0;
+  margin: 7px 0 14px;
 
-  color: #7b838e;
+  color: #999999;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.candidate-message-list-state button {
+  min-height: 34px;
+
+  padding: 0 14px;
+
+  border: 1px solid #111111;
+  border-radius: 7px;
+
+  background: #111111;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.candidate-message-list-state button:hover {
+  background: #2a2a2a;
+}
+
+.candidate-message-list-state.error svg {
+  color: #777777;
+}
+
+/* =========================================================
+   CHAT PANEL
+========================================================= */
+
+.candidate-chat-panel {
+  min-width: 0;
+  min-height: 650px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.candidate-chat-header {
+  min-height: 76px;
+
+  padding: 14px 20px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-back {
+  display: none;
+
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #333333;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.candidate-chat-back:hover {
+  background: #f6f6f6;
+}
+
+.candidate-chat-identity {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.candidate-chat-identity strong {
+  overflow: hidden;
+
+  color: #111111;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.candidate-chat-identity span {
+  overflow: hidden;
+
+  color: #777777;
 
   font-size: 11px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.candidate-chat-status {
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 3px;
+}
+
+.candidate-chat-status span {
+  color: #999999;
+
+  font-size: 10px;
+}
+
+.candidate-chat-status strong {
+  color: #333333;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   CHAT ERROR
+========================================================= */
+
+.candidate-chat-error {
+  margin: 10px 18px 0;
+
+  padding: 9px 12px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 7px;
+
+  background: #fafafa;
+  color: #555555;
+
+  font-size: 12px;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CHAT MESSAGES
+========================================================= */
+
+.candidate-chat-messages {
+  flex: 1;
+  min-height: 0;
+
+  padding: 24px 24px 20px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-messages::-webkit-scrollbar {
+  width: 5px;
+}
+
+.candidate-chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.candidate-chat-messages::-webkit-scrollbar-thumb {
+  background: #dddddd;
+  border-radius: 999px;
+}
+
+/* =========================================================
+   MESSAGE THREAD
+========================================================= */
+
+.candidate-message-thread {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+/* =========================================================
+   MESSAGE ROW
+========================================================= */
+
+.candidate-message-row {
+  width: 100%;
+
+  display: flex;
+}
+
+.candidate-message-row.mine {
+  justify-content: flex-end;
+}
+
+.candidate-message-row.theirs {
+  justify-content: flex-start;
+}
+
+/* =========================================================
+   MESSAGE BUBBLE
+========================================================= */
+
+.candidate-message-bubble {
+  max-width: min(72%, 560px);
+
+  padding: 10px 13px 8px;
+
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+
+  background: #f7f7f7;
+
+  box-sizing: border-box;
+}
+
+.candidate-message-row.mine .candidate-message-bubble {
+  border-color: #111111;
+
+  background: #111111;
+  color: #ffffff;
+
+  border-bottom-right-radius: 4px;
+}
+
+.candidate-message-row.theirs .candidate-message-bubble {
+  border-bottom-left-radius: 4px;
+}
+
+.candidate-message-bubble p {
+  margin: 0;
+
+  color: inherit;
+
+  font-size: 13px;
+  line-height: 1.55;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.candidate-message-bubble > span {
+  margin-top: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 4px;
+
+  color: #999999;
+
+  font-size: 9px;
+}
+
+.candidate-message-row.mine .candidate-message-bubble > span {
+  color: #cccccc;
+}
+
+/* =========================================================
+   EMPTY CHAT
+========================================================= */
+
+.candidate-chat-state {
+  flex: 1;
+  min-height: 650px;
+
+  padding: 30px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-state-icon {
+  width: 62px;
+  height: 62px;
+
+  margin-bottom: 16px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #fafafa;
+  color: #555555;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candidate-chat-state h2 {
+  margin: 0;
+
+  color: #222222;
+
+  font-size: 18px;
+}
+
+.candidate-chat-state p {
+  max-width: 360px;
+
+  margin: 8px 0 0;
+
+  color: #888888;
+
+  font-size: 13px;
   line-height: 1.6;
 }
 
 /* =========================================================
-   RESPONSIVE
-   ========================================================= */
+   EMPTY THREAD
+========================================================= */
 
-@media (max-width: 1000px) {
-  .candidate-utility-sidebar {
-    width: 220px;
+.candidate-chat-empty {
+  min-height: 320px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.candidate-chat-empty > div {
+  width: 55px;
+  height: 55px;
+
+  margin-bottom: 12px;
+
+  border-radius: 50%;
+
+  background: #f5f5f5;
+  color: #777777;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candidate-chat-empty strong {
+  color: #333333;
+
+  font-size: 14px;
+}
+
+.candidate-chat-empty p {
+  margin: 6px 0 0;
+
+  color: #999999;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   COMPOSER
+========================================================= */
+
+.candidate-chat-composer {
+  min-height: 68px;
+
+  padding: 12px 16px;
+
+  display: flex;
+  align-items: flex-end;
+
+  gap: 10px;
+
+  border-top: 1px solid #e5e7eb;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-composer textarea {
+  flex: 1;
+  min-width: 0;
+
+  min-height: 42px;
+  max-height: 120px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #dfe3e7;
+  border-radius: 9px;
+
+  outline: none;
+
+  resize: none;
+
+  background: #ffffff;
+  color: #222222;
+
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+
+  box-sizing: border-box;
+
+  transition: border-color 0.2s ease;
+}
+
+.candidate-chat-composer textarea::placeholder {
+  color: #999999;
+}
+
+.candidate-chat-composer textarea:focus {
+  border-color: #999999;
+}
+
+.candidate-chat-composer textarea:disabled {
+  background: #f8f8f8;
+  cursor: not-allowed;
+}
+
+.candidate-chat-composer button {
+  min-width: 78px;
+  height: 42px;
+
+  padding: 0 13px;
+
+  border: 1px solid #111111;
+  border-radius: 9px;
+
+  background: #111111;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.candidate-chat-composer button:hover:not(:disabled) {
+  background: #292929;
+}
+
+.candidate-chat-composer button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   SEND SPINNER
+========================================================= */
+
+.candidate-send-spinner {
+  width: 15px;
+  height: 15px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: candidateSendSpin 0.7s linear infinite;
+}
+
+@keyframes candidateSendSpin {
+  to {
+    transform: rotate(360deg);
   }
+}
 
-  .candidate-utility-main {
-    width: calc(100% - 220px);
+/* =========================================================
+   COMPOSER HINT
+========================================================= */
+
+.candidate-chat-composer-hint {
+  padding: 0 17px 9px;
+
+  color: #aaaaaa;
+
+  font-size: 10px;
+
+  text-align: right;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CHAT LOADING
+========================================================= */
+
+.candidate-chat-loading {
+  flex: 1;
+  min-height: 650px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-loading-header {
+  min-height: 76px;
+
+  padding: 14px 20px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  border-bottom: 1px solid #eeeeee;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-loading-header > span {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+}
+
+.candidate-chat-loading-header > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.candidate-chat-loading-header i {
+  width: 140px;
+  height: 11px;
+
+  border-radius: 5px;
+
+  background: #eeeeee;
+}
+
+.candidate-chat-loading-header b {
+  width: 95px;
+  height: 8px;
+
+  border-radius: 5px;
+
+  background: #f1f1f1;
+}
+
+.candidate-chat-loading-messages {
+  flex: 1;
+
+  padding: 25px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  box-sizing: border-box;
+}
+
+.candidate-chat-loading-messages span {
+  width: 45%;
+  height: 42px;
+
+  border-radius: 10px;
+
+  background: #f0f0f0;
+}
+
+.candidate-chat-loading-messages span.left {
+  align-self: flex-start;
+}
+
+.candidate-chat-loading-messages span.right {
+  align-self: flex-end;
+}
+
+.candidate-chat-loading-messages span.short {
+  width: 30%;
+}
+
+.candidate-chat-loading-messages span.medium {
+  width: 38%;
+}
+
+.candidate-chat-loading-composer {
+  height: 68px;
+
+  border-top: 1px solid #eeeeee;
+
+  background: #fafafa;
+}
+
+/* =========================================================
+   CONVERSATION LIST LOADING
+========================================================= */
+
+.candidate-conversation-loading {
+  width: 100%;
+}
+
+.candidate-conversation-skeleton {
+  min-height: 82px;
+
+  padding: 12px 14px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  border-bottom: 1px solid #f0f0f0;
+
+  box-sizing: border-box;
+}
+
+.candidate-conversation-skeleton > span {
+  flex: 0 0 42px;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+}
+
+.candidate-conversation-skeleton > div {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.candidate-conversation-skeleton i {
+  width: 65%;
+  height: 10px;
+
+  border-radius: 5px;
+
+  background: #eeeeee;
+}
+
+.candidate-conversation-skeleton b {
+  width: 45%;
+  height: 8px;
+
+  border-radius: 5px;
+
+  background: #f1f1f1;
+}
+
+.candidate-conversation-skeleton em {
+  width: 75%;
+  height: 8px;
+
+  border-radius: 5px;
+
+  background: #f3f3f3;
+}
+
+/* =========================================================
+   TABLET - 1100px
+   Sidebar = 220px
+========================================================= */
+
+@media (max-width: 1100px) {
+  .candidate-message-main {
     margin-left: 220px;
   }
 
-  .candidate-utility-content {
-    padding: 30px 25px 50px;
+  .candidate-message-content {
+    padding: 30px 28px 44px;
   }
 
-  .candidate-utility-topbar {
-    padding: 18px 25px;
-  }
-
-  .candidate-messages-summary {
-    grid-template-columns: 1fr;
+  .candidate-message-workspace {
+    grid-template-columns: 320px minmax(0, 1fr);
   }
 }
 
-@media (max-width: 760px) {
-  .candidate-utility-sidebar {
-    width: 70px;
-    padding: 20px 9px;
+/* =========================================================
+   TABLET / MOBILE - 768px
+   Sidebar = 72px
+========================================================= */
+
+@media (max-width: 768px) {
+  .candidate-message-main {
+    margin-left: 72px;
   }
 
-  .candidate-utility-main {
-    width: calc(100% - 70px);
-    margin-left: 70px;
+  .candidate-message-content {
+    padding: 26px 22px 40px;
   }
 
-  .candidate-utility-logo {
-    align-items: center;
-    padding: 4px 0 25px;
+  .candidate-message-heading {
+    align-items: flex-start;
+
+    margin-bottom: 22px;
   }
 
-  .candidate-utility-logo strong {
-    font-size: 18px;
+  .candidate-message-heading h1 {
+    font-size: 27px;
   }
 
-  .candidate-utility-logo small,
-  .candidate-utility-navigation a span,
-  .candidate-utility-logout span {
+  .candidate-message-total {
+    min-width: 120px;
+  }
+
+  /*
+     At this width the workspace becomes a single-panel
+     mobile chat layout.
+  */
+
+  .candidate-message-workspace {
+    min-height: 620px;
+
+    display: block;
+
+    position: relative;
+  }
+
+  .candidate-conversation-panel {
+    width: 100%;
+    min-height: 620px;
+
+    border-right: 0;
+  }
+
+  .candidate-chat-panel {
+    width: 100%;
+    min-height: 620px;
+  }
+
+  /*
+     Default mobile state:
+     show conversation list
+     hide chat
+  */
+
+  .candidate-message-workspace:not(.mobile-chat-open) .candidate-chat-panel {
     display: none;
   }
 
-  .candidate-utility-navigation a,
-  .candidate-utility-logout {
-    justify-content: center;
+  /*
+     When a conversation is selected:
+     hide list
+     show chat
+  */
+
+  .candidate-message-workspace.mobile-chat-open .candidate-conversation-panel {
+    display: none;
+  }
+
+  .candidate-message-workspace.mobile-chat-open .candidate-chat-panel {
+    display: flex;
+  }
+
+  .candidate-chat-back {
+    display: flex;
+  }
+
+  .candidate-message-bubble {
+    max-width: 82%;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE - 480px
+   Sidebar = 64px
+========================================================= */
+
+@media (max-width: 480px) {
+  .candidate-message-main {
+    margin-left: 64px;
+  }
+
+  .candidate-message-content {
+    padding: 22px 14px 30px;
+  }
+
+  .candidate-message-heading {
+    display: block;
+  }
+
+  .candidate-message-heading h1 {
+    font-size: 25px;
+  }
+
+  .candidate-message-heading p {
+    font-size: 12px;
+  }
+
+  .candidate-message-total {
+    width: fit-content;
+
+    margin-top: 14px;
+  }
+
+  .candidate-message-workspace {
+    min-height: calc(100vh - 190px);
+
+    border-radius: 11px;
+  }
+
+  .candidate-conversation-panel,
+  .candidate-chat-panel {
+    min-height: calc(100vh - 190px);
+  }
+
+  .candidate-conversation-header {
+    padding: 14px;
+  }
+
+  .candidate-message-search {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .candidate-message-filters {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .candidate-chat-header {
+    padding: 12px 13px;
+
+    gap: 9px;
+  }
+
+  .candidate-chat-header .candidate-message-avatar {
+    width: 38px;
+    height: 38px;
+
+    flex-basis: 38px;
+  }
+
+  .candidate-chat-status {
+    display: none;
+  }
+
+  .candidate-chat-messages {
+    padding: 18px 13px;
+  }
+
+  .candidate-message-bubble {
+    max-width: 88%;
+
+    padding: 9px 11px 7px;
+  }
+
+  .candidate-message-bubble p {
+    font-size: 12px;
+  }
+
+  .candidate-chat-composer {
+    padding: 10px;
+  }
+
+  .candidate-chat-composer button {
+    min-width: 43px;
+    width: 43px;
+
     padding: 0;
   }
 
-  .candidate-utility-navigation-badge {
-    position: absolute;
-    margin-left: 27px;
-    margin-top: -25px;
-  }
-
-  .candidate-utility-topbar {
-    padding: 15px;
-  }
-
-  .candidate-utility-topbar p,
-  .candidate-utility-user div {
+  .candidate-chat-composer button span:not(.candidate-send-spinner) {
     display: none;
   }
 
-  .candidate-utility-content {
-    padding: 25px 15px 40px;
-  }
-
-  .candidate-messages-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .candidate-messages-toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .candidate-messages-search {
-    width: 100%;
-  }
-
-  .candidate-messages-filters {
-    overflow-x: auto;
+  .candidate-chat-composer-hint {
+    display: none;
   }
 }
 
-@media (max-width: 500px) {
-  .candidate-messages-header h2 {
-    font-size: 24px;
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .candidate-message-avatar,
+  .candidate-conversation-item,
+  .candidate-message-search input,
+  .candidate-message-filters button,
+  .candidate-chat-composer button {
+    transition: none;
   }
 
-  .candidate-message-item {
-    padding: 15px;
-  }
-
-  .candidate-message-item-icon {
-    width: 38px;
-    height: 38px;
-  }
-
-  .candidate-message-item-arrow {
-    display: none;
-  }
-
-  .candidate-messages-summary {
-    gap: 8px;
-  }
-
-  .candidate-messages-chat-info {
-    padding: 15px;
+  .candidate-send-spinner {
+    animation: none;
   }
 }

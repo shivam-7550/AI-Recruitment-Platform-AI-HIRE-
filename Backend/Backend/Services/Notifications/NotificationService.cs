@@ -530,6 +530,34 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
+
+    // =========================================================
+    // NewMessage
+    // =========================================================
+    public async Task NotifyNewMessageAsync(
+    Guid recipientUserId,
+    string senderName,
+    CancellationToken cancellationToken)
+    {
+        var notification = new Notification
+        {
+            UserId = recipientUserId,
+            Title = "New message",
+            Message = $"New message from {senderName}",
+            Type = "NewMessage",
+            IsRead = false,
+            IsArchived = false,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _repository.AddRangeAsync(
+            new[] { notification },
+            cancellationToken);
+
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
+
     // =========================================================
     // GET CURRENT USER NOTIFICATIONS
     // =========================================================

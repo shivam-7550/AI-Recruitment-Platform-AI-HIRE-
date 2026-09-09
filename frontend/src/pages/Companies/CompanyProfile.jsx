@@ -229,7 +229,7 @@ export default function CompanyProfile() {
             COMPANY HEADER
         =================================================== */}
 
-        <CompanyHeader />
+        <CompanyHeader company={company} setCompany={setCompany} />
 
         {/* ===================================================
             PROFILE PAGE
@@ -239,14 +239,14 @@ export default function CompanyProfile() {
           <div className="company-profile-container">
             {/* Header */}
             <div className="company-profile-topbar">
-              <button
+              {/* <button
                 type="button"
                 className="company-profile-back"
                 onClick={handleBack}
               >
                 <ArrowLeft size={18} />
                 Back to Dashboard
-              </button>
+              </button> */}
             </div>
 
             <div className="company-profile-heading">

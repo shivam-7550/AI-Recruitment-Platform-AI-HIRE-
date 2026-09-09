@@ -106,6 +106,45 @@ namespace Backend.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Backend.Models.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CandidateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId")
+                        .IsUnique();
+
+                    b.HasIndex("CandidateId");
+
+                    b.HasIndex("CompanyId", "CandidateId", "ApplicationId")
+                        .IsUnique();
+
+                    b.ToTable("Conversations");
+                });
+
             modelBuilder.Entity("Backend.Models.Interview", b =>
                 {
                     b.Property<Guid>("Id")
@@ -348,6 +387,43 @@ namespace Backend.Migrations
                         .IsUnique();
 
                     b.ToTable("JobApplications");
+                });
+
+            modelBuilder.Entity("Backend.Models.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Backend.Models.Notification", b =>
@@ -756,6 +832,33 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Backend.Models.Conversation", b =>
+                {
+                    b.HasOne("Backend.Models.JobApplication", "Application")
+                        .WithOne("Conversation")
+                        .HasForeignKey("Backend.Models.Conversation", "ApplicationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "Candidate")
+                        .WithMany("ConversationsAsCandidate")
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Company", "Company")
+                        .WithMany("Conversations")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("Backend.Models.Interview", b =>
                 {
                     b.HasOne("Backend.Models.JobApplication", "Application")
@@ -802,6 +905,25 @@ namespace Backend.Migrations
                     b.Navigation("Resume");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.Message", b =>
+                {
+                    b.HasOne("Backend.Models.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "Sender")
+                        .WithMany("MessagesSent")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Backend.Models.Notification", b =>
@@ -887,7 +1009,14 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Company", b =>
                 {
+                    b.Navigation("Conversations");
+
                     b.Navigation("Jobs");
+                });
+
+            modelBuilder.Entity("Backend.Models.Conversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Backend.Models.Job", b =>
@@ -897,11 +1026,20 @@ namespace Backend.Migrations
                     b.Navigation("SavedByUsers");
                 });
 
+            modelBuilder.Entity("Backend.Models.JobApplication", b =>
+                {
+                    b.Navigation("Conversation");
+                });
+
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
                     b.Navigation("Applications");
 
                     b.Navigation("Company");
+
+                    b.Navigation("ConversationsAsCandidate");
+
+                    b.Navigation("MessagesSent");
 
                     b.Navigation("Notifications");
 

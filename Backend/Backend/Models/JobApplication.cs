@@ -38,6 +38,7 @@ public class JobApplication
     public string? ResumeExtractedSkills { get; set; }
     public DateTime? ResumeUploadedAt { get; set; }
 
+    public Conversation? Conversation { get; set; }
 
     // =====================================================
     // Application Form Details

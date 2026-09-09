@@ -108,6 +108,16 @@ public interface INotificationService
         CancellationToken cancellationToken);
 
     // =========================================================
+    // MESSAGING
+    // =========================================================
+
+    Task NotifyNewMessageAsync(
+        Guid recipientUserId,
+        string senderName,
+        CancellationToken cancellationToken);
+
+
+    // =========================================================
     // Get Notifications
     // =========================================================
 

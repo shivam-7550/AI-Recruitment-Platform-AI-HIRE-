@@ -38,6 +38,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Interview> Interviews { get; set; } = null!;
 
+    public DbSet<Conversation> Conversations { get; set; }
+    public DbSet<Message> Messages { get; set; }
+
 
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)
@@ -377,6 +380,68 @@ public class ApplicationDbContext : DbContext
                 .WithOne()
                 .HasForeignKey<UserSettings>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // =========================================================
+        // CONVERSATION
+        // =========================================================
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.HasIndex(x => new
+            {
+                x.CompanyId,
+                x.CandidateId,
+                x.ApplicationId
+            })
+            .IsUnique();
+
+            entity.HasOne(x => x.Company)
+                .WithMany(x => x.Conversations)
+                .HasForeignKey(x => x.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Candidate)
+                .WithMany(x => x.ConversationsAsCandidate)
+                .HasForeignKey(x => x.CandidateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Application)
+                .WithOne(x => x.Conversation)
+                .HasForeignKey<Conversation>(x => x.ApplicationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(x => x.IsArchived)
+                .HasDefaultValue(false);
+        });
+
+
+        // =========================================================
+        // MESSAGE
+        // =========================================================
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Content)
+                .IsRequired()
+                .HasMaxLength(5000);
+
+            entity.Property(x => x.IsRead)
+                .HasDefaultValue(false);
+
+            entity.HasOne(x => x.Conversation)
+                .WithMany(x => x.Messages)
+                .HasForeignKey(x => x.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.Sender)
+                .WithMany(x => x.MessagesSent)
+                .HasForeignKey(x => x.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

@@ -60,5 +60,6 @@ namespace Backend.Models
 
         // Navigation Property
         public ICollection<Job> Jobs { get; set; } = new List<Job>();
+        public ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
     }
 }

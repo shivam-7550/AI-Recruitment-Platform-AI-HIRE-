@@ -8,6 +8,7 @@
   background: #ffffff;
   color: #171717;
   display: flex;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .candidate-interviews-main {
@@ -16,6 +17,7 @@
   min-height: 100vh;
   margin-left: 250px;
   background: #ffffff;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .candidate-interviews-content {
@@ -24,6 +26,7 @@
   padding: 32px 36px 48px;
   max-width: 1500px;
   margin: 0 auto;
+  font-family: "Times New Roman", Times, serif;
 }
 
 /* =========================================================
@@ -39,6 +42,7 @@
   background: #ffffff;
   color: #333333;
   font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .candidate-interviews-spinner {
@@ -72,6 +76,7 @@
   display: block;
   margin-bottom: 8px;
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: #777777;
@@ -80,6 +85,7 @@
 .candidate-interviews-page-header h1 {
   margin: 0;
   font-size: 30px;
+  font-family: "Times New Roman", Times, serif;
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -89,6 +95,7 @@
   margin: 9px 0 0;
   color: #707070;
   font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
   line-height: 1.6;
 }
 
@@ -104,6 +111,7 @@
   background: #ffffff;
   color: #171717;
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -150,6 +158,7 @@
   background: #fafafa;
   color: #3b3b3b;
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .candidate-interviews-error svg {
@@ -202,6 +211,7 @@
   margin-bottom: 4px;
   color: #777777;
   font-size: 12px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 500;
 }
 
@@ -209,6 +219,7 @@
   display: block;
   color: #161616;
   font-size: 24px;
+  font-family: "Times New Roman", Times, serif;
   line-height: 1;
   font-weight: 700;
 }
@@ -234,6 +245,7 @@
   margin-bottom: 5px;
   color: #8a8a8a;
   font-size: 10px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
   letter-spacing: 0.13em;
 }
@@ -242,6 +254,7 @@
   margin: 0;
   color: #171717;
   font-size: 19px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
 }
 
@@ -257,6 +270,7 @@
   background: #fafafa;
   color: #4c4c4c;
   font-size: 12px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
 }
 
@@ -333,6 +347,7 @@
   margin-bottom: 4px;
   color: #777777;
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 600;
 }
 
@@ -341,6 +356,7 @@
   overflow: hidden;
   color: #161616;
   font-size: 17px;
+  font-family: "Times New Roman", Times, serif;
   line-height: 1.35;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -361,6 +377,7 @@
   background: #fafafa;
   color: #444444;
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -418,11 +435,13 @@
   margin-bottom: 3px;
   color: #858585;
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .candidate-interview-schedule-item strong {
   display: block;
   color: #242424;
+  font-family: "Times New Roman", Times, serif;
   font-size: 13px;
   font-weight: 600;
 }
@@ -443,6 +462,7 @@
   margin-bottom: 6px;
   color: #858585;
   font-size: 11px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .candidate-interview-detail strong {
@@ -451,6 +471,7 @@
   gap: 7px;
   color: #252525;
   font-size: 13px;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 600;
 }
 

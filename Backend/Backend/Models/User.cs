@@ -18,6 +18,10 @@
         public ICollection<SavedJob> SavedJobs { get; set; } = new List<SavedJob>();
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
+        public ICollection<Conversation> ConversationsAsCandidate { get; set; } = new List<Conversation>();
+
+        public ICollection<Message> MessagesSent { get; set; } = new List<Message>();
+
         public Company? Company { get; set; }
 
         public UserProfile? Profile { get; set; }

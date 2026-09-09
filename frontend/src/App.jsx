@@ -22,7 +22,7 @@ import CandidateDashboard from "./pages/Candidates/CandidateDashboard";
 // ==========================================
 import CompanyDashboard from "./pages/Companies/CompanyDashboard";
 import CompanyProfile from "./pages/Companies/CompanyProfile";
-
+import CompanyMessage from "./pages/Companies/CompanyMessage";
 // ==========================================
 // Admin Dashboard
 // ==========================================
@@ -232,7 +232,7 @@ function App() {
             Messages
         ----------------------------------------- */}
 
-        <Route path="/company/messages" element={<CompanyDashboard />} />
+        <Route path="/company/messages" element={<CompanyMessage />} />
 
         {/* -----------------------------------------
             Analytics

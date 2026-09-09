@@ -205,6 +205,14 @@ builder.Services.AddScoped<
 builder.Services.AddScoped <IAdminReportsService, AdminReportsService>();
 
 
+//-------------------------------------------------------------
+// Message
+//-------------------------------------------------------------
+
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
+
 // ------------------------------------------------------------
 // AUTHENTICATION
 // ------------------------------------------------------------
@@ -389,9 +397,7 @@ if (app.Environment.IsDevelopment())
             .GetRequiredService<
                 ApplicationDbContext>();
 
-    await migrationDbContext
-        .Database
-        .MigrateAsync();
+    await migrationDbContext.Database.MigrateAsync();
 
 
     // ========================================================

@@ -763,3 +763,32 @@ export const savedJobsApi = {
       method: "DELETE",
     }),
 };
+
+export const messageApi = {
+  conversations: () => api("/messages/conversations"),
+
+  conversation: (conversationId) =>
+    api(`/messages/conversations/${conversationId}`),
+
+  messages: (conversationId) =>
+    api(`/messages/conversations/${conversationId}/messages`),
+
+  createConversation: (data) =>
+    api("/messages/conversations", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  send: (data) =>
+    api("/messages", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  markAsRead: (conversationId) =>
+    api(`/messages/conversations/${conversationId}/read`, {
+      method: "PUT",
+    }),
+
+  unreadCount: () => api("/messages/unread-count"),
+};
