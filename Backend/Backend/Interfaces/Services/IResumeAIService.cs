@@ -1,3 +1,4 @@
+
 using Backend.DTOs.Resume;
 
 namespace Backend.Interfaces.Services;
@@ -42,8 +43,18 @@ public interface IResumeAIService
     Task<CompanyCandidateAIAnalysisDto> AnalyzeCandidateForCompanyAsync(
         string resumeText,
         string candidateSkills,
+        string qualification,
+        string course,
+        string collegeName,
+        int candidateExperience,
         string jobTitle,
         string jobDescription,
         string jobSkills,
+        string preferredSkills,
+        string educationRequirements,
+        string certificationRequirements,
+        int requiredExperience,
+        bool requiresPortfolio,
         CancellationToken cancellationToken = default);
 }
+

@@ -560,11 +560,6 @@ export default function CandidateDashboard() {
               portalRole="User"
               maxItems={8}
               onOpen={() => setShowProfileMenu(false)}
-              resolveRoute={(notification) =>
-                notification?.type === "ApplicationStatusChanged"
-                  ? "/user/applications"
-                  : "/user/browse-jobs"
-              }
             />
 
             {/* ===============================================

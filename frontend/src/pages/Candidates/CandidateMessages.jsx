@@ -1180,7 +1180,7 @@ export default function CandidateMessage() {
           ==================================================== */}
 
           <section className="candidate-message-heading">
-            <div>
+            {/* <div>
               <span className="candidate-message-eyebrow">
                 Recruitment communication
               </span>
@@ -1191,9 +1191,9 @@ export default function CandidateMessage() {
                 Connect with companies about your applications and recruitment
                 process.
               </p>
-            </div>
+            </div> */}
 
-            <div className="candidate-message-total">
+            {/* <div className="candidate-message-total">
               <MessageCircle size={18} />
 
               <span>{conversations.length}</span>
@@ -1202,7 +1202,7 @@ export default function CandidateMessage() {
                 conversation
                 {conversations.length === 1 ? "" : "s"}
               </small>
-            </div>
+            </div> */}
           </section>
 
           {/* ====================================================
@@ -1221,9 +1221,10 @@ export default function CandidateMessage() {
             <aside className="candidate-conversation-panel">
               <div className="candidate-conversation-header">
                 <div>
-                  <h2>Conversations</h2>
+                  <h1>Chat</h1>
+                  {/* <h2>Conversations</h2>
 
-                  <span>{conversations.length} total</span>
+                  <span>{conversations.length} total</span> */}
                 </div>
 
                 {unreadCount > 0 && (

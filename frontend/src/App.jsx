@@ -23,6 +23,7 @@ import CandidateDashboard from "./pages/Candidates/CandidateDashboard";
 import CompanyDashboard from "./pages/Companies/CompanyDashboard";
 import CompanyProfile from "./pages/Companies/CompanyProfile";
 import CompanyMessage from "./pages/Companies/CompanyMessage";
+
 // ==========================================
 // Admin Dashboard
 // ==========================================
@@ -114,58 +115,31 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="User" />}>
-        {/* -----------------------------------------
-            Dashboard
-        ----------------------------------------- */}
-
+        {/* Dashboard */}
         <Route path="/user/dashboard" element={<CandidateDashboard />} />
 
-        {/* -----------------------------------------
-            Browse Jobs
-        ----------------------------------------- */}
-
+        {/* Browse Jobs */}
         <Route path="/user/browse-jobs" element={<CandidateBrowseJobs />} />
 
-        {/* -----------------------------------------
-            Applications
-        ----------------------------------------- */}
-
+        {/* Applications */}
         <Route path="/user/applications" element={<CandidateApplications />} />
 
-        {/* -----------------------------------------
-            Interviews
-        ----------------------------------------- */}
-
+        {/* Interviews */}
         <Route path="/user/interviews" element={<CandidateInterviews />} />
 
-        {/* -----------------------------------------
-            Resume
-        ----------------------------------------- */}
-
+        {/* Resume */}
         <Route path="/user/resume" element={<CandidateResume />} />
 
-        {/* -----------------------------------------
-            Saved Jobs
-        ----------------------------------------- */}
-
+        {/* Saved Jobs */}
         <Route path="/user/saved-jobs" element={<CandidateSavedJobs />} />
 
-        {/* -----------------------------------------
-            Messages
-        ----------------------------------------- */}
-
+        {/* Messages */}
         <Route path="/user/messages" element={<CandidateMessages />} />
 
-        {/* -----------------------------------------
-            Profile
-        ----------------------------------------- */}
-
+        {/* Profile */}
         <Route path="/user/profile" element={<CandidateProfile />} />
 
-        {/* -----------------------------------------
-            Settings
-        ----------------------------------------- */}
-
+        {/* Settings */}
         <Route path="/user/settings" element={<CandidateSettings />} />
       </Route>
 
@@ -174,83 +148,62 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="Company" />}>
-        {/* -----------------------------------------
-            Dashboard
-        ----------------------------------------- */}
-
+        {/* Dashboard */}
         <Route path="/company/dashboard" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Profile
-        ----------------------------------------- */}
-
+        {/* Profile */}
         <Route path="/company/profile" element={<CompanyProfile />} />
 
-        {/* -----------------------------------------
-            Posted Jobs
-        ----------------------------------------- */}
-
+        {/* Posted Jobs */}
         <Route path="/company/posted-jobs" element={<CompanyPostedJobs />} />
 
-        {/* -----------------------------------------
-            Create Job
-        ----------------------------------------- */}
-
+        {/* Create Job */}
         <Route path="/company/jobs/new" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Job Details
-        ----------------------------------------- */}
-
+        {/* Job Details */}
         <Route path="/company/jobs/:id" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Edit Job
-        ----------------------------------------- */}
-
+        {/* Edit Job */}
         <Route path="/company/jobs/:id/edit" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Candidates
-        ----------------------------------------- */}
-
+        {/* Candidates */}
         <Route path="/company/candidates" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Applications
-        ----------------------------------------- */}
-
+        {/* Applications */}
         <Route path="/company/applications" element={<CompanyApplication />} />
 
-        {/* -----------------------------------------
-            Interviews
-        ----------------------------------------- */}
-
+        {/* Interviews */}
         <Route path="/company/interviews" element={<CompanyInterviews />} />
 
-        {/* -----------------------------------------
+        {/* =================================================
             Messages
-        ----------------------------------------- */}
+
+            IMPORTANT:
+            Both routes are supported.
+
+            /company/messages
+            /company/message
+
+            The singular route is required because
+            CompanyApplication navigates directly to it
+            after creating/opening a conversation.
+        ================================================== */}
 
         <Route path="/company/messages" element={<CompanyMessage />} />
 
-        {/* -----------------------------------------
-            Analytics
-        ----------------------------------------- */}
+        <Route path="/company/message" element={<CompanyMessage />} />
 
+        {/* Analytics */}
         <Route path="/company/analytics" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Team
-        ----------------------------------------- */}
-
+        {/* Team */}
         <Route path="/company/team" element={<CompanyDashboard />} />
 
-        {/* -----------------------------------------
-            Settings
-        ----------------------------------------- */}
-
-        <Route path="/company/settings" element={<CompanyDashboard />} />
+        {/* Settings */}
+        {/* <Route
+          path="/company/settings"
+          element={<CompanyDashboard />}
+        /> */}
       </Route>
 
       {/* =====================================================
@@ -258,49 +211,28 @@ function App() {
       ===================================================== */}
 
       <Route element={<RoleGuard role="Admin" />}>
-        {/* -----------------------------------------
-            Admin Dashboard
-        ----------------------------------------- */}
-
+        {/* Admin Dashboard */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-        {/* -----------------------------------------
-            Admin Jobs
-        ----------------------------------------- */}
-
+        {/* Admin Jobs */}
         <Route path="/admin/jobs" element={<AdminJobs />} />
 
-        {/* -----------------------------------------
-            Admin Companies
-        ----------------------------------------- */}
-
+        {/* Admin Companies */}
         <Route path="/admin/companies" element={<AdminCompanies />} />
 
-        {/* -----------------------------------------
-            Admin Users
-        ----------------------------------------- */}
-
+        {/* Admin Users */}
         <Route path="/admin/users" element={<AdminUsers />} />
 
-        {/* -----------------------------------------
-            Admin Reports
-        ----------------------------------------- */}
-
+        {/* Admin Reports */}
         <Route path="/admin/reports" element={<AdminReports />} />
 
-        {/* -----------------------------------------
-            Notifications
-        ----------------------------------------- */}
-
+        {/* Notifications */}
         <Route
           path="/admin/notifications"
           element={<Navigate to="/admin/dashboard" replace />}
         />
 
-        {/* -----------------------------------------
-            Admin Settings
-        ----------------------------------------- */}
-
+        {/* Admin Settings */}
         <Route
           path="/admin/settings"
           element={<Navigate to="/admin/dashboard" replace />}

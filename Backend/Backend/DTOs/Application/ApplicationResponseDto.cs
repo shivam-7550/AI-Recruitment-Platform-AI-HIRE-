@@ -63,6 +63,9 @@ public class ApplicationResponseDto
     // ==========================================
 
     public double ATSScore { get; set; }
+    
+    // New AI-generated semantic job matching score
+    public int? JobMatchScore { get; set; }
 
     public double SkillsMatch { get; set; }
 

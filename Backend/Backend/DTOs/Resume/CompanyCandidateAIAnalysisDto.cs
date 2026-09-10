@@ -2,6 +2,9 @@ namespace Backend.DTOs.Resume;
 
 public class CompanyCandidateAIAnalysisDto
 {
+    // AI-generated semantic job fit score. 
+    // This is NOT the existing ATS score.
+    public int JobMatchScore { get; set; }
     public string Summary { get; set; } = string.Empty;
 
     public List<string> Strengths { get; set; } = new();

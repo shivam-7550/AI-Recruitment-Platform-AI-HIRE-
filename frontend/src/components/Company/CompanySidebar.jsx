@@ -48,11 +48,11 @@ const NAVIGATION_ITEMS = [
     path: "/company/profile",
     icon: UserRound,
   },
-  {
-    label: "Settings",
-    path: "/company/settings",
-    icon: Settings,
-  },
+  // {
+  //   label: "Settings",
+  //   path: "/company/settings",
+  //   icon: Settings,
+  // },
 ];
 
 export default function CompanySidebar() {

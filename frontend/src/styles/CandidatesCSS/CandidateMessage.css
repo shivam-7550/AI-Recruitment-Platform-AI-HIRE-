@@ -3,7 +3,7 @@
 ========================================================= */
 
 .candidate-message-page {
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
 
   background: #ffffff;
@@ -18,7 +18,7 @@
 .candidate-message-main {
   flex: 1;
   min-width: 0;
-  min-height: 100vh;
+  height: 100vh;
 
   margin-left: 250px;
 
@@ -31,7 +31,7 @@
   max-width: 1500px;
 
   margin: 0 auto;
-  padding: 32px 36px 48px;
+  padding: 30px 30px 40px;
 
   box-sizing: border-box;
 }
@@ -606,8 +606,8 @@
 }
 
 .candidate-message-list-state p {
-  max-width: 230px;
-
+  max-width: 200px;
+  font-family: "Times New Roman", Times, serif;
   margin: 7px 0 14px;
 
   color: #999999;
@@ -630,7 +630,7 @@
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
-
+  font-family: "Times New Roman", Times, serif;
   cursor: pointer;
 }
 
@@ -648,11 +648,11 @@
 
 .candidate-chat-panel {
   min-width: 0;
-  min-height: 650px;
+  height: 550px;
 
   display: flex;
   flex-direction: column;
-
+  font-family: "Times New Roman", Times, serif;
   background: #ffffff;
 
   box-sizing: border-box;
@@ -669,8 +669,8 @@
 
   display: flex;
   align-items: center;
-
-  gap: 12px;
+  font-family: "Times New Roman", Times, serif;
+  gap: 10px;
 
   border-bottom: 1px solid #e5e7eb;
 
@@ -687,7 +687,7 @@
 
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-
+  font-family: "Times New Roman", Times, serif;
   background: #ffffff;
   color: #333333;
 
@@ -704,7 +704,7 @@
 .candidate-chat-identity {
   min-width: 0;
   flex: 1;
-
+  font-family: "Times New Roman", Times, serif;
   display: flex;
   flex-direction: column;
 
@@ -718,14 +718,14 @@
 
   font-size: 15px;
   font-weight: 700;
-
+  font-family: "Times New Roman", Times, serif;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .candidate-chat-identity span {
   overflow: hidden;
-
+  font-family: "Times New Roman", Times, serif;
   color: #777777;
 
   font-size: 11px;

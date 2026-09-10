@@ -1,177 +1,321 @@
+/* =========================================================
+   COMPANY APPLICATION PAGE
+   ========================================================= */
+
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import {
   Award,
   BriefcaseBusiness,
   CalendarDays,
   ChevronRight,
-  Clock3,
   Download,
   FileText,
+  Mail,
   MapPin,
+  MessageCircle,
+  Phone,
   RefreshCw,
   Search,
   Sparkles,
   Users,
-  Video,
   X,
 } from "lucide-react";
 
 import CompanySidebar from "../../components/Company/CompanySidebar";
 import CompanyHeader from "../../components/Company/CompanyHeader";
 
-import { companyApi, interviewApi, jobsApi } from "../../services/api.js";
+import {
+  companyApi,
+  interviewApi,
+  jobsApi,
+  messageApi,
+} from "../../services/api.js";
 
 import "../../styles/CompanyCSS/CompanyApplication.css";
 
-export default function CompanyApplication() {
-  // =========================================================
-  // SESSION
-  // =========================================================
+/* =========================================================
+   SESSION HELPERS
+   ========================================================= */
 
-  const session = JSON.parse(sessionStorage.getItem("user") || "null");
+function tokenUserId(token) {
+  try {
+    if (!token) return null;
 
-  // =========================================================
-  // STATE
-  // =========================================================
+    const payload = token.split(".")[1];
+
+    if (!payload) return null;
+
+    const decoded = JSON.parse(
+      atob(payload.replace(/-/g, "+").replace(/_/g, "/")),
+    );
+
+    return (
+      decoded?.nameid ||
+      decoded?.sub ||
+      decoded?.[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ] ||
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
+function getSession() {
+  try {
+    return JSON.parse(sessionStorage.getItem("user") || "null");
+  } catch {
+    return null;
+  }
+}
+
+/* =========================================================
+   APPLICATION HELPERS
+   ========================================================= */
+
+function getApplicationId(application) {
+  return (
+    application?.id ||
+    application?.applicationId ||
+    application?.Id ||
+    application?.ApplicationId ||
+    null
+  );
+}
+
+function getCandidateId(application) {
+  return (
+    application?.userId ||
+    application?.candidateId ||
+    application?.UserId ||
+    application?.CandidateId ||
+    null
+  );
+}
+
+function getCandidateName(application) {
+  return (
+    application?.candidateName ||
+    application?.name ||
+    application?.candidate?.name ||
+    application?.user?.name ||
+    application?.CandidateName ||
+    application?.Name ||
+    "Candidate"
+  );
+}
+
+function getJobTitle(application) {
+  return (
+    application?.jobTitle ||
+    application?.job?.title ||
+    application?.JobTitle ||
+    application?.Job?.Title ||
+    "Job Application"
+  );
+}
+
+function getApplicationStatus(application) {
+  return (
+    application?.status ||
+    application?.applicationStatus ||
+    application?.Status ||
+    application?.ApplicationStatus ||
+    "Pending"
+  );
+}
+
+function formatDate(value) {
+  if (!value) return "Not available";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not available";
+  }
+
+  return date.toLocaleDateString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function normalizeList(value) {
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function getStatusClass(status) {
+  const normalized = String(status || "Pending").toLowerCase();
+
+  if (
+    normalized.includes("shortlist") ||
+    normalized.includes("interview") ||
+    normalized.includes("selected")
+  ) {
+    return "is-success";
+  }
+
+  if (normalized.includes("reject") || normalized.includes("cancel")) {
+    return "is-danger";
+  }
+
+  return "is-pending";
+}
+
+/* =========================================================
+   COMPANY APPLICATION
+   ========================================================= */
+
+function CompanyApplication() {
+  const session = getSession();
+
+  const navigate = useNavigate();
+
+  const token = session?.token || session?.accessToken || null;
+
+  const userId = session?.userId || session?.id || tokenUserId(token);
+
+  const role = session?.role || session?.userRole || session?.Role || "";
+
+  /* =======================================================
+     STATE
+     ======================================================= */
 
   const [company, setCompany] = useState(null);
+
   const [jobs, setJobs] = useState([]);
+
   const [applications, setApplications] = useState([]);
 
-  const [selectedJob, setSelectedJob] = useState("all");
   const [search, setSearch] = useState("");
 
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const [jobFilter, setJobFilter] = useState("all");
+
   const [loading, setLoading] = useState(true);
-  const [applicationsLoading, setApplicationsLoading] = useState(false);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [selectedApplication, setSelectedApplication] = useState(null);
 
-  const [downloadingResumeId, setDownloadingResumeId] = useState(null);
-
-  // =========================================================
-  // AI ANALYSIS STATE
-  // =========================================================
+  const [resumeLoadingId, setResumeLoadingId] = useState(null);
 
   const [aiAnalysis, setAiAnalysis] = useState(null);
+
   const [aiLoading, setAiLoading] = useState(false);
 
-  // =========================================================
-  // INTERVIEW STATE
-  // =========================================================
-
-  const [showInterviewModal, setShowInterviewModal] = useState(false);
   const [interviewLoading, setInterviewLoading] = useState(false);
 
+  const [interviewModalOpen, setInterviewModalOpen] = useState(false);
+
   const [interviewForm, setInterviewForm] = useState({
-    round: "Technical",
-    interviewType: "Online",
     scheduledAt: "",
     durationMinutes: 30,
     meetingLink: "",
-    location: "",
-    instructions: "",
+    notes: "",
   });
 
-  // =========================================================
-  // AUTH
-  // =========================================================
+  const [interviewError, setInterviewError] = useState("");
 
-  const userId = session?.userId || tokenUserId(session?.token);
+  const [interviewSuccess, setInterviewSuccess] = useState("");
 
-  // =========================================================
-  // LOAD COMPANY + JOBS
-  // =========================================================
+  /* =======================================================
+     LOAD COMPANY + JOBS + APPLICATIONS
+     ======================================================= */
 
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      setError("Unable to identify the logged-in company.");
-      return;
-    }
-
-    loadCompanyData();
-  }, [userId]);
-
-  async function loadCompanyData() {
-    setLoading(true);
-    setError("");
-
+  const loadApplications = async (showRefreshing = false) => {
     try {
-      const [companyResult, jobsResult] = await Promise.all([
-        companyApi.byUser(userId),
-        jobsApi.all(),
-      ]);
+      if (showRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
-      setCompany(companyResult);
+      setError("");
 
-      const allJobs = Array.isArray(jobsResult) ? jobsResult : [];
+      if (!userId) {
+        throw new Error("Company session could not be identified.");
+      }
 
-      const companyJobs = companyResult
-        ? allJobs.filter(
-            (job) =>
-              String(job.companyId).toLowerCase() ===
-              String(companyResult.id).toLowerCase(),
-          )
+      /* ---------------------------------------------------
+         COMPANY
+         --------------------------------------------------- */
+
+      const companyResult = await companyApi.byUser(userId);
+
+      const companyData =
+        companyResult?.data || companyResult?.company || companyResult;
+
+      if (!companyData) {
+        throw new Error("Company profile could not be loaded.");
+      }
+
+      setCompany(companyData);
+
+      /* ---------------------------------------------------
+         JOBS
+         --------------------------------------------------- */
+
+      const jobsResult = await jobsApi.all();
+
+      const allJobs = jobsResult?.data || jobsResult?.jobs || jobsResult || [];
+
+      const companyId =
+        companyData?.id ||
+        companyData?.companyId ||
+        companyData?.Id ||
+        companyData?.CompanyId;
+
+      const companyJobs = Array.isArray(allJobs)
+        ? allJobs.filter((job) => {
+            const jobCompanyId =
+              job?.companyId ||
+              job?.CompanyId ||
+              job?.company?.id ||
+              job?.Company?.Id;
+
+            return String(jobCompanyId) === String(companyId);
+          })
         : [];
 
       setJobs(companyJobs);
 
-      if (companyJobs.length > 0) {
-        await loadApplications(companyJobs);
-      } else {
-        setApplications([]);
-      }
-    } catch (err) {
-      console.error("Company applications loading error:", err);
+      /* ---------------------------------------------------
+         APPLICATIONS
+         --------------------------------------------------- */
 
-      setError(err?.message || "Unable to load company applications.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // =========================================================
-  // LOAD APPLICATIONS
-  // =========================================================
-
-  async function loadApplications(companyJobs = jobs) {
-    if (!companyJobs.length) {
-      setApplications([]);
-      return;
-    }
-
-    setApplicationsLoading(true);
-    setError("");
-
-    try {
-      const results = await Promise.all(
+      const applicationResponses = await Promise.all(
         companyJobs.map(async (job) => {
           try {
-            const result = await companyApi.applicants(job.id);
+            const jobId = job?.id || job?.jobId || job?.Id || job?.JobId;
 
-            if (Array.isArray(result)) {
-              return result;
-            }
+            const result = await companyApi.applicants(jobId);
 
-            if (Array.isArray(result?.data)) {
-              return result.data;
-            }
+            const data = result?.data || result?.applications || result || [];
 
-            if (Array.isArray(result?.applications)) {
-              return result.applications;
-            }
-
-            return [];
-          } catch (err) {
+            return Array.isArray(data) ? data : [];
+          } catch (jobError) {
             console.error(
-              `Applications loading failed for job ${job.id}:`,
-              err,
+              `Unable to load applications for job ${job?.id}:`,
+              jobError,
             );
 
             return [];
@@ -179,308 +323,321 @@ export default function CompanyApplication() {
         }),
       );
 
-      const combined = results
-        .flat()
-        .sort(
-          (a, b) => new Date(b.appliedAt || 0) - new Date(a.appliedAt || 0),
-        );
+      const flattened = applicationResponses.flat();
 
-      // Remove duplicate applications
+      /* ---------------------------------------------------
+         REMOVE DUPLICATES
+         --------------------------------------------------- */
+
       const uniqueApplications = Array.from(
         new Map(
-          combined
-            .filter((application) => application?.id)
-            .map((application) => [
-              String(application.id).toLowerCase(),
-              application,
-            ]),
+          flattened.map((application) => [
+            String(getApplicationId(application)),
+            application,
+          ]),
         ).values(),
       );
 
+      /* ---------------------------------------------------
+         NEWEST APPLICATION FIRST
+         --------------------------------------------------- */
+
+      uniqueApplications.sort((a, b) => {
+        const dateA = new Date(
+          a?.appliedAt || a?.createdAt || a?.AppliedAt || a?.CreatedAt || 0,
+        ).getTime();
+
+        const dateB = new Date(
+          b?.appliedAt || b?.createdAt || b?.AppliedAt || b?.CreatedAt || 0,
+        ).getTime();
+
+        return dateB - dateA;
+      });
+
       setApplications(uniqueApplications);
     } catch (err) {
-      console.error("Applications loading error:", err);
+      console.error("Unable to load company applications:", err);
 
       setError(err?.message || "Unable to load applications.");
     } finally {
-      setApplicationsLoading(false);
+      setLoading(false);
+      setRefreshing(false);
     }
-  }
+  };
 
-  // =========================================================
-  // REFRESH
-  // =========================================================
+  /* =======================================================
+     INITIAL LOAD
+     ======================================================= */
 
-  async function handleRefresh() {
-    if (!jobs.length) {
-      await loadCompanyData();
+  useEffect(() => {
+    if (role !== "Company" || !userId) {
+      setLoading(false);
       return;
     }
 
-    setRefreshing(true);
+    loadApplications();
+  }, [role, userId]);
 
-    try {
-      await loadApplications(jobs);
-    } finally {
-      setRefreshing(false);
-    }
-  }
-
-  // =========================================================
-  // FILTER APPLICATIONS
-  // =========================================================
+  /* =======================================================
+     FILTER APPLICATIONS
+     ======================================================= */
 
   const filteredApplications = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     return applications.filter((application) => {
+      const candidateName = getCandidateName(application).toLowerCase();
+
+      const jobTitle = getJobTitle(application).toLowerCase();
+
+      const email = String(
+        application?.email ||
+          application?.candidateEmail ||
+          application?.Email ||
+          "",
+      ).toLowerCase();
+
+      const status = getApplicationStatus(application).toLowerCase();
+
+      const jobId =
+        application?.jobId ||
+        application?.JobId ||
+        application?.job?.id ||
+        application?.Job?.Id;
+
+      const matchesSearch =
+        !query ||
+        candidateName.includes(query) ||
+        jobTitle.includes(query) ||
+        email.includes(query);
+
+      const matchesStatus =
+        statusFilter === "all" || status === statusFilter.toLowerCase();
+
       const matchesJob =
-        selectedJob === "all" ||
-        String(application.jobId).toLowerCase() ===
-          String(selectedJob).toLowerCase();
+        jobFilter === "all" || String(jobId) === String(jobFilter);
 
-      if (!matchesJob) {
-        return false;
-      }
-
-      if (!query) {
-        return true;
-      }
-
-      const searchableText = `
-        ${application.name || ""}
-        ${application.email || ""}
-        ${application.contact || ""}
-        ${application.jobTitle || ""}
-        ${application.companyName || ""}
-        ${application.qualification || ""}
-        ${application.course || ""}
-        ${application.collegeName || ""}
-        ${
-          Array.isArray(application.skills)
-            ? application.skills.join(" ")
-            : application.skills || ""
-        }
-        ${application.experience || ""}
-        ${application.status || ""}
-        ${application.resumeFileName || ""}
-      `.toLowerCase();
-
-      return searchableText.includes(query);
+      return matchesSearch && matchesStatus && matchesJob;
     });
-  }, [applications, selectedJob, search]);
+  }, [applications, search, statusFilter, jobFilter]);
 
-  // =========================================================
-  // STATS
-  // =========================================================
+  /* =======================================================
+     OPEN APPLICATION
+     ======================================================= */
 
-  const totalApplications = applications.length;
+  const openApplication = (application) => {
+    setSelectedApplication(application);
 
-  const pendingApplications = applications.filter((application) =>
-    ["applied", "pending", "reviewing", "underreview"].includes(
-      String(application.status || "Applied").toLowerCase(),
-    ),
-  ).length;
+    setAiAnalysis(null);
 
-  const shortlistedApplications = applications.filter((application) =>
-    String(application.status || "")
-      .toLowerCase()
-      .includes("short"),
-  ).length;
+    setInterviewError("");
 
-  const averageATS =
-    applications.length > 0
-      ? (
-          applications.reduce(
-            (total, application) => total + Number(application.atsScore || 0),
-            0,
-          ) / applications.length
-        ).toFixed(1)
-      : "0";
+    setInterviewSuccess("");
+  };
 
-  // =========================================================
-  // JOB TITLE
-  // =========================================================
+  /* =======================================================
+     CLOSE APPLICATION
+     ======================================================= */
 
-  function getJobTitle(jobId) {
-    const job = jobs.find(
-      (item) => String(item.id).toLowerCase() === String(jobId).toLowerCase(),
-    );
-
-    return job?.title || "Unknown Position";
-  }
-
-  // =========================================================
-  // STATUS CLASS
-  // =========================================================
-
-  function getStatusClass(status) {
-    const normalized = String(status || "Applied").toLowerCase();
-
-    if (normalized.includes("short")) {
-      return "shortlisted";
+  const closeApplication = () => {
+    if (aiLoading || interviewLoading) {
+      return;
     }
 
-    if (normalized.includes("reject")) {
-      return "rejected";
-    }
+    setSelectedApplication(null);
 
-    if (normalized.includes("interview")) {
-      return "interview";
-    }
+    setAiAnalysis(null);
 
-    if (normalized.includes("review") || normalized.includes("pending")) {
-      return "reviewing";
-    }
+    setInterviewError("");
 
-    return "applied";
-  }
+    setInterviewSuccess("");
+  };
 
-  // =========================================================
-  // RESUME HELPERS
-  // =========================================================
+  /* =======================================================
+     DOWNLOAD APPLICATION RESUME
+     ======================================================= */
 
-  function hasResume(application) {
-    return Boolean(
-      application?.resumeId ||
-      application?.resumeFileName ||
-      application?.resumeUrl ||
-      application?.resumePath ||
-      application?.resume,
-    );
-  }
+  const handleDownloadResume = async (application) => {
+    const applicationId = getApplicationId(application);
 
-  function getResumeName(application) {
-    if (application?.resumeFileName) {
-      return application.resumeFileName;
-    }
-
-    if (application?.resumeName) {
-      return application.resumeName;
-    }
-
-    if (application?.resume?.fileName) {
-      return application.resume.fileName;
-    }
-
-    if (application?.resumePath) {
-      return application.resumePath.split(/[\\/]/).pop();
-    }
-
-    return "Candidate Resume";
-  }
-
-  // =========================================================
-  // DOWNLOAD RESUME
-  // =========================================================
-
-  async function handleDownloadResume(application) {
-    if (!application?.id) {
+    if (!applicationId) {
       setError("Application ID not found.");
       return;
     }
 
     try {
-      setDownloadingResumeId(application.id);
+      setResumeLoadingId(applicationId);
+
       setError("");
 
-      const sessionUser = JSON.parse(sessionStorage.getItem("user") || "null");
+      const response = await companyApi.downloadResume(applicationId);
 
-      const token =
-        sessionUser?.token || sessionUser?.accessToken || sessionUser?.jwtToken;
+      const blob = response?.blob || response?.data || response;
 
-      if (!token) {
-        throw new Error("Authentication token not found.");
+      if (blob instanceof Blob) {
+        const url = window.URL.createObjectURL(blob);
+
+        const anchor = document.createElement("a");
+
+        anchor.href = url;
+
+        anchor.download =
+          application?.resumeFileName ||
+          application?.ResumeFileName ||
+          `${getCandidateName(application)}-Resume`;
+
+        document.body.appendChild(anchor);
+
+        anchor.click();
+
+        anchor.remove();
+
+        window.URL.revokeObjectURL(url);
+
+        return;
       }
 
-      const response = await fetch(
-        `/api/Application/${application.id}/resume`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        },
-      );
-
-      if (!response.ok) {
-        let message = "Unable to download resume.";
-
-        try {
-          const errorData = await response.json();
-
-          message = errorData?.message || errorData?.title || message;
-        } catch {
-          // Response was not JSON.
-        }
-
-        throw new Error(message);
+      if (typeof response === "string") {
+        window.open(response, "_blank", "noopener,noreferrer");
       }
-
-      const blob = await response.blob();
-
-      const downloadUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-
-      link.href = downloadUrl;
-
-      link.download = getResumeName(application) || "candidate-resume";
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      link.remove();
-
-      window.URL.revokeObjectURL(downloadUrl);
     } catch (err) {
-      console.error("Resume download error:", err);
+      console.error("Resume download failed:", err);
 
       setError(err?.message || "Unable to download resume.");
     } finally {
-      setDownloadingResumeId(null);
+      setResumeLoadingId(null);
     }
-  }
+  };
 
-  // =========================================================
-  // AI CANDIDATE ANALYSIS
-  // =========================================================
+  /* =======================================================
+     APPLICATION -> MESSAGE
+     ======================================================= */
 
-  async function handleAIAnalysis(application) {
-    if (!application?.id) {
+  const handleOpenCandidateChat = async (application) => {
+    const applicationId = getApplicationId(application);
+
+    if (!applicationId) {
+      setError("Application ID not found.");
+      return;
+    }
+
+    const candidateId = getCandidateId(application);
+
+    if (!candidateId) {
+      setError("Candidate ID not found for this application.");
+      return;
+    }
+
+    try {
+      setError("");
+
+      const result = await messageApi.createConversation({
+        applicationId,
+        candidateId,
+      });
+
+      const conversation = result?.data || result?.conversation || result;
+
+      const conversationId =
+        conversation?.conversationId ||
+        conversation?.ConversationId ||
+        conversation?.id ||
+        conversation?.Id;
+
+      if (!conversationId) {
+        throw new Error(
+          "Conversation could not be opened because no conversation ID was returned.",
+        );
+      }
+
+      setSelectedApplication(null);
+
+      setAiAnalysis(null);
+
+      /*
+       * IMPORTANT:
+       * Existing CompanyMessage route:
+       *
+       * /company/messages
+       *
+       * CompanyMessage.jsx reads:
+       *
+       * ?conversationId=
+       */
+
+      navigate(
+        `/company/messages?conversationId=${encodeURIComponent(
+          conversationId,
+        )}`,
+      );
+    } catch (err) {
+      console.error("Unable to open candidate conversation:", err);
+
+      setError(err?.message || "Unable to open candidate conversation.");
+    }
+  };
+
+  /* =======================================================
+     AI CANDIDATE ANALYSIS
+     ======================================================= */
+
+  const handleAIAnalysis = async (application) => {
+    const applicationId = getApplicationId(application);
+
+    if (!applicationId) {
       setError("Application ID not found.");
       return;
     }
 
     try {
       setAiLoading(true);
+
       setAiAnalysis(null);
+
       setError("");
 
+      const result = await companyApi.analyzeCandidateWithAI(applicationId);
+
+      const analysis = result?.data || result?.analysis || result;
+
+      setAiAnalysis(analysis || null);
+
       /*
-       * Backend endpoint:
+       * Persist the semantic AI Job Match Score
+       * in local application state as well.
        *
-       * POST /api/Application/{applicationId}/ai-analysis
-       *
-       * No request body is required.
-       *
-       * Backend resolves:
-       * Application
-       *      ↓
-       * Candidate
-       *      ↓
-       * Resume
-       *      ↓
-       * Resume text
-       *      ↓
-       * Gemini AI
+       * This is NOT the deterministic ATSScore.
        */
 
-      const result = await companyApi.analyzeCandidateWithAI(application.id);
+      if (analysis && analysis.jobMatchScore !== undefined) {
+        const updatedScore = Number(analysis.jobMatchScore);
 
-      setAiAnalysis(result?.data || result?.analysis || result);
+        setSelectedApplication((current) =>
+          current
+            ? {
+                ...current,
+
+                jobMatchScore: updatedScore,
+
+                JobMatchScore: updatedScore,
+              }
+            : current,
+        );
+
+        setApplications((current) =>
+          current.map((item) =>
+            String(getApplicationId(item)) === String(applicationId)
+              ? {
+                  ...item,
+
+                  jobMatchScore: updatedScore,
+
+                  JobMatchScore: updatedScore,
+                }
+              : item,
+          ),
+        );
+      }
     } catch (err) {
       console.error("AI candidate analysis failed:", err);
 
@@ -490,993 +647,983 @@ export default function CompanyApplication() {
     } finally {
       setAiLoading(false);
     }
-  }
+  };
 
-  // =========================================================
-  // OPEN INTERVIEW MODAL
-  // =========================================================
+  /* =======================================================
+     INTERVIEW MODAL
+     ======================================================= */
 
-  function openInterviewModal() {
-    if (!selectedApplication?.id) {
-      setError("No application selected.");
-      return;
-    }
+  const openInterviewModal = (application) => {
+    setSelectedApplication(application);
 
-    setError("");
-    setSuccess("");
+    setInterviewError("");
+
+    setInterviewSuccess("");
 
     setInterviewForm({
-      round: "Technical",
-      interviewType: "Online",
       scheduledAt: "",
       durationMinutes: 30,
       meetingLink: "",
-      location: "",
-      instructions: "",
+      notes: "",
     });
 
-    setShowInterviewModal(true);
-  }
+    setInterviewModalOpen(true);
+  };
 
-  // =========================================================
-  // CLOSE INTERVIEW MODAL
-  // =========================================================
-
-  function closeInterviewModal() {
+  const closeInterviewModal = () => {
     if (interviewLoading) {
       return;
     }
 
-    setShowInterviewModal(false);
-  }
+    setInterviewModalOpen(false);
 
-  // =========================================================
-  // INTERVIEW FORM CHANGE
-  // =========================================================
+    setInterviewError("");
 
-  function handleInterviewChange(event) {
+    setInterviewSuccess("");
+  };
+
+  const handleInterviewFormChange = (event) => {
     const { name, value } = event.target;
 
-    setInterviewForm((previous) => ({
-      ...previous,
-      [name]: name === "durationMinutes" ? Number(value) : value,
+    setInterviewForm((current) => ({
+      ...current,
+      [name]: value,
     }));
-  }
+  };
 
-  // =========================================================
-  // CREATE INTERVIEW
-  // =========================================================
+  /* =======================================================
+     SCHEDULE INTERVIEW
+     ======================================================= */
 
-  async function handleScheduleInterview(event) {
+  const handleScheduleInterview = async (event) => {
     event.preventDefault();
 
-    if (!selectedApplication?.id) {
-      setError("No application selected.");
+    const applicationId = getApplicationId(selectedApplication);
+
+    if (!applicationId) {
+      setInterviewError("Application ID not found.");
+
       return;
     }
 
     if (!interviewForm.scheduledAt) {
-      setError("Please select an interview date and time.");
-      return;
-    }
+      setInterviewError("Please select an interview date and time.");
 
-    if (
-      interviewForm.interviewType === "Online" &&
-      !interviewForm.meetingLink.trim()
-    ) {
-      setError("Meeting link is required for an online interview.");
-      return;
-    }
-
-    if (
-      interviewForm.interviewType === "InPerson" &&
-      !interviewForm.location.trim()
-    ) {
-      setError("Location is required for an in-person interview.");
-      return;
-    }
-
-    const selectedDate = new Date(interviewForm.scheduledAt);
-
-    if (Number.isNaN(selectedDate.getTime())) {
-      setError("Invalid interview date and time.");
-      return;
-    }
-
-    if (selectedDate <= new Date()) {
-      setError("Interview date and time must be in the future.");
       return;
     }
 
     try {
       setInterviewLoading(true);
-      setError("");
-      setSuccess("");
 
-      // =====================================================
-      // BACKEND DTO
-      // =====================================================
+      setInterviewError("");
+
+      setInterviewSuccess("");
 
       const payload = {
-        applicationId: selectedApplication.id,
+        applicationId,
 
-        round: interviewForm.round,
+        scheduledAt: new Date(interviewForm.scheduledAt).toISOString(),
 
-        interviewType: interviewForm.interviewType,
+        durationMinutes: Number(interviewForm.durationMinutes) || 30,
 
-        scheduledAt: selectedDate.toISOString(),
+        meetingLink: interviewForm.meetingLink?.trim() || null,
 
-        durationMinutes: Number(interviewForm.durationMinutes),
-
-        meetingLink: interviewForm.meetingLink.trim() || null,
-
-        location: interviewForm.location.trim() || null,
-
-        instructions: interviewForm.instructions.trim() || null,
+        notes: interviewForm.notes?.trim() || null,
       };
-
-      console.log("Creating interview:", payload);
 
       await interviewApi.create(payload);
 
-      // =====================================================
-      // UPDATE LOCAL APPLICATION STATUS
-      // =====================================================
+      setInterviewSuccess("Interview scheduled successfully.");
 
-      const updatedApplication = {
-        ...selectedApplication,
-        status: "Interview",
-      };
-
-      setSelectedApplication(updatedApplication);
-
-      setApplications((previous) =>
-        previous.map((application) =>
-          String(application.id).toLowerCase() ===
-          String(selectedApplication.id).toLowerCase()
+      setApplications((current) =>
+        current.map((item) =>
+          String(getApplicationId(item)) === String(applicationId)
             ? {
-                ...application,
+                ...item,
+
                 status: "Interview",
+
+                applicationStatus: "Interview",
               }
-            : application,
+            : item,
         ),
       );
 
-      // =====================================================
-      // CLOSE MODAL
-      // =====================================================
+      setSelectedApplication((current) =>
+        current
+          ? {
+              ...current,
 
-      setShowInterviewModal(false);
+              status: "Interview",
 
-      setSuccess("Interview scheduled successfully.");
+              applicationStatus: "Interview",
+            }
+          : current,
+      );
+
+      setTimeout(() => {
+        setInterviewModalOpen(false);
+
+        setInterviewSuccess("");
+      }, 1200);
     } catch (err) {
-      console.error("Interview scheduling failed:", err);
+      console.error("Unable to schedule interview:", err);
 
-      setError(err?.message || "Unable to schedule interview.");
+      setInterviewError(err?.message || "Unable to schedule interview.");
     } finally {
       setInterviewLoading(false);
     }
-  }
+  };
 
-  // =========================================================
-  // CLOSE APPLICATION MODAL
-  // =========================================================
+  /* =======================================================
+     AUTH GUARD
+     ======================================================= */
 
-  function closeApplicationModal() {
-    if (aiLoading || interviewLoading) {
-      return;
-    }
-
-    setSelectedApplication(null);
-    setAiAnalysis(null);
-    setError("");
-    setSuccess("");
-  }
-
-  // =========================================================
-  // AUTH REDIRECT
-  // =========================================================
-
-  if (!session) {
+  if (!session || role !== "Company") {
     return <Navigate to="/login" replace />;
   }
 
-  if (session.role !== "Company") {
-    return (
-      <Navigate
-        to={`/${String(session.role || "").toLowerCase()}/dashboard`}
-        replace
-      />
-    );
-  }
-
-  // =========================================================
-  // LOADING
-  // =========================================================
-
-  if (loading) {
-    return (
-      <div className="company-applications-loading">
-        <div className="company-applications-spinner" />
-
-        <span>Loading applications...</span>
-      </div>
-    );
-  }
-
-  // =========================================================
-  // UI
-  // =========================================================
+  /* =======================================================
+     RENDER
+     ======================================================= */
 
   return (
-    <div className="company-applications-page">
-      {/* =====================================================
+    <div className="company-application-page">
+      {/* ===================================================
           SIDEBAR
-      ===================================================== */}
+      =================================================== */}
 
       <CompanySidebar company={company} />
 
-      {/* =====================================================
+      {/* ===================================================
           MAIN
-      ===================================================== */}
+      =================================================== */}
 
-      <div className="company-applications-main">
-        {/* ===================================================
+      <main className="company-application-main">
+        {/* =================================================
             HEADER
-        =================================================== */}
+        ================================================= */}
 
         <CompanyHeader
           company={company}
           setCompany={setCompany}
           pageTitle="Applications"
-          pageSubtitle="Review and manage candidates who applied to your posted jobs."
+          pageSubtitle="Review candidates, analyze applications and manage your hiring process."
         />
 
-        {/* ===================================================
-            CONTENT
-        =================================================== */}
-
-        <main className="company-applications-content">
+        <div className="company-application-content">
           {/* =================================================
-              PAGE ACTION
+              PAGE HEADER
           ================================================= */}
 
-          <div className="company-applications-heading-action">
-            <Link
-              to="/company/posted-jobs"
-              className="company-applications-refresh-btn"
-            >
-              <BriefcaseBusiness />
-              View Posted Jobs
-            </Link>
+          <section className="company-application-header">
+            <div>
+              <span className="company-application-eyebrow">
+                Candidate Management
+              </span>
+
+              <h1>Applications</h1>
+
+              <p>
+                Review incoming applications, evaluate candidates and move
+                strong profiles forward.
+              </p>
+            </div>
 
             <button
               type="button"
-              className="company-applications-refresh-btn"
-              onClick={handleRefresh}
+              className="company-application-refresh"
+              onClick={() => loadApplications(true)}
               disabled={refreshing}
             >
               <RefreshCw
-                className={
-                  refreshing ? "company-applications-refresh-icon" : ""
-                }
+                size={15}
+                className={refreshing ? "is-spinning" : ""}
               />
 
               {refreshing ? "Refreshing..." : "Refresh"}
             </button>
-          </div>
+          </section>
 
           {/* =================================================
               ERROR
           ================================================= */}
 
-          {error && <div className="company-applications-error">{error}</div>}
+          {error && (
+            <div className="company-application-error">
+              <span>{error}</span>
 
-          {/* =================================================
-              SUCCESS
-          ================================================= */}
-
-          {success && (
-            <div className="company-applications-success">{success}</div>
+              <button
+                type="button"
+                onClick={() => setError("")}
+                aria-label="Close error"
+              >
+                <X size={16} />
+              </button>
+            </div>
           )}
 
           {/* =================================================
               STATS
           ================================================= */}
 
-          <section className="company-applications-stats">
-            <article className="company-applications-stat-card">
-              <div className="company-applications-stat-icon">
-                <Users />
+          <section className="company-application-stats">
+            {/* TOTAL */}
+            <div className="company-application-stat-card">
+              <div className="company-application-stat-icon">
+                <Users size={18} />
               </div>
 
-              <div className="company-applications-stat-info">
+              <div>
                 <span>Total Applications</span>
 
-                <strong>{totalApplications}</strong>
-              </div>
-            </article>
-
-            <article className="company-applications-stat-card">
-              <div className="company-applications-stat-icon">
-                <Clock3 />
-              </div>
-
-              <div className="company-applications-stat-info">
-                <span>Pending Review</span>
-
-                <strong>{pendingApplications}</strong>
-              </div>
-            </article>
-
-            <article className="company-applications-stat-card">
-              <div className="company-applications-stat-icon">
-                <Award />
-              </div>
-
-              <div className="company-applications-stat-info">
-                <span>Shortlisted</span>
-
-                <strong>{shortlistedApplications}</strong>
-              </div>
-            </article>
-
-            <article className="company-applications-stat-card">
-              <div className="company-applications-stat-icon">
-                <BriefcaseBusiness />
-              </div>
-
-              <div className="company-applications-stat-info">
-                <span>Average ATS</span>
-
-                <strong>{averageATS}%</strong>
-              </div>
-            </article>
-          </section>
-
-          {/* =================================================
-              TOOLBAR
-          ================================================= */}
-
-          <section className="company-applications-toolbar">
-            <div className="company-applications-results-header">
-              <div>
-                <h2>Candidate Applications</h2>
-
-                <span className="company-applications-results-count">
-                  {filteredApplications.length}{" "}
-                  {filteredApplications.length === 1
-                    ? "application"
-                    : "applications"}{" "}
-                  found
-                </span>
+                <strong>{applications.length}</strong>
               </div>
             </div>
 
-            <div className="company-applications-toolbar-row">
+            {/* PENDING */}
+            <div className="company-application-stat-card">
+              <div className="company-application-stat-icon">
+                <RefreshCw size={18} />
+              </div>
+
+              <div>
+                <span>Pending Review</span>
+
+                <strong>
+                  {
+                    applications.filter((application) =>
+                      getApplicationStatus(application)
+                        .toLowerCase()
+                        .includes("pending"),
+                    ).length
+                  }
+                </strong>
+              </div>
+            </div>
+
+            {/* SHORTLISTED */}
+            <div className="company-application-stat-card">
+              <div className="company-application-stat-icon">
+                <Award size={18} />
+              </div>
+
+              <div>
+                <span>Shortlisted</span>
+
+                <strong>
+                  {
+                    applications.filter((application) =>
+                      getApplicationStatus(application)
+                        .toLowerCase()
+                        .includes("shortlist"),
+                    ).length
+                  }
+                </strong>
+              </div>
+            </div>
+
+            {/* OPEN JOBS */}
+            <div className="company-application-stat-card">
+              <div className="company-application-stat-icon">
+                <BriefcaseBusiness size={18} />
+              </div>
+
+              <div>
+                <span>Open Jobs</span>
+
+                <strong>{jobs.length}</strong>
+              </div>
+            </div>
+          </section>
+
+          {/* =================================================
+              FILTER TOOLBAR
+          ================================================= */}
+
+          <section className="company-application-toolbar">
+            <div className="company-application-search">
+              <Search size={17} />
+
+              <input
+                type="text"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search candidate, job or email..."
+              />
+            </div>
+
+            <div className="company-application-filters">
               <select
-                className="company-applications-filter-select"
-                value={selectedJob}
-                onChange={(event) => setSelectedJob(event.target.value)}
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                <option value="all">All Status</option>
+
+                <option value="pending">Pending</option>
+
+                <option value="shortlisted">Shortlisted</option>
+
+                <option value="interview">Interview</option>
+
+                <option value="rejected">Rejected</option>
+              </select>
+
+              <select
+                value={jobFilter}
+                onChange={(event) => setJobFilter(event.target.value)}
               >
                 <option value="all">All Jobs</option>
 
-                {jobs.map((job) => (
-                  <option key={job.id} value={job.id}>
-                    {job.title}
-                  </option>
-                ))}
+                {jobs.map((job) => {
+                  const jobId = job?.id || job?.jobId || job?.Id || job?.JobId;
+
+                  return (
+                    <option key={jobId} value={jobId}>
+                      {job?.title || job?.Title || "Untitled Job"}
+                    </option>
+                  );
+                })}
               </select>
-
-              <label className="company-applications-search-box">
-                <Search />
-
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search candidates, skills, email..."
-                />
-              </label>
             </div>
           </section>
 
           {/* =================================================
-              APPLICATIONS
+              APPLICATION LIST
           ================================================= */}
 
-          {applicationsLoading ? (
-            <div className="company-applications-loading">
-              <div className="company-applications-spinner" />
+          {loading ? (
+            <div className="company-application-state">
+              <RefreshCw size={22} className="is-spinning" />
 
-              <span>Loading candidate applications...</span>
+              <span>Loading applications...</span>
+            </div>
+          ) : filteredApplications.length === 0 ? (
+            <div className="company-application-empty">
+              <div className="company-application-empty-icon">
+                <Users size={25} />
+              </div>
+
+              <h3>No applications found</h3>
+
+              <p>
+                Applications matching your current filters will appear here.
+              </p>
             </div>
           ) : (
-            <div className="company-applications-list">
+            <section className="company-application-list">
               {filteredApplications.map((application) => {
-                const atsScore = Number(application.atsScore || 0);
+                const applicationId = getApplicationId(application);
 
-                const candidateInitial =
-                  application.name?.trim()?.charAt(0)?.toUpperCase() || "C";
+                const candidateName = getCandidateName(application);
 
-                const resumeAvailable = hasResume(application);
+                const jobTitle = getJobTitle(application);
+
+                const status = getApplicationStatus(application);
+
+                const email =
+                  application?.email ||
+                  application?.candidateEmail ||
+                  application?.Email ||
+                  "Email not available";
+
+                const contact =
+                  application?.contact ||
+                  application?.phone ||
+                  application?.phoneNumber ||
+                  application?.Contact ||
+                  application?.Phone ||
+                  "Not available";
+
+                const qualification =
+                  application?.qualification ||
+                  application?.Qualification ||
+                  "Not specified";
+
+                const experience =
+                  application?.experience ?? application?.Experience ?? 0;
+
+                const skills = normalizeList(
+                  application?.skills || application?.Skills,
+                );
+
+                const appliedAt =
+                  application?.appliedAt ||
+                  application?.createdAt ||
+                  application?.AppliedAt ||
+                  application?.CreatedAt;
+
+                const resumeFileName =
+                  application?.resumeFileName ||
+                  application?.ResumeFileName ||
+                  "Resume";
 
                 return (
                   <article
-                    key={application.id}
+                    key={applicationId}
                     className="company-application-card"
-                    onClick={() => {
-                      setSelectedApplication(application);
-
-                      setAiAnalysis(null);
-                      setError("");
-                      setSuccess("");
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-
-                        setSelectedApplication(application);
-
-                        setAiAnalysis(null);
-                        setError("");
-                        setSuccess("");
-                      }
-                    }}
+                    onClick={() => openApplication(application)}
                   >
-                    {/* CARD TOP */}
+                    {/* ===================================
+                          CANDIDATE ICON
+                      =================================== */}
 
-                    <div className="company-application-card-top">
-                      <div className="company-application-candidate">
-                        <div className="company-application-avatar">
-                          {candidateInitial}
-                        </div>
-
-                        <div className="company-application-candidate-info">
-                          <h3>{application.name || "Candidate"}</h3>
-
-                          <p>
-                            {application.jobTitle ||
-                              getJobTitle(application.jobId)}
-                          </p>
-
-                          <p className="company-application-candidate-email">
-                            {application.email || "Email not available"}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="company-application-avatar">
+                      {candidateName?.trim()?.charAt(0)?.toUpperCase() || "C"}
                     </div>
 
-                    {/* JOB */}
+                    {/* ===================================
+                          CANDIDATE INFORMATION
+                      =================================== */}
 
-                    <div className="company-application-job-info">
-                      <span className="company-application-job-info-label">
-                        Applied Position
-                      </span>
+                    <div className="company-application-info">
+                      <div className="company-application-title-row">
+                        <div className="company-application-title-info">
+                          <h3>{candidateName}</h3>
 
-                      <strong>
-                        {application.jobTitle || getJobTitle(application.jobId)}
-                      </strong>
-                    </div>
-
-                    {/* META */}
-
-                    <div className="company-application-meta">
-                      <div className="company-application-meta-item">
-                        <span>Email</span>
-
-                        <strong>{application.email || "-"}</strong>
-                      </div>
-
-                      <div className="company-application-meta-item">
-                        <span>Contact</span>
-
-                        <strong>{application.contact || "-"}</strong>
-                      </div>
-
-                      <div className="company-application-meta-item">
-                        <span>Qualification</span>
-
-                        <strong>{application.qualification || "-"}</strong>
-                      </div>
-
-                      <div className="company-application-meta-item">
-                        <span>Experience</span>
-
-                        <strong>
-                          {Number(application.experience || 0)} years
-                        </strong>
-                      </div>
-                    </div>
-
-                    {/* RESUME */}
-
-                    <div className="company-application-resume-row">
-                      <div className="company-application-resume-info">
-                        <div className="company-application-resume-icon">
-                          <FileText />
+                          <span>{jobTitle}</span>
                         </div>
 
-                        <div>
-                          <span>Resume</span>
-
-                          <strong>
-                            {resumeAvailable
-                              ? getResumeName(application)
-                              : "Resume not uploaded"}
-                          </strong>
-                        </div>
-                      </div>
-
-                      {resumeAvailable && (
-                        <button
-                          type="button"
-                          className="company-application-download-btn"
-                          onClick={(event) => {
-                            event.stopPropagation();
-
-                            handleDownloadResume(application);
-                          }}
-                          disabled={downloadingResumeId === application.id}
-                          title="Download Resume"
-                          aria-label="Download Resume"
+                        <span
+                          className={`company-application-status ${getStatusClass(
+                            status,
+                          )}`}
                         >
-                          <Download />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* ATS */}
-
-                    <div className="company-application-card-bottom">
-                      <div className="company-application-ats">
-                        <div className="company-application-ats-circle">
-                          {Math.round(Math.min(Math.max(atsScore, 0), 100))}
-                        </div>
-
-                        <div className="company-application-ats-details">
-                          <span>ATS Match Score</span>
-
-                          <strong>{atsScore}%</strong>
-                        </div>
+                          {status}
+                        </span>
                       </div>
 
-                      <div className="company-application-applied-date">
-                        <CalendarDays />
-                        Applied {formatDate(application.appliedAt)}
-                      </div>
-                    </div>
+                      {/* =============================
+                            APPLICATION META
+                        ============================== */}
 
-                    {/* SKILLS */}
+                      {/* <div className="company-application-meta">
+                        <span>
+                          <BriefcaseBusiness size={14} />
+                          {experience}{" "}
+                          {Number(experience) === 1 ? "year" : "years"}
+                        </span>
 
-                    {Array.isArray(application.skills) &&
-                      application.skills.length > 0 && (
+                        <span>
+                          <Mail size={14} />
+
+                          {email}
+                        </span>
+
+                        <span>
+                          <CalendarDays size={14} />
+                          Applied {formatDate(appliedAt)}
+                        </span>
+                      </div> */}
+
+                      {/* =============================
+                            SKILLS
+                        ============================== */}
+
+                      {/* {skills.length > 0 && (
                         <div className="company-application-skills">
-                          {application.skills.slice(0, 8).map((skill) => (
-                            <span
-                              className="company-application-skill"
-                              key={skill}
-                            >
-                              {skill}
-                            </span>
+                          {skills.slice(0, 5).map((skill) => (
+                            <span key={skill}>{skill}</span>
                           ))}
 
-                          {application.skills.length > 8 && (
-                            <span className="company-application-skill">
-                              +{application.skills.length - 8}
-                            </span>
+                          {skills.length > 5 && (
+                            <span>+{skills.length - 5}</span>
                           )}
                         </div>
-                      )}
+                      )} */}
+                    </div>
 
-                    {/* VIEW */}
+                    {/* ===================================
+                          ACTIONS
+                      =================================== */}
 
-                    <button
-                      type="button"
-                      className="company-application-view-btn"
-                      onClick={(event) => {
-                        event.stopPropagation();
+                    <div className="company-application-actions">
+                      {/* CHAT */}
 
-                        setSelectedApplication(application);
+                      <button
+                        type="button"
+                        className="company-application-chat-button"
+                        title={`Message ${candidateName || "candidate"}`}
+                        aria-label={`Message ${candidateName || "candidate"}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
 
-                        setAiAnalysis(null);
-                        setError("");
-                        setSuccess("");
-                      }}
-                    >
-                      View Candidate Details
-                      <ChevronRight />
-                    </button>
+                          handleOpenCandidateChat(application);
+                        }}
+                      >
+                        <MessageCircle size={16} />
+                      </button>
+
+                      {/* RESUME */}
+
+                      <button
+                        type="button"
+                        className="company-application-resume-button"
+                        title="Download resume"
+                        aria-label="Download resume"
+                        onClick={(event) => {
+                          event.stopPropagation();
+
+                          handleDownloadResume(application);
+                        }}
+                        disabled={resumeLoadingId === applicationId}
+                      >
+                        {resumeLoadingId === applicationId ? (
+                          <RefreshCw size={15} className="is-spinning" />
+                        ) : (
+                          <Download size={15} />
+                        )}
+                      </button>
+
+                      {/* VIEW */}
+
+                      <button
+                        type="button"
+                        className="company-application-view-button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+
+                          openApplication(application);
+                        }}
+                      >
+                        View
+                        <ChevronRight size={15} />
+                      </button>
+                    </div>
                   </article>
                 );
               })}
-
-              {!filteredApplications.length && (
-                <div className="company-applications-empty">
-                  <div className="company-applications-empty-icon">
-                    <Users />
-                  </div>
-
-                  <h3>
-                    {search || selectedJob !== "all"
-                      ? "No applications found"
-                      : "No applications yet"}
-                  </h3>
-
-                  <p>
-                    {search || selectedJob !== "all"
-                      ? "Try changing your search keyword or selected job."
-                      : "Applications from candidates will appear here when they apply to your posted jobs."}
-                  </p>
-                </div>
-              )}
-            </div>
+            </section>
           )}
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* =====================================================
-          APPLICATION DETAIL MODAL
+          APPLICATION DETAILS MODAL
       ===================================================== */}
 
       {selectedApplication && (
         <div
           className="company-application-modal-overlay"
-          onClick={closeApplicationModal}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeApplication();
+            }
+          }}
         >
-          <div
-            className="company-application-modal"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {/* MODAL HEADER */}
+          <div className="company-application-modal">
+            {/* ===============================================
+                MODAL HEADER
+            =============================================== */}
 
             <div className="company-application-modal-header">
               <div>
-                <span>CANDIDATE PROFILE</span>
+                <span className="company-application-eyebrow">
+                  Candidate Application
+                </span>
 
-                <h2>{selectedApplication.name || "Candidate"}</h2>
+                <h2>{getCandidateName(selectedApplication)}</h2>
+
+                <p>{getJobTitle(selectedApplication)}</p>
               </div>
 
               <button
                 type="button"
                 className="company-application-modal-close"
-                onClick={closeApplicationModal}
-                aria-label="Close candidate profile"
-                disabled={aiLoading || interviewLoading}
+                onClick={closeApplication}
+                aria-label="Close"
               >
-                <X />
+                <X size={19} />
               </button>
             </div>
 
-            {/* MODAL BODY */}
+            {/* ===============================================
+                MODAL BODY
+            =============================================== */}
 
             <div className="company-application-modal-body">
-              {/* =================================================
-                  APPLICATION STATUS
-              ================================================= */}
+              {/* =============================================
+                  STATUS
+              ============================================= */}
+
+              <div className="company-application-modal-status-row">
+                <span>Application Status</span>
+
+                <strong
+                  className={`company-application-status ${getStatusClass(
+                    getApplicationStatus(selectedApplication),
+                  )}`}
+                >
+                  {getApplicationStatus(selectedApplication)}
+                </strong>
+              </div>
+
+              {/* =============================================
+                  CANDIDATE DETAILS
+              ============================================= */}
 
               <section className="company-application-modal-section">
-                <h4>Application Status</h4>
+                <div className="company-application-section-heading">
+                  <div>
+                    <span>Candidate</span>
 
-                <div className="company-application-status-row">
-                  <span
-                    className={`company-application-status ${getStatusClass(
-                      selectedApplication.status,
-                    )}`}
-                  >
-                    {selectedApplication.status || "Applied"}
-                  </span>
-
-                  <span>
-                    Applied {formatDate(selectedApplication.appliedAt)}
-                  </span>
+                    <h4>Candidate Details</h4>
+                  </div>
                 </div>
-              </section>
 
-              {/* =================================================
-                  POSITION
-              ================================================= */}
+                <div className="company-application-detail-grid">
+                  <div>
+                    <span>Applied For</span>
 
-              <section className="company-application-modal-section">
-                <h4>Applied For</h4>
+                    <strong>{getJobTitle(selectedApplication)}</strong>
+                  </div>
 
-                <div className="company-application-modal-field">
-                  <strong>
-                    {selectedApplication.jobTitle ||
-                      getJobTitle(selectedApplication.jobId)}
-                  </strong>
-                </div>
-              </section>
-
-              {/* =================================================
-                  CONTACT
-              ================================================= */}
-
-              <section className="company-application-modal-section">
-                <h4>Contact Information</h4>
-
-                <div className="company-application-modal-grid">
-                  <div className="company-application-modal-field">
+                  <div>
                     <span>Email</span>
 
-                    <strong>{selectedApplication.email || "-"}</strong>
+                    <strong>
+                      {selectedApplication?.email ||
+                        selectedApplication?.candidateEmail ||
+                        selectedApplication?.Email ||
+                        "Not available"}
+                    </strong>
                   </div>
 
-                  <div className="company-application-modal-field">
-                    <span>Phone</span>
+                  <div>
+                    <span>Contact</span>
 
-                    <strong>{selectedApplication.contact || "-"}</strong>
+                    <strong>
+                      {selectedApplication?.contact ||
+                        selectedApplication?.phone ||
+                        selectedApplication?.phoneNumber ||
+                        selectedApplication?.Contact ||
+                        selectedApplication?.Phone ||
+                        "Not available"}
+                    </strong>
                   </div>
-                </div>
-              </section>
 
-              {/* =================================================
-                  EDUCATION
-              ================================================= */}
-
-              <section className="company-application-modal-section">
-                <h4>Education</h4>
-
-                <div className="company-application-modal-grid">
-                  <div className="company-application-modal-field">
+                  <div>
                     <span>Qualification</span>
 
-                    <strong>{selectedApplication.qualification || "-"}</strong>
+                    <strong>
+                      {selectedApplication?.qualification ||
+                        selectedApplication?.Qualification ||
+                        "Not specified"}
+                    </strong>
                   </div>
 
-                  <div className="company-application-modal-field">
+                  <div>
                     <span>Course</span>
 
-                    <strong>{selectedApplication.course || "-"}</strong>
+                    <strong>
+                      {selectedApplication?.course ||
+                        selectedApplication?.Course ||
+                        "Not specified"}
+                    </strong>
                   </div>
 
-                  <div className="company-application-modal-field">
-                    <span>College / University</span>
+                  <div>
+                    <span>College</span>
 
-                    <strong>{selectedApplication.collegeName || "-"}</strong>
+                    <strong>
+                      {selectedApplication?.collegeName ||
+                        selectedApplication?.college ||
+                        selectedApplication?.CollegeName ||
+                        "Not specified"}
+                    </strong>
                   </div>
 
-                  <div className="company-application-modal-field">
+                  <div>
                     <span>Experience</span>
 
                     <strong>
-                      {Number(selectedApplication.experience || 0)} years
+                      {selectedApplication?.experience ??
+                        selectedApplication?.Experience ??
+                        0}{" "}
+                      years
                     </strong>
                   </div>
-                </div>
-              </section>
 
-              {/* =================================================
-                  SKILLS
-              ================================================= */}
-
-              <section className="company-application-modal-section">
-                <h4>Skills</h4>
-
-                <div className="company-application-skills">
-                  {Array.isArray(selectedApplication.skills) &&
-                  selectedApplication.skills.length > 0 ? (
-                    selectedApplication.skills.map((skill) => (
-                      <span className="company-application-skill" key={skill}>
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="company-application-skill">
-                      No skills provided
-                    </span>
-                  )}
-                </div>
-              </section>
-
-              {/* =================================================
-                  RESUME
-              ================================================= */}
-
-              <section className="company-application-modal-section">
-                <h4>Candidate Resume</h4>
-
-                <div className="company-application-modal-resume">
-                  <div className="company-application-modal-resume-info">
-                    <div className="company-application-modal-resume-icon">
-                      <FileText />
-                    </div>
-
-                    <div>
-                      <span>Resume File</span>
-
-                      <strong>
-                        {hasResume(selectedApplication)
-                          ? getResumeName(selectedApplication)
-                          : "Resume not available"}
-                      </strong>
-                    </div>
-                  </div>
-
-                  {hasResume(selectedApplication) && (
-                    <button
-                      type="button"
-                      className="company-application-download-btn"
-                      onClick={() => handleDownloadResume(selectedApplication)}
-                      disabled={downloadingResumeId === selectedApplication.id}
-                    >
-                      <Download />
-
-                      {downloadingResumeId === selectedApplication.id
-                        ? "Downloading..."
-                        : ""}
-                    </button>
-                  )}
-                </div>
-              </section>
-
-              {/* =================================================
-                  ATS
-              ================================================= */}
-
-              <section className="company-application-modal-section">
-                <h4>Job Match Score</h4>
-
-                <div className="company-application-ats">
-                  <div className="company-application-ats-circle">
-                    {Math.round(Number(selectedApplication.atsScore || 0))}
-                  </div>
-
-                  <div className="company-application-ats-details">
-                    <span>Resume / Job Match</span>
-                    {/**/}
-                    <strong>
-                      {Number(selectedApplication.atsScore || 0)}%
-                    </strong>
-                  </div>
-                </div>
-              </section>
-
-              {/* =================================================
-                  AI ANALYSIS
-              ================================================= */}
-
-              <section className="company-application-modal-section company-application-ai-section">
-                <div className="company-application-ai-header">
                   <div>
-                    <h4>AI Candidate Analysis</h4>
+                    <span>Applied On</span>
 
-                    <p>
-                      AI helps the company understand this candidate; ATS score
-                      remains keyword-based.
-                    </p>
+                    <strong>
+                      {formatDate(
+                        selectedApplication?.appliedAt ||
+                          selectedApplication?.createdAt ||
+                          selectedApplication?.AppliedAt ||
+                          selectedApplication?.CreatedAt,
+                      )}
+                    </strong>
+                  </div>
+                </div>
+              </section>
+
+              {/* =============================================
+                  SKILLS
+              ============================================= */}
+
+              <section className="company-application-modal-section">
+                <div className="company-application-section-heading">
+                  <div>
+                    <span>Skills</span>
+
+                    <h4>Candidate Skills</h4>
+                  </div>
+                </div>
+
+                <div className="company-application-modal-skills">
+                  {normalizeList(
+                    selectedApplication?.skills || selectedApplication?.Skills,
+                  ).length > 0 ? (
+                    normalizeList(
+                      selectedApplication?.skills ||
+                        selectedApplication?.Skills,
+                    ).map((skill) => <span key={skill}>{skill}</span>)
+                  ) : (
+                    <p>No skills available.</p>
+                  )}
+                </div>
+              </section>
+
+              {/* =============================================
+                  RESUME
+              ============================================= */}
+
+              <section className="company-application-modal-section">
+                <div className="company-application-section-heading">
+                  <div>
+                    <span>Resume</span>
+
+                    <h4>Application Resume</h4>
                   </div>
 
                   <button
                     type="button"
-                    className="company-application-ai-btn"
-                    onClick={() => handleAIAnalysis(selectedApplication)}
-                    disabled={aiLoading}
+                    className="company-application-download"
+                    onClick={() => handleDownloadResume(selectedApplication)}
+                    disabled={
+                      resumeLoadingId === getApplicationId(selectedApplication)
+                    }
                   >
-                    <Sparkles />
+                    {resumeLoadingId ===
+                    getApplicationId(selectedApplication) ? (
+                      <RefreshCw size={15} className="is-spinning" />
+                    ) : (
+                      <Download size={15} />
+                    )}
 
-                    {aiLoading ? "Analyzing..." : "Analyze with AI"}
+                    {resumeLoadingId === getApplicationId(selectedApplication)
+                      ? "Downloading..."
+                      : "Download"}
                   </button>
                 </div>
+              </section>
 
-                {/* AI LOADING */}
+              {/* =============================================
+                  AI ANALYSIS
+              ============================================= */}
 
-                {aiLoading && (
-                  <div className="company-applications-loading">
-                    <div className="company-applications-spinner" />
+              <section className="company-application-modal-section company-application-ai-section">
+                <div className="company-application-section-heading">
+                  <div>
+                    <span>Gemini AI</span>
 
-                    <span>Analyzing candidate resume...</span>
+                    <h4>AI Candidate Analysis</h4>
                   </div>
-                )}
 
-                {/* AI RESULT */}
+                  <Sparkles size={19} />
+                </div>
 
-                {aiAnalysis && !aiLoading && (
+                <p className="company-application-ai-description">
+                  AI evaluates the candidate against the job requirements using
+                  the application details and immutable resume snapshot.
+                </p>
+
+                <button
+                  type="button"
+                  className="company-application-ai-button"
+                  onClick={() => handleAIAnalysis(selectedApplication)}
+                  disabled={aiLoading}
+                >
+                  {aiLoading ? (
+                    <>
+                      <RefreshCw size={16} className="is-spinning" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} />
+                      Analyze with AI
+                    </>
+                  )}
+                </button>
+
+                {/* =========================================
+                    AI RESULT
+                ========================================= */}
+
+                {aiAnalysis && (
                   <div className="company-application-ai-result">
-                    <div className="company-application-ai-block">
-                      <span>Summary</span>
+                    {/* =======================================
+                        AI JOB MATCH SCORE
+                    ======================================= */}
 
-                      <p>{aiAnalysis.summary || "No summary returned."}</p>
-                    </div>
+                    {aiAnalysis.jobMatchScore !== undefined &&
+                      aiAnalysis.jobMatchScore !== null && (
+                        <div className="company-application-ai-match-score">
+                          <div className="company-application-ai-match-score-circle">
+                            {Math.round(
+                              Math.min(
+                                Math.max(
+                                  Number(aiAnalysis.jobMatchScore) || 0,
+                                  0,
+                                ),
+                                100,
+                              ),
+                            )}
 
-                    <div className="company-application-ai-columns">
+                            <span>%</span>
+                          </div>
+
+                          <div>
+                            <span>AI Job Match Score</span>
+
+                            <strong>
+                              {Math.round(
+                                Math.min(
+                                  Math.max(
+                                    Number(aiAnalysis.jobMatchScore) || 0,
+                                    0,
+                                  ),
+                                  100,
+                                ),
+                              )}
+                              %
+                            </strong>
+
+                            <small>Semantic job-fit assessment</small>
+                          </div>
+                        </div>
+                      )}
+
+                    {/* =======================================
+                        SUMMARY
+                    ======================================= */}
+
+                    {aiAnalysis.summary && (
                       <div className="company-application-ai-block">
-                        <span>Strengths</span>
+                        <h5>AI Summary</h5>
 
-                        {Array.isArray(aiAnalysis.strengths) &&
-                        aiAnalysis.strengths.length > 0 ? (
-                          <ul>
-                            {aiAnalysis.strengths.map((item, index) => (
-                              <li key={`strength-${index}`}>{item}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No specific strengths returned.</p>
-                        )}
+                        <p>{aiAnalysis.summary}</p>
                       </div>
+                    )}
 
+                    {/* =======================================
+                        STRENGTHS
+                    ======================================= */}
+
+                    {normalizeList(aiAnalysis.strengths).length > 0 && (
                       <div className="company-application-ai-block">
-                        <span>Missing Job Skills</span>
+                        <h5>Strengths</h5>
 
-                        {Array.isArray(aiAnalysis.missingSkills) &&
-                        aiAnalysis.missingSkills.length > 0 ? (
-                          <ul>
-                            {aiAnalysis.missingSkills.map((item, index) => (
-                              <li key={`missing-${index}`}>{item}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No important missing skills identified.</p>
-                        )}
+                        <ul>
+                          {normalizeList(aiAnalysis.strengths).map(
+                            (item, index) => (
+                              <li key={`${item}-${index}`}>{item}</li>
+                            ),
+                          )}
+                        </ul>
                       </div>
-                    </div>
+                    )}
 
-                    <div className="company-application-ai-columns">
+                    {/* =======================================
+                        MISSING SKILLS
+                    ======================================= */}
+
+                    {normalizeList(aiAnalysis.missingSkills).length > 0 && (
                       <div className="company-application-ai-block">
-                        <span>Suggestions</span>
+                        <h5>Missing Skills</h5>
 
-                        {Array.isArray(aiAnalysis.suggestions) &&
-                        aiAnalysis.suggestions.length > 0 ? (
-                          <ul>
-                            {aiAnalysis.suggestions.map((item, index) => (
-                              <li key={`suggestion-${index}`}>{item}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No suggestions returned.</p>
-                        )}
+                        <ul>
+                          {normalizeList(aiAnalysis.missingSkills).map(
+                            (item, index) => (
+                              <li key={`${item}-${index}`}>{item}</li>
+                            ),
+                          )}
+                        </ul>
                       </div>
+                    )}
 
+                    {/* =======================================
+                        SUGGESTIONS
+                    ======================================= */}
+
+                    {normalizeList(aiAnalysis.suggestions).length > 0 && (
                       <div className="company-application-ai-block">
-                        <span>Interview Focus</span>
+                        <h5>Suggestions / Improvement</h5>
 
-                        {Array.isArray(aiAnalysis.interviewFocus) &&
-                        aiAnalysis.interviewFocus.length > 0 ? (
-                          <ul>
-                            {aiAnalysis.interviewFocus.map((item, index) => (
-                              <li key={`focus-${index}`}>{item}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No interview focus returned.</p>
-                        )}
+                        <ul>
+                          {normalizeList(aiAnalysis.suggestions).map(
+                            (item, index) => (
+                              <li key={`${item}-${index}`}>{item}</li>
+                            ),
+                          )}
+                        </ul>
                       </div>
-                    </div>
+                    )}
+
+                    {/* =======================================
+                        INTERVIEW FOCUS
+                    ======================================= */}
+
+                    {normalizeList(aiAnalysis.interviewFocus).length > 0 && (
+                      <div className="company-application-ai-block">
+                        <h5>Interview Preparation</h5>
+
+                        <ul>
+                          {normalizeList(aiAnalysis.interviewFocus).map(
+                            (item, index) => (
+                              <li key={`${item}-${index}`}>{item}</li>
+                            ),
+                          )}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               </section>
 
-              {/* =================================================
-                  INTERVIEW ACTION
-              ================================================= */}
+              {/* =============================================
+                  INTERVIEW
+              ============================================= */}
 
               <section className="company-application-modal-section">
-                <h4>Interview</h4>
-
-                <div className="company-application-interview-action">
+                <div className="company-application-section-heading">
                   <div>
-                    <span>
-                      {String(
-                        selectedApplication.status || "",
-                      ).toLowerCase() === "interview"
-                        ? "Interview has been scheduled for this candidate."
-                        : "Ready to move this candidate to the interview stage?"}
-                    </span>
+                    <span>Next Step</span>
+
+                    <h4>Interview</h4>
                   </div>
+                </div>
+
+                <div className="company-application-interview-actions">
+                  <button
+                    type="button"
+                    className="company-application-interview-button"
+                    onClick={() => openInterviewModal(selectedApplication)}
+                  >
+                    <CalendarDays size={16} />
+                    Schedule Interview
+                  </button>
 
                   <button
                     type="button"
-                    className="company-application-interview-btn"
-                    onClick={openInterviewModal}
+                    className="company-application-chat-secondary-button"
+                    onClick={() => handleOpenCandidateChat(selectedApplication)}
                   >
-                    <CalendarDays />
-
-                    {String(selectedApplication.status || "").toLowerCase() ===
-                    "interview"
-                      ? "Schedule Another Round"
-                      : "Schedule Interview"}
+                    <MessageCircle size={16} />
+                    Message Candidate
                   </button>
                 </div>
               </section>
@@ -1486,222 +1633,139 @@ export default function CompanyApplication() {
       )}
 
       {/* =====================================================
-          SCHEDULE INTERVIEW MODAL
+          INTERVIEW MODAL
       ===================================================== */}
 
-      {showInterviewModal && selectedApplication && (
+      {interviewModalOpen && selectedApplication && (
         <div
           className="company-interview-modal-overlay"
-          onClick={closeInterviewModal}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeInterviewModal();
+            }
+          }}
         >
-          <div
-            className="company-interview-modal"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {/* HEADER */}
+          <div className="company-interview-modal">
+            {/* =============================================
+                  INTERVIEW HEADER
+              ============================================= */}
 
             <div className="company-interview-modal-header">
               <div>
-                <span>INTERVIEW SCHEDULING</span>
+                <span>Interview</span>
 
-                <h2>Schedule Interview</h2>
+                <h3>Schedule Interview</h3>
 
                 <p>
-                  {selectedApplication.name || "Candidate"}
-                  {" • "}
-                  {selectedApplication.jobTitle ||
-                    getJobTitle(selectedApplication.jobId)}
+                  {getCandidateName(selectedApplication)} ·{" "}
+                  {getJobTitle(selectedApplication)}
                 </p>
               </div>
 
               <button
                 type="button"
-                className="company-interview-modal-close"
                 onClick={closeInterviewModal}
-                disabled={interviewLoading}
+                aria-label="Close"
               >
-                <X />
+                <X size={18} />
               </button>
             </div>
 
-            {/* FORM */}
+            {/* =============================================
+                  INTERVIEW FORM
+              ============================================= */}
 
             <form
               className="company-interview-form"
               onSubmit={handleScheduleInterview}
             >
-              {/* ROUND */}
+              {interviewError && (
+                <div className="company-interview-error">{interviewError}</div>
+              )}
 
-              <div className="company-interview-form-group">
-                <label htmlFor="round">Interview Round</label>
-
-                <select
-                  id="round"
-                  name="round"
-                  value={interviewForm.round}
-                  onChange={handleInterviewChange}
-                  required
-                >
-                  <option value="HR">HR</option>
-
-                  <option value="Technical">Technical</option>
-
-                  <option value="Managerial">Managerial</option>
-
-                  <option value="Final">Final</option>
-                </select>
-              </div>
-
-              {/* INTERVIEW TYPE */}
-
-              <div className="company-interview-form-group">
-                <label htmlFor="interviewType">Interview Type</label>
-
-                <select
-                  id="interviewType"
-                  name="interviewType"
-                  value={interviewForm.interviewType}
-                  onChange={handleInterviewChange}
-                  required
-                >
-                  <option value="Online">Online</option>
-
-                  <option value="InPerson">In Person</option>
-
-                  <option value="Phone">Phone</option>
-                </select>
-              </div>
-
-              {/* DATE TIME + DURATION */}
-
-              <div className="company-interview-form-row">
-                <div className="company-interview-form-group">
-                  <label htmlFor="scheduledAt">Date & Time</label>
-
-                  <div className="company-interview-input-icon">
-                    <CalendarDays />
-
-                    <input
-                      id="scheduledAt"
-                      type="datetime-local"
-                      name="scheduledAt"
-                      value={interviewForm.scheduledAt}
-                      onChange={handleInterviewChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="company-interview-form-group">
-                  <label htmlFor="durationMinutes">Duration</label>
-
-                  <select
-                    id="durationMinutes"
-                    name="durationMinutes"
-                    value={interviewForm.durationMinutes}
-                    onChange={handleInterviewChange}
-                    required
-                  >
-                    <option value={15}>15 minutes</option>
-
-                    <option value={30}>30 minutes</option>
-
-                    <option value={45}>45 minutes</option>
-
-                    <option value={60}>60 minutes</option>
-
-                    <option value={90}>90 minutes</option>
-
-                    <option value={120}>120 minutes</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* ONLINE */}
-
-              {interviewForm.interviewType === "Online" && (
-                <div className="company-interview-form-group">
-                  <label htmlFor="meetingLink">Meeting Link</label>
-
-                  <div className="company-interview-input-icon">
-                    <Video />
-
-                    <input
-                      id="meetingLink"
-                      type="url"
-                      name="meetingLink"
-                      value={interviewForm.meetingLink}
-                      onChange={handleInterviewChange}
-                      placeholder="https://meet.google.com/..."
-                      required
-                    />
-                  </div>
+              {interviewSuccess && (
+                <div className="company-interview-success">
+                  {interviewSuccess}
                 </div>
               )}
 
-              {/* LOCATION */}
+              <label>
+                <span>Date & Time</span>
 
-              {interviewForm.interviewType === "InPerson" && (
-                <div className="company-interview-form-group">
-                  <label htmlFor="location">Location</label>
+                <input
+                  type="datetime-local"
+                  name="scheduledAt"
+                  value={interviewForm.scheduledAt}
+                  onChange={handleInterviewFormChange}
+                  required
+                />
+              </label>
 
-                  <div className="company-interview-input-icon">
-                    <MapPin />
+              <label>
+                <span>Duration</span>
 
-                    <input
-                      id="location"
-                      type="text"
-                      name="location"
-                      value={interviewForm.location}
-                      onChange={handleInterviewChange}
-                      placeholder="Office address / meeting room"
-                      required
-                    />
-                  </div>
-                </div>
-              )}
+                <select
+                  name="durationMinutes"
+                  value={interviewForm.durationMinutes}
+                  onChange={handleInterviewFormChange}
+                >
+                  <option value="15">15 minutes</option>
 
-              {/* INSTRUCTIONS */}
+                  <option value="30">30 minutes</option>
 
-              <div className="company-interview-form-group">
-                <label htmlFor="instructions">Instructions</label>
+                  <option value="45">45 minutes</option>
+
+                  <option value="60">60 minutes</option>
+
+                  <option value="90">90 minutes</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Meeting Link</span>
+
+                <input
+                  type="url"
+                  name="meetingLink"
+                  value={interviewForm.meetingLink}
+                  onChange={handleInterviewFormChange}
+                  placeholder="https://meet.google.com/..."
+                />
+              </label>
+
+              <label>
+                <span>Notes</span>
 
                 <textarea
-                  id="instructions"
-                  name="instructions"
-                  value={interviewForm.instructions}
-                  onChange={handleInterviewChange}
-                  placeholder="Add instructions for the candidate..."
-                  rows={4}
+                  name="notes"
+                  value={interviewForm.notes}
+                  onChange={handleInterviewFormChange}
+                  rows="4"
+                  placeholder="Add interview instructions or notes..."
                 />
-              </div>
-
-              {/* ERROR */}
-
-              {error && (
-                <div className="company-interview-form-error">{error}</div>
-              )}
-
-              {/* ACTIONS */}
+              </label>
 
               <div className="company-interview-form-actions">
                 <button
                   type="button"
-                  className="company-interview-cancel-btn"
                   onClick={closeInterviewModal}
                   disabled={interviewLoading}
                 >
                   Cancel
                 </button>
 
-                <button
-                  type="submit"
-                  className="company-interview-submit-btn"
-                  disabled={interviewLoading}
-                >
-                  <CalendarDays />
-
-                  {interviewLoading ? "Scheduling..." : "Schedule Interview"}
+                <button type="submit" disabled={interviewLoading}>
+                  {interviewLoading ? (
+                    <>
+                      <RefreshCw size={15} className="is-spinning" />
+                      Scheduling...
+                    </>
+                  ) : (
+                    <>
+                      <CalendarDays size={15} />
+                      Schedule Interview
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -1712,52 +1776,4 @@ export default function CompanyApplication() {
   );
 }
 
-// =========================================================
-// DATE FORMAT
-// =========================================================
-
-function formatDate(value) {
-  if (!value) {
-    return "-";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-// =========================================================
-// TOKEN USER ID
-// =========================================================
-
-function tokenUserId(token) {
-  try {
-    if (!token) {
-      return null;
-    }
-
-    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-
-    const paddedPayload = payload + "=".repeat((4 - (payload.length % 4)) % 4);
-
-    const data = JSON.parse(atob(paddedPayload));
-
-    return (
-      data[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ] ||
-      data.sub ||
-      null
-    );
-  } catch {
-    return null;
-  }
-}
+export default CompanyApplication;

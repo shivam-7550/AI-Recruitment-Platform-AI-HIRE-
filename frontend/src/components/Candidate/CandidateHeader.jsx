@@ -49,16 +49,7 @@ export default function CandidateHeader({ title, subtitle }) {
         {/* =========================
             NOTIFICATION
             ========================= */}
-        <NotificationBell
-          portalRole="User"
-          maxItems={8}
-          resolveRoute={(notification) =>
-            notification?.type === "ApplicationSubmittedCandidate" ||
-            notification?.type === "ApplicationStatusChanged"
-              ? "/user/applications"
-              : "/user/browse-jobs"
-          }
-        />
+        <NotificationBell portalRole="User" maxItems={8} />
 
         {/* =========================
             USER PROFILE

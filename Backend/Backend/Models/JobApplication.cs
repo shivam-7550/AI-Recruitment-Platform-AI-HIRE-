@@ -103,6 +103,10 @@ public class JobApplication
 
     public double ATSScore { get; set; }
 
+    // New AI-generated semantic job matching score. 
+    // This is separate from ATSScore.
+    public int? JobMatchScore { get; set; }
+
     public double SkillsMatch { get; set; }
 
     public double ExperienceMatch { get; set; }
