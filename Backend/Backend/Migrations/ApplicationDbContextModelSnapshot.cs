@@ -472,7 +472,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "IsArchived", "CreatedAt");
+
+                    b.HasIndex("UserId", "IsRead", "IsArchived", "CreatedAt");
 
                     b.ToTable("Notifications");
                 });

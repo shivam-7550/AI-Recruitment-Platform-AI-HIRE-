@@ -2,22 +2,15 @@
 using Backend.Interfaces.Repositories;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public sealed class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _context;
-
-
     public UserRepository(
         ApplicationDbContext context)
     {
         _context = context;
     }
-
-
-
     public async Task<User?> GetByEmailAsync(
         string email,
         CancellationToken cancellationToken)
@@ -28,10 +21,6 @@ public sealed class UserRepository : IUserRepository
                 u => u.Email == email,
                 cancellationToken);
     }
-
-
-
-
     public async Task<User?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
@@ -42,10 +31,6 @@ public sealed class UserRepository : IUserRepository
                 u => u.Id == id,
                 cancellationToken);
     }
-
-
-
-
     public async Task<User?> GetUserWithCompanyAsync(
         string email,
         CancellationToken cancellationToken)
@@ -56,10 +41,6 @@ public sealed class UserRepository : IUserRepository
                 u => u.Email == email,
                 cancellationToken);
     }
-
-
-
-
     public async Task AddAsync(
         User user,
         CancellationToken cancellationToken)
@@ -69,10 +50,6 @@ public sealed class UserRepository : IUserRepository
                 user,
                 cancellationToken);
     }
-
-
-
-
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken)
     {

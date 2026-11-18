@@ -11,17 +11,12 @@ namespace Backend.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-
-
     public AuthController(
         IAuthService authService)
     {
         _authService = authService;
     }
-
-
-
-    [HttpPost("register")]
+    [HttpPost("register")] //register method
     public async Task<IActionResult> Register(
     RegisterRequestDto request,
     CancellationToken cancellationToken)
@@ -30,16 +25,10 @@ public sealed class AuthController : ControllerBase
             await _authService.RegisterAsync(
                 request,
                 cancellationToken);
-
         if (!response.Success)
             return BadRequest(response);
-
         return Ok(response);
     }
-
-
-
-
     [HttpPost("login")]
     public async Task<IActionResult> Login(
     LoginRequestDto request,
@@ -49,21 +38,11 @@ public sealed class AuthController : ControllerBase
             await _authService.LoginAsync(
                 request,
                 cancellationToken);
-
-
         if (!response.Success)
             return Unauthorized(response);
-
-
         SetRefreshTokenCookie(response);
-
         return Ok(response);
     }
-
-
-
-
-
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(
     CancellationToken cancellationToken)
@@ -71,32 +50,19 @@ public sealed class AuthController : ControllerBase
         var token =
             Request.Cookies["refreshToken"]
             ?? string.Empty;
-
-
         var response =
             await _authService.RefreshAsync(
                 token,
                 cancellationToken);
-
-
         if (!response.Success)
         {
             Response.Cookies.Delete(
                 "refreshToken");
-
             return Unauthorized(response);
         }
-
-
         SetRefreshTokenCookie(response);
-
         return Ok(response);
     }
-
-
-
-
-
     [Authorize]
     [HttpGet("me")]
     public IActionResult Me()
@@ -106,27 +72,18 @@ public sealed class AuthController : ControllerBase
             Id =
             User.FindFirstValue(
                 ClaimTypes.NameIdentifier),
-
-
             Name =
             User.FindFirst("Name")?.Value,
-
-
             Email =
             User.FindFirstValue(
                 ClaimTypes.Email),
-
-
             Role =
             User.FindFirstValue(
                 ClaimTypes.Role)
         });
     }
 
-
-
-
-
+    //logout api
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(
     CancellationToken cancellationToken)
@@ -135,18 +92,12 @@ public sealed class AuthController : ControllerBase
             Request.Cookies["refreshToken"]
             ?? string.Empty,
             cancellationToken);
-
-
         Response.Cookies.Delete(
             "refreshToken");
-
-
         return NoContent();
     }
 
-
-
-
+    // this is a private helper method not an api endpoint and the use of this method is to set the cookie of refresh token
     private void SetRefreshTokenCookie(
         AuthResponseDto response)
     {
@@ -156,25 +107,19 @@ public sealed class AuthController : ControllerBase
         {
             return;
         }
-
-
-
         Response.Cookies.Append(
             "refreshToken",
             response.RefreshToken,
             new CookieOptions
             {
                 HttpOnly = true,
-
                 Secure = true,
-
                 SameSite =
                     SameSiteMode.Strict,
-
                 Expires =
                     response.RefreshTokenExpiresAt,
-
                 Path = "/"
-            });
+            }
+        );
     }
 }

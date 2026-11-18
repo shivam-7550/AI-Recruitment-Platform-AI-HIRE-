@@ -1427,7 +1427,11 @@ function CompanyApplication() {
               <section className="company-application-modal-section company-application-ai-section">
                 <div className="company-application-section-heading">
                   <div>
-                    <span>Gemini AI</span>
+                    <span>
+                      {aiAnalysis?.analysisMode === "Local"
+                        ? "Local Job Match Review"
+                        : "Gemini AI"}
+                    </span>
 
                     <h4>AI Candidate Analysis</h4>
                   </div>
@@ -1487,7 +1491,11 @@ function CompanyApplication() {
                           </div>
 
                           <div>
-                            <span>AI Job Match Score</span>
+                            <span>
+                              {aiAnalysis.analysisMode === "Local"
+                                ? "Local Job Match Score"
+                                : "AI Job Match Score"}
+                            </span>
 
                             <strong>
                               {Math.round(
@@ -1502,7 +1510,11 @@ function CompanyApplication() {
                               %
                             </strong>
 
-                            <small>Semantic job-fit assessment</small>
+                            <small>
+                              {aiAnalysis.analysisMode === "Local"
+                                ? "Evidence-based requirement comparison"
+                                : "Semantic job-fit assessment"}
+                            </small>
                           </div>
                         </div>
                       )}
@@ -1513,7 +1525,11 @@ function CompanyApplication() {
 
                     {aiAnalysis.summary && (
                       <div className="company-application-ai-block">
-                        <h5>AI Summary</h5>
+                        <h5>
+                          {aiAnalysis.analysisMode === "Local"
+                            ? "Job Match Summary"
+                            : "AI Summary"}
+                        </h5>
 
                         <p>{aiAnalysis.summary}</p>
                       </div>
@@ -1529,6 +1545,24 @@ function CompanyApplication() {
 
                         <ul>
                           {normalizeList(aiAnalysis.strengths).map(
+                            (item, index) => (
+                              <li key={`${item}-${index}`}>{item}</li>
+                            ),
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* =======================================
+                        MATCHED SKILLS
+                    ======================================= */}
+
+                    {normalizeList(aiAnalysis.matchedSkills).length > 0 && (
+                      <div className="company-application-ai-block">
+                        <h5>Matching Skills</h5>
+
+                        <ul>
+                          {normalizeList(aiAnalysis.matchedSkills).map(
                             (item, index) => (
                               <li key={`${item}-${index}`}>{item}</li>
                             ),

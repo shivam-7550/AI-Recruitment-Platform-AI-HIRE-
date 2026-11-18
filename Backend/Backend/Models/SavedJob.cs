@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Backend.Models;
-
 public class SavedJob : BaseEntity
 {
     public Guid UserId { get; set; }

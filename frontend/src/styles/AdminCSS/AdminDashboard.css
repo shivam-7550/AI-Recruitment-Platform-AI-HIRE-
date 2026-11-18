@@ -391,7 +391,7 @@
 .admin-bottom-grid {
   display: grid;
 
-  grid-template-columns: 1.7fr 0.8fr 1fr;
+  grid-template-columns: 10fr 10fr 1fr;
 
   gap: 20px;
 }
@@ -695,7 +695,7 @@
   }
 
   .admin-bottom-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto;
   }
 
   .admin-activity {

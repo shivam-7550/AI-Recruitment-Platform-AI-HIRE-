@@ -4,15 +4,12 @@ using Backend.Interfaces.Repositories;
 using Backend.Interfaces.Services;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Services;
-
 public class MessageService : IMessageService
 {
     private readonly IMessageRepository _messageRepository;
     private readonly INotificationService _notificationService;
     private readonly ApplicationDbContext _context;
-
     public MessageService(
         IMessageRepository messageRepository,
         INotificationService notificationService,
@@ -22,18 +19,15 @@ public class MessageService : IMessageService
         _notificationService = notificationService;
         _context = context;
     }
-
     // =========================================================
     // GET CONVERSATIONS
     // =========================================================
-
     public async Task<List<ConversationSummaryDto>> GetConversationsAsync(
         Guid userId,
         string role,
         CancellationToken cancellationToken)
     {
         List<Conversation> conversations;
-
         if (role.Equals("Company", StringComparison.OrdinalIgnoreCase))
         {
             var company = await _context.Companies
@@ -41,15 +35,14 @@ public class MessageService : IMessageService
                 .FirstOrDefaultAsync(
                     x => x.UserId == userId,
                     cancellationToken);
-
             if (company == null)
             {
                 return new List<ConversationSummaryDto>();
             }
-
-            conversations = await _messageRepository
+            return await _messageRepository
                 .GetCompanyConversationsAsync(
                     company.Id,
+                    userId,
                     cancellationToken);
         }
         else if (role.Equals("User", StringComparison.OrdinalIgnoreCase))
@@ -63,17 +56,14 @@ public class MessageService : IMessageService
         {
             return new List<ConversationSummaryDto>();
         }
-
         return conversations.Select(x =>
         {
             var lastMessage = x.Messages
                 .OrderByDescending(m => m.CreatedAt)
                 .FirstOrDefault();
-
             var unreadCount = x.Messages.Count(m =>
                 !m.IsRead &&
                 m.SenderId != userId);
-
             return new ConversationSummaryDto
             {
                 ConversationId = x.Id,
@@ -90,12 +80,9 @@ public class MessageService : IMessageService
             };
         }).ToList();
     }
-
-
     // =========================================================
     // GET CONVERSATION
     // =========================================================
-
     public async Task<ConversationDto?> GetConversationAsync(
         Guid conversationId,
         Guid userId,
@@ -106,31 +93,24 @@ public class MessageService : IMessageService
             .GetConversationByIdAsync(
                 conversationId,
                 cancellationToken);
-
         if (conversation == null)
         {
             return null;
         }
-
         var authorized = await IsAuthorizedAsync(
             conversation,
             userId,
             role,
             cancellationToken);
-
         if (!authorized)
         {
             return null;
         }
-
         return MapConversation(conversation);
     }
-
-
     // =========================================================
     // GET MESSAGES
     // =========================================================
-
     public async Task<List<MessageDto>?> GetMessagesAsync(
         Guid conversationId,
         Guid userId,
@@ -141,28 +121,23 @@ public class MessageService : IMessageService
             .GetConversationByIdAsync(
                 conversationId,
                 cancellationToken);
-
         if (conversation == null)
         {
             return null;
         }
-
         var authorized = await IsAuthorizedAsync(
             conversation,
             userId,
             role,
             cancellationToken);
-
         if (!authorized)
         {
             return null;
         }
-
         var messages = await _messageRepository
             .GetMessagesAsync(
                 conversationId,
                 cancellationToken);
-
         return messages.Select(x => new MessageDto
         {
             Id = x.Id,
@@ -175,13 +150,10 @@ public class MessageService : IMessageService
             IsMine = x.SenderId == userId
         }).ToList();
     }
-
-
     // =========================================================
     // CREATE CONVERSATION
     // COMPANY ONLY
     // =========================================================
-
     public async Task<ConversationDto> CreateConversationAsync(
         Guid companyUserId,
         CreateConversationDto dto,
@@ -192,40 +164,34 @@ public class MessageService : IMessageService
             .FirstOrDefaultAsync(
                 x => x.UserId == companyUserId,
                 cancellationToken);
-
         if (company == null)
         {
             throw new UnauthorizedAccessException(
                 "Company profile not found.");
         }
-
         var application = await _context.JobApplications
             .Include(x => x.User)
             .Include(x => x.Job)
             .FirstOrDefaultAsync(
                 x => x.Id == dto.ApplicationId,
                 cancellationToken);
-
         if (application == null)
         {
             throw new KeyNotFoundException(
                 "Application not found.");
         }
-
         // Application must belong to the current company.
         if (application.Job.CompanyId != company.Id)
         {
             throw new UnauthorizedAccessException(
                 "You are not authorized to access this application.");
         }
-
         // Application must belong to the selected candidate.
         if (application.UserId != dto.CandidateId)
         {
             throw new ArgumentException(
                 "The selected candidate does not belong to this application.");
         }
-
         // Check if conversation already exists.
         var existing = await _messageRepository
             .FindExistingConversationAsync(
@@ -233,12 +199,10 @@ public class MessageService : IMessageService
                 dto.CandidateId,
                 dto.ApplicationId,
                 cancellationToken);
-
         if (existing != null)
         {
             return MapConversation(existing);
         }
-
         var conversation = new Conversation
         {
             CompanyId = company.Id,
@@ -248,34 +212,26 @@ public class MessageService : IMessageService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-
         await _messageRepository.AddConversationAsync(
             conversation,
             cancellationToken);
-
         await _messageRepository.SaveChangesAsync(
             cancellationToken);
-
         // Reload complete navigation properties.
         var created = await _messageRepository
             .GetConversationByIdAsync(
                 conversation.Id,
                 cancellationToken);
-
         if (created == null)
         {
             throw new InvalidOperationException(
                 "Conversation could not be created.");
         }
-
         return MapConversation(created);
     }
-
-
     // =========================================================
     // SEND MESSAGE
     // =========================================================
-
     public async Task<MessageDto?> SendMessageAsync(
         Guid senderUserId,
         string role,
@@ -287,7 +243,6 @@ public class MessageService : IMessageService
             throw new ArgumentException(
                 "Message content is required.");
         }
-
         var content = dto.Content.Trim();
 
         if (content.Length > 5000)
@@ -295,28 +250,23 @@ public class MessageService : IMessageService
             throw new ArgumentException(
                 "Message cannot exceed 5000 characters.");
         }
-
         var conversation = await _messageRepository
             .GetConversationByIdAsync(
                 dto.ConversationId,
                 cancellationToken);
-
         if (conversation == null)
         {
             return null;
         }
-
         var authorized = await IsAuthorizedAsync(
             conversation,
             senderUserId,
             role,
             cancellationToken);
-
         if (!authorized)
         {
             return null;
         }
-
         var message = new Message
         {
             ConversationId = conversation.Id,
@@ -325,23 +275,17 @@ public class MessageService : IMessageService
             IsRead = false,
             CreatedAt = DateTime.UtcNow
         };
-
         await _messageRepository.AddMessageAsync(
             message,
             cancellationToken);
-
         conversation.UpdatedAt = DateTime.UtcNow;
-
         await _messageRepository.SaveChangesAsync(
             cancellationToken);
-
         // -----------------------------------------------------
         // Notification
         // -----------------------------------------------------
-
         Guid recipientUserId;
         string senderName;
-
         if (role.Equals(
                 "Company",
                 StringComparison.OrdinalIgnoreCase))
@@ -356,7 +300,6 @@ public class MessageService : IMessageService
             senderName = conversation.Candidate?.Name
                          ?? "Candidate";
         }
-
         try
         {
             await _notificationService.NotifyNewMessageAsync(
@@ -369,7 +312,6 @@ public class MessageService : IMessageService
             // Messaging should continue to work even if
             // notification creation fails.
         }
-
         return new MessageDto
         {
             Id = message.Id,
@@ -382,12 +324,9 @@ public class MessageService : IMessageService
             IsMine = true
         };
     }
-
-
     // =========================================================
     // MARK AS READ
-    // =========================================================
-
+    // ========================================================
     public async Task<bool> MarkAsReadAsync(
         Guid conversationId,
         Guid userId,
@@ -398,39 +337,30 @@ public class MessageService : IMessageService
             .GetConversationByIdAsync(
                 conversationId,
                 cancellationToken);
-
         if (conversation == null)
         {
             return false;
         }
-
         var authorized = await IsAuthorizedAsync(
             conversation,
             userId,
             role,
             cancellationToken);
-
         if (!authorized)
         {
             return false;
         }
-
         await _messageRepository.MarkMessagesAsReadAsync(
             conversationId,
             userId,
             cancellationToken);
-
         await _messageRepository.SaveChangesAsync(
             cancellationToken);
-
         return true;
     }
-
-
     // =========================================================
     // UNREAD COUNT
     // =========================================================
-
     public async Task<int> GetUnreadCountAsync(
         Guid userId,
         CancellationToken cancellationToken)
@@ -440,12 +370,9 @@ public class MessageService : IMessageService
                 userId,
                 cancellationToken);
     }
-
-
     // =========================================================
     // AUTHORIZATION
     // =========================================================
-
     private async Task<bool> IsAuthorizedAsync(
         Conversation conversation,
         Guid userId,
@@ -458,7 +385,6 @@ public class MessageService : IMessageService
         {
             return conversation.CandidateId == userId;
         }
-
         if (role.Equals(
                 "Company",
                 StringComparison.OrdinalIgnoreCase))
@@ -468,19 +394,14 @@ public class MessageService : IMessageService
                 .FirstOrDefaultAsync(
                     x => x.Id == conversation.CompanyId,
                     cancellationToken);
-
             return company != null &&
                    company.UserId == userId;
         }
-
         return false;
     }
-
-
     // =========================================================
     // MAPPER
     // =========================================================
-
     private static ConversationDto MapConversation(
         Conversation conversation)
     {

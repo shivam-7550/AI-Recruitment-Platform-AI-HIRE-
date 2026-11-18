@@ -64,7 +64,7 @@ public class InterviewController : ControllerBase
 
             return Ok(result);
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
             return Forbid();
         }
@@ -83,11 +83,9 @@ public class InterviewController : ControllerBase
             });
         }
     }
-
     // ==========================================
     // GET INTERVIEW BY ID
     // ==========================================
-
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(
         Guid id,
@@ -96,43 +94,35 @@ public class InterviewController : ControllerBase
         // ==========================================
         // Company
         // ==========================================
-
         if (User.IsInRole("Company"))
         {
             var companyIdClaim =
                 User.FindFirstValue("CompanyId");
-
             if (!Guid.TryParse(
                     companyIdClaim,
                     out var companyId))
             {
                 return Unauthorized();
             }
-
             var result =
                 await _service.GetForCompanyAsync(
                     id,
                     companyId,
                     cancellationToken);
-
             if (result == null)
             {
                 return NotFound();
             }
-
             return Ok(result);
         }
-
         // ==========================================
         // Candidate
         // ==========================================
-
         if (User.IsInRole("User"))
         {
             var userIdClaim =
                 User.FindFirstValue(
                     ClaimTypes.NameIdentifier);
-
             if (!Guid.TryParse(
                     userIdClaim,
                     out var userId))

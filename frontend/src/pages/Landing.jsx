@@ -29,7 +29,7 @@ function Landing() {
         <Link className="landing-brand" to="/"><Sparkles size={20} /> Hireline</Link>
         <nav aria-label="Main navigation">
           <a href="#product">Product</a><a href="#solutions">Solutions</a>
-          <a href="#process">How it works</a><Link to="/jobs">Jobs</Link>
+          <a href="#process">How it works</a>
           <a href="#about">About us</a>
         </nav>
         <div className="landing-nav-actions">

@@ -1,11 +1,14 @@
 ﻿using Backend.Models;
 
+using Backend.DTOs.Messages;
+
 namespace Backend.Interfaces.Repositories;
 
 public interface IMessageRepository
 {
-    Task<List<Conversation>> GetCompanyConversationsAsync(
+    Task<List<ConversationSummaryDto>> GetCompanyConversationsAsync(
         Guid companyId,
+        Guid userId,
         CancellationToken cancellationToken);
 
     Task<List<Conversation>> GetCandidateConversationsAsync(

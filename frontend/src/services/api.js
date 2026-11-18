@@ -242,6 +242,8 @@ export const candidateApi = {
 
   resume: () => api("/Resume"),
 
+  analyzeResume: (resumeId) => api(`/Resume/${resumeId}/analysis`),
+
   uploadResume: (file) => {
     if (!file) {
       throw new Error("Please select a resume file.");
@@ -251,7 +253,7 @@ export const candidateApi = {
     // ALLOWED FORMATS
     // -----------------------------------------------------
 
-    const allowedExtensions = [".pdf", ".doc", ".docx", ".word"];
+    const allowedExtensions = [".pdf", ".docx"];
 
     const fileName = String(file.name || "");
 
@@ -260,7 +262,7 @@ export const candidateApi = {
       : "";
 
     if (!allowedExtensions.includes(extension)) {
-      throw new Error("Only PDF, DOC, DOCX and WORD files are allowed.");
+      throw new Error("Only PDF and DOCX files are supported.");
     }
 
     // -----------------------------------------------------

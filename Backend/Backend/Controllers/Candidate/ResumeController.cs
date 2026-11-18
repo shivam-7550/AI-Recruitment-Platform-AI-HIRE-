@@ -259,6 +259,18 @@ public sealed class ResumeController : ControllerBase
             });
         }
         catch (InvalidOperationException ex)
+            when (ex.Message.StartsWith(
+                "Gemini API Error (429):",
+                StringComparison.Ordinal))
+        {
+            return StatusCode(
+                StatusCodes.Status429TooManyRequests,
+                new
+                {
+                    message = "Gemini's free-tier request limit has been reached. Your resume is saved. Retry after the quota resets or upgrade your Gemini plan."
+                });
+        }
+        catch (InvalidOperationException ex)
         {
             return StatusCode(
                 StatusCodes.Status502BadGateway,

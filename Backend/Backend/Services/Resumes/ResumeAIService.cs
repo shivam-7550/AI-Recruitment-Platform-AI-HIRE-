@@ -1,30 +1,27 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Backend.DTOs.Resume;
 using Backend.Interfaces.Services;
-
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
 namespace Backend.Services.Resumes;
-
 public sealed class ResumeAIService : IResumeAIService
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
     private readonly ILogger<ResumeAIService> _logger;
-
     // =========================================================
     // GEMINI INTERACTIONS API
     // =========================================================
-
     private const string GeminiUrl =
         "https://generativelanguage.googleapis.com/v1beta/interactions";
-
     private const string ApiRevision =
         "2026-05-20";
-
     // =========================================================
     // CONSTRUCTOR
     // =========================================================
-
     public ResumeAIService(
         IConfiguration configuration,
         HttpClient httpClient,
@@ -34,19 +31,15 @@ public sealed class ResumeAIService : IResumeAIService
         _httpClient = httpClient;
         _logger = logger;
     }
-
     // =========================================================
     // RESUME DATA EXTRACTION
     // =========================================================
-
     public async Task<ResumeParsedDataDto> ExtractResumeDataAsync(
         string resumeText,
         CancellationToken cancellationToken)
     {
         ValidateResumeText(resumeText);
-
         var apiKey = GetApiKey();
-
         var prompt = $"""
         You are an expert resume parsing engine.
 
@@ -81,7 +74,6 @@ public sealed class ResumeAIService : IResumeAIService
 
         Return ONLY valid JSON matching the schema.
         """;
-
         var body = new
         {
             model = GetModel(),
@@ -91,22 +83,17 @@ public sealed class ResumeAIService : IResumeAIService
                 BuildJsonResponseFormat(
                     BuildResumeExtractionSchema())
         };
-
         var data =
             await SendGeminiRequestAsync<ResumeParsedDataDto>(
                 apiKey,
                 body,
                 cancellationToken);
-
         NormalizeResumeData(data);
-
         return data;
     }
-
     // =========================================================
     // NORMALIZE RESUME DATA
     // =========================================================
-
     private static void NormalizeResumeData(
         ResumeParsedDataDto data)
     {
@@ -114,32 +101,24 @@ public sealed class ResumeAIService : IResumeAIService
         {
             return;
         }
-
         data.Skills ??=
             new List<string>();
-
         data.Education ??=
             new List<string>();
-
         data.Projects ??=
             new List<string>();
-
         data.Certifications ??=
             new List<string>();
-
         data.ProfessionalSummary ??=
             string.Empty;
-
         if (data.ExperienceYears < 0)
         {
             data.ExperienceYears = 0;
         }
     }
-
     // =========================================================
     // RESUME EXTRACTION SCHEMA
     // =========================================================
-
     private static object BuildResumeExtractionSchema()
     {
         return new
@@ -157,12 +136,10 @@ public sealed class ResumeAIService : IResumeAIService
                         type = "string"
                     }
                 },
-
                 experienceYears = new
                 {
                     type = "integer"
                 },
-
                 education = new
                 {
                     type = "array",
@@ -172,7 +149,6 @@ public sealed class ResumeAIService : IResumeAIService
                         type = "string"
                     }
                 },
-
                 projects = new
                 {
                     type = "array",
@@ -182,7 +158,6 @@ public sealed class ResumeAIService : IResumeAIService
                         type = "string"
                     }
                 },
-
                 certifications = new
                 {
                     type = "array",
@@ -192,13 +167,11 @@ public sealed class ResumeAIService : IResumeAIService
                         type = "string"
                     }
                 },
-
                 professionalSummary = new
                 {
                     type = "string"
                 }
             },
-
             required = new[]
             {
                 "skills",
@@ -210,20 +183,16 @@ public sealed class ResumeAIService : IResumeAIService
             }
         };
     }
-
     // =========================================================
     // GENERAL RESUME AI ANALYSIS
     // =========================================================
-
     public async Task<ResumeAIAnalysisDto> AnalyzeResumeAsync(
         string resumeText,
         string skills,
         CancellationToken cancellationToken = default)
     {
         ValidateResumeText(resumeText);
-
         var apiKey = GetApiKey();
-
         var prompt = $"""
         You are an expert AI recruitment assistant.
 
@@ -262,7 +231,6 @@ public sealed class ResumeAIService : IResumeAIService
 
         Return ONLY valid JSON matching the supplied schema.
         """;
-
         var body = new
         {
             model = GetModel(),
@@ -272,17 +240,14 @@ public sealed class ResumeAIService : IResumeAIService
                 BuildJsonResponseFormat(
                     BuildGeneralAnalysisSchema())
         };
-
         return await SendGeminiRequestAsync<ResumeAIAnalysisDto>(
             apiKey,
             body,
             cancellationToken);
     }
-
     // =========================================================
     // JOB-SPECIFIC RESUME AI ANALYSIS
     // =========================================================
-
     public async Task<ResumeAIAnalysisDto> AnalyzeResumeForJobAsync(
         string resumeText,
         string skills,
@@ -296,21 +261,17 @@ public sealed class ResumeAIService : IResumeAIService
         CancellationToken cancellationToken = default)
     {
         ValidateResumeText(resumeText);
-
         if (string.IsNullOrWhiteSpace(jobTitle))
         {
             throw new ArgumentException(
                 "Job title is required for ATS analysis.");
         }
-
         if (requiredExperience < 0)
         {
             throw new ArgumentException(
                 "Required experience cannot be negative.");
         }
-
         var apiKey = GetApiKey();
-
         var prompt = $"""
         You are an expert AI recruitment and ATS evaluation system.
 
@@ -429,7 +390,6 @@ public sealed class ResumeAIService : IResumeAIService
 
         Return ONLY valid JSON matching the supplied schema.
         """;
-
         var body = new
         {
             model = GetModel(),
@@ -439,17 +399,14 @@ public sealed class ResumeAIService : IResumeAIService
                 BuildJsonResponseFormat(
                     BuildJobAnalysisSchema())
         };
-
         return await SendGeminiRequestAsync<ResumeAIAnalysisDto>(
             apiKey,
             body,
             cancellationToken);
     }
-
     // =========================================================
     // COMPANY PORTAL - CANDIDATE AI ANALYSIS
     // =========================================================
-
     public async Task<CompanyCandidateAIAnalysisDto>
         AnalyzeCandidateForCompanyAsync(
             string resumeText,
@@ -469,31 +426,25 @@ public sealed class ResumeAIService : IResumeAIService
             CancellationToken cancellationToken = default)
     {
         ValidateResumeText(resumeText);
-
         if (string.IsNullOrWhiteSpace(jobTitle))
         {
             throw new ArgumentException(
                 "Job title is required for candidate AI analysis.");
         }
-
         if (candidateExperience < 0)
         {
             throw new ArgumentException(
                 "Candidate experience cannot be negative.");
         }
-
         if (requiredExperience < 0)
         {
             throw new ArgumentException(
                 "Required experience cannot be negative.");
         }
-
         var apiKey = GetApiKey();
-
         // =====================================================
         // COMPANY-SIDE SEMANTIC JOB MATCHING
         // =====================================================
-
         var prompt = $"""
         You are an expert AI recruitment assistant used by a hiring company.
 
@@ -739,14 +690,18 @@ public sealed class ResumeAIService : IResumeAIService
         3. Strengths
            Candidate strengths that are directly relevant to this job.
 
-        4. MissingSkills
+        4. MatchedSkills
+           Required or preferred job skills directly supported by the
+           candidate resume, profile or application information.
+
+        5. MissingSkills
            Important job requirements for which the candidate has
            no sufficient evidence.
 
-        5. Suggestions
+        6. Suggestions
            Practical improvement suggestions based on actual gaps.
 
-        6. InterviewFocus
+        7. InterviewFocus
            Technical, role-specific or experience areas that the
            interviewer should verify during the interview.
 
@@ -769,7 +724,6 @@ public sealed class ResumeAIService : IResumeAIService
         - Keep the analysis objective and evidence-based.
         - Return ONLY valid JSON matching the supplied schema.
         """;
-
         var body = new
         {
             model = GetModel(),
@@ -779,67 +733,206 @@ public sealed class ResumeAIService : IResumeAIService
                 BuildJsonResponseFormat(
                     BuildCompanyAnalysisSchema())
         };
-
-        var analysis =
-            await SendGeminiRequestAsync<CompanyCandidateAIAnalysisDto>(
-                apiKey,
-                body,
-                cancellationToken);
-
+        CompanyCandidateAIAnalysisDto analysis;
+        try
+        {
+            analysis =
+                await SendGeminiRequestAsync<CompanyCandidateAIAnalysisDto>(
+                    apiKey,
+                    body,
+                    cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+            when (ex.Message.StartsWith(
+                "Gemini API Error (",
+                StringComparison.Ordinal))
+        {
+            analysis = BuildLocalCompanyAnalysis(
+                resumeText,
+                candidateSkills,
+                qualification,
+                course,
+                collegeName,
+                candidateExperience,
+                jobTitle,
+                jobDescription,
+                jobSkills,
+                preferredSkills,
+                educationRequirements,
+                certificationRequirements,
+                requiredExperience,
+                requiresPortfolio);
+        }
         NormalizeCompanyAnalysis(analysis);
-
         return analysis;
     }
 
+    private static CompanyCandidateAIAnalysisDto BuildLocalCompanyAnalysis(
+        string resumeText,
+        string candidateSkills,
+        string qualification,
+        string course,
+        string collegeName,
+        int candidateExperience,
+        string jobTitle,
+        string jobDescription,
+        string jobSkills,
+        string preferredSkills,
+        string educationRequirements,
+        string certificationRequirements,
+        int requiredExperience,
+        bool requiresPortfolio)
+    {
+        var candidateEvidence = string.Join(
+            Environment.NewLine,
+            candidateSkills,
+            qualification,
+            course,
+            collegeName,
+            resumeText);
+        var required = SplitRequirementSkills(jobSkills);
+        var preferred = SplitRequirementSkills(preferredSkills);
+        var matched = required
+            .Concat(preferred)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(skill => ContainsSkillEvidence(candidateEvidence, skill))
+            .ToList();
+        var missing = required
+            .Where(skill => !ContainsSkillEvidence(candidateEvidence, skill))
+            .ToList();
+        missing.AddRange(preferred
+            .Where(skill => !ContainsSkillEvidence(candidateEvidence, skill))
+            .Select(skill => $"Preferred: {skill}"));
+
+        var requiredScore = required.Count == 0
+            ? CalculateDescriptionSkillMatch(candidateSkills, jobDescription)
+            : (double)(required.Count - missing.Count(skill => !skill.StartsWith("Preferred:", StringComparison.Ordinal))) / required.Count * 100;
+        var preferredMissing = missing.Count(skill => skill.StartsWith("Preferred:", StringComparison.Ordinal));
+        var preferredScore = preferred.Count == 0
+            ? 100
+            : (double)(preferred.Count - preferredMissing) / preferred.Count * 100;
+        var experienceScore = requiredExperience <= 0
+            ? 100
+            : Math.Min(100, (double)candidateExperience / requiredExperience * 100);
+        var educationScore = string.IsNullOrWhiteSpace(educationRequirements)
+            ? 100
+            : ContainsSkillEvidence(candidateEvidence, educationRequirements) ? 100 : 0;
+        var portfolioScore = !requiresPortfolio ||
+            Regex.IsMatch(candidateEvidence, @"\b(portfolio|github|gitlab|project)\b", RegexOptions.IgnoreCase)
+                ? 100
+                : 0;
+        var score = (requiredScore * 0.50) +
+                    (experienceScore * 0.25) +
+                    (preferredScore * 0.10) +
+                    (educationScore * 0.10) +
+                    (portfolioScore * 0.05);
+
+        var strengths = new List<string>();
+        if (matched.Count > 0)
+            strengths.Add($"Resume/profile evidence matches these job skills: {string.Join(", ", matched)}.");
+        if (candidateExperience >= requiredExperience && requiredExperience > 0)
+            strengths.Add($"Reported experience ({candidateExperience} years) meets the role's {requiredExperience}-year requirement.");
+        if (!string.IsNullOrWhiteSpace(educationRequirements) && educationScore == 100)
+            strengths.Add("The candidate's education/profile information aligns with the stated education requirement.");
+        if (strengths.Count == 0)
+            strengths.Add("The application and resume provide evidence to review; compare the listed gaps with the candidate's actual project and work examples.");
+
+        var suggestions = new List<string>();
+        foreach (var skill in missing.Where(skill => !skill.StartsWith("Preferred:", StringComparison.Ordinal)).Take(4))
+            suggestions.Add($"For the {jobTitle} role, build or demonstrate {skill} through a small practical project, then add the evidence to the resume if it reflects real experience.");
+        if (candidateExperience < requiredExperience)
+            suggestions.Add($"The application reports {candidateExperience} years against {requiredExperience} required; highlight the most relevant projects and responsibilities to show transferable experience.");
+        if (requiresPortfolio && portfolioScore == 0)
+            suggestions.Add("Add a portfolio or code repository with project descriptions, the candidate's contribution, and working outcomes.");
+        if (!Regex.IsMatch(resumeText, @"\b\d+\s*(%|percent|users|customers|clients|projects)\b", RegexOptions.IgnoreCase))
+            suggestions.Add("Strengthen experience bullets with verifiable outcomes, scale, or time saved; avoid adding numbers that cannot be substantiated.");
+        if (suggestions.Count == 0)
+            suggestions.Add("Tailor the resume to this job by foregrounding the matching skills and adding concrete results for the most relevant work or projects.");
+
+        var interviewFocus = missing
+            .Select(skill => $"Ask for a hands-on example demonstrating {skill.Replace("Preferred: ", string.Empty, StringComparison.Ordinal)}.")
+            .Take(5)
+            .ToList();
+        if (interviewFocus.Count == 0)
+            interviewFocus.Add("Ask the candidate to walk through a relevant project and explain their individual contribution, technical decisions, and results.");
+        if (!string.IsNullOrWhiteSpace(certificationRequirements) &&
+            !ContainsSkillEvidence(candidateEvidence, certificationRequirements))
+            interviewFocus.Add($"Confirm whether the candidate has the required certification: {certificationRequirements}.");
+
+        return new CompanyCandidateAIAnalysisDto
+        {
+            AnalysisMode = "Local",
+            JobMatchScore = (int)Math.Round(Math.Clamp(score, 0, 100)),
+            Summary = $"Local evidence-based comparison for {jobTitle}. Gemini did not return an analysis, so this score uses listed job requirements, application profile fields, and resume text; it does not infer skills without evidence.",
+            Strengths = strengths,
+            MatchedSkills = matched,
+            MissingSkills = missing,
+            Suggestions = suggestions,
+            InterviewFocus = interviewFocus
+        };
+    }
+
+    private static List<string> SplitRequirementSkills(string value) =>
+        Regex.Split(value ?? string.Empty, @"[,;\r\n|•]+")
+            .Select(skill => skill.Trim().Trim('-', ' '))
+            .Where(skill => skill.Length > 1)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+    private static bool ContainsSkillEvidence(string evidence, string skill)
+    {
+        if (string.IsNullOrWhiteSpace(evidence) || string.IsNullOrWhiteSpace(skill))
+            return false;
+        return Regex.IsMatch(
+            evidence,
+            $@"(?<![A-Za-z0-9+#.]){Regex.Escape(skill.Trim())}(?![A-Za-z0-9+#.])",
+            RegexOptions.IgnoreCase);
+    }
+
+    private static double CalculateDescriptionSkillMatch(string candidateSkills, string jobDescription)
+    {
+        var skills = SplitRequirementSkills(candidateSkills);
+        if (skills.Count == 0 || string.IsNullOrWhiteSpace(jobDescription))
+            return 0;
+        var matching = skills.Count(skill => ContainsSkillEvidence(jobDescription, skill));
+        return (double)matching / skills.Count * 100;
+    }
     // =========================================================
     // COMMON GEMINI REQUEST
     // =========================================================
-
     private async Task<T> SendGeminiRequestAsync<T>(
         string apiKey,
         object body,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-
         var model = GetModel();
-
         _logger.LogInformation(
             "Gemini AI request started. Model: {Model}",
             model);
-
         using var request =
             new HttpRequestMessage(
                 HttpMethod.Post,
                 GeminiUrl);
-
         // =====================================================
         // HEADERS
         // =====================================================
-
         request.Headers.Add(
             "x-goog-api-key",
             apiKey);
-
         request.Headers.Add(
             "Api-Revision",
             ApiRevision);
-
         request.Headers.Accept.Clear();
-
         request.Headers.Accept.Add(
             new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(
                 "application/json"));
-
         request.Content =
             JsonContent.Create(body);
-
         // =====================================================
         // SEND REQUEST
         // =====================================================
-
         HttpResponseMessage response;
-
         try
         {
             response =
@@ -854,7 +947,6 @@ public sealed class ResumeAIService : IResumeAIService
             _logger.LogError(
                 "Gemini AI request timed out. Model: {Model}",
                 model);
-
             throw new InvalidOperationException(
                 "Gemini AI request timed out.");
         }
@@ -864,27 +956,22 @@ public sealed class ResumeAIService : IResumeAIService
                 ex,
                 "Unable to connect to Gemini API. Model: {Model}",
                 model);
-
             throw new InvalidOperationException(
                 "Unable to connect to Gemini AI service.",
                 ex);
         }
-
         using (response)
         {
             var result =
                 await response.Content.ReadAsStringAsync(
                     cancellationToken);
-
             _logger.LogInformation(
                 "Gemini API response received. Status: {StatusCode}, Model: {Model}",
                 (int)response.StatusCode,
                 model);
-
             // =================================================
             // API ERROR
             // =================================================
-
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -892,60 +979,47 @@ public sealed class ResumeAIService : IResumeAIService
                     (int)response.StatusCode,
                     model,
                     result);
-
                 throw new InvalidOperationException(
                     $"Gemini API Error ({(int)response.StatusCode}): {result}");
             }
-
             // =================================================
             // EMPTY RESPONSE
             // =================================================
-
             if (string.IsNullOrWhiteSpace(result))
             {
                 _logger.LogError(
                     "Gemini returned an empty HTTP response. Model: {Model}",
                     model);
-
                 throw new InvalidOperationException(
                     "Gemini returned an empty HTTP response.");
             }
-
             // =================================================
             // PARSE RESPONSE
             // =================================================
-
             try
             {
                 using var document =
                     JsonDocument.Parse(result);
-
                 var root =
                     document.RootElement;
-
                 var outputText =
                     ExtractOutputText(root);
-
                 if (string.IsNullOrWhiteSpace(outputText))
                 {
                     _logger.LogError(
                         "Gemini returned a successful response but no model text was found. Model: {Model}. Response: {Response}",
                         model,
                         result);
-
                     throw new InvalidOperationException(
                         "Gemini returned an empty model response.");
                 }
-
                 outputText =
                     CleanJsonResponse(outputText);
-
                 if (string.IsNullOrWhiteSpace(outputText))
                 {
                     throw new InvalidOperationException(
                         "Gemini returned an empty JSON response.");
                 }
-
                 var data =
                     JsonSerializer.Deserialize<T>(
                         outputText,
@@ -953,36 +1027,29 @@ public sealed class ResumeAIService : IResumeAIService
                         {
                             PropertyNameCaseInsensitive = true
                         });
-
                 if (data == null)
                 {
                     throw new InvalidOperationException(
                         "Gemini response could not be deserialized.");
                 }
-
                 // =================================================
                 // NORMALIZATION
                 // =================================================
-
                 if (data is ResumeAIAnalysisDto resumeAnalysis)
                 {
                     NormalizeAnalysis(resumeAnalysis);
                 }
-
                 if (data is ResumeParsedDataDto parsedData)
                 {
                     NormalizeResumeData(parsedData);
                 }
-
                 if (data is CompanyCandidateAIAnalysisDto companyAnalysis)
                 {
                     NormalizeCompanyAnalysis(companyAnalysis);
                 }
-
                 _logger.LogInformation(
                     "Gemini AI response parsed successfully. Model: {Model}",
                     model);
-
                 return data;
             }
             catch (JsonException ex)
@@ -992,25 +1059,21 @@ public sealed class ResumeAIService : IResumeAIService
                     "Failed to parse Gemini JSON response. Model: {Model}. Raw response: {Response}",
                     model,
                     result);
-
                 throw new InvalidOperationException(
                     $"Failed to parse Gemini response. Raw response: {result}",
                     ex);
             }
         }
     }
-
     // =========================================================
     // EXTRACT OUTPUT TEXT
     // =========================================================
-
     private static string ExtractOutputText(
         JsonElement root)
     {
         // =====================================================
         // OPTION 1 - output_text
         // =====================================================
-
         if (root.TryGetProperty(
                 "output_text",
                 out var outputTextProperty))
@@ -1027,28 +1090,23 @@ public sealed class ResumeAIService : IResumeAIService
                 }
             }
         }
-
         // =====================================================
         // OPTION 2 - steps
         // =====================================================
-
         if (root.TryGetProperty(
                 "steps",
                 out var steps))
         {
             var result =
                 ExtractTextFromSteps(steps);
-
             if (!string.IsNullOrWhiteSpace(result))
             {
                 return result;
             }
         }
-
         // =====================================================
         // OPTION 3 - output
         // =====================================================
-
         if (root.TryGetProperty(
                 "output",
                 out var output))
@@ -1061,14 +1119,11 @@ public sealed class ResumeAIService : IResumeAIService
                 return result;
             }
         }
-
         return string.Empty;
     }
-
     // =========================================================
     // EXTRACT TEXT FROM STEPS
     // =========================================================
-
     private static string ExtractTextFromSteps(
         JsonElement steps)
     {
@@ -1077,20 +1132,17 @@ public sealed class ResumeAIService : IResumeAIService
         {
             return string.Empty;
         }
-
         foreach (var step in steps.EnumerateArray())
         {
             // -------------------------------------------------
             // Only model_output steps
             // -------------------------------------------------
-
             if (step.TryGetProperty(
                     "type",
                     out var stepType))
             {
                 var type =
                     stepType.GetString();
-
                 if (!string.Equals(
                         type,
                         "model_output",
@@ -1099,41 +1151,33 @@ public sealed class ResumeAIService : IResumeAIService
                     continue;
                 }
             }
-
             // -------------------------------------------------
             // content
             // -------------------------------------------------
-
             if (!step.TryGetProperty(
                     "content",
                     out var content))
             {
                 continue;
             }
-
             var text =
                 ExtractTextFromContent(content);
-
             if (!string.IsNullOrWhiteSpace(text))
             {
                 return text;
             }
         }
-
         return string.Empty;
     }
-
     // =========================================================
     // EXTRACT TEXT FROM OUTPUT
     // =========================================================
-
     private static string ExtractTextFromOutput(
         JsonElement output)
     {
         // -----------------------------------------------------
         // output can be an array
         // -----------------------------------------------------
-
         if (output.ValueKind ==
             JsonValueKind.Array)
         {
@@ -1152,7 +1196,6 @@ public sealed class ResumeAIService : IResumeAIService
                         return directText;
                     }
                 }
-
                 // Object content
                 if (item.ValueKind ==
                     JsonValueKind.Object)
@@ -1169,7 +1212,6 @@ public sealed class ResumeAIService : IResumeAIService
                             return text;
                         }
                     }
-
                     if (item.TryGetProperty(
                             "text",
                             out var textProperty) &&
@@ -1178,7 +1220,6 @@ public sealed class ResumeAIService : IResumeAIService
                     {
                         var text =
                             textProperty.GetString();
-
                         if (!string.IsNullOrWhiteSpace(text))
                         {
                             return text;
@@ -1187,11 +1228,9 @@ public sealed class ResumeAIService : IResumeAIService
                 }
             }
         }
-
         // -----------------------------------------------------
         // output can be an object
         // -----------------------------------------------------
-
         if (output.ValueKind ==
             JsonValueKind.Object)
         {
@@ -1204,7 +1243,6 @@ public sealed class ResumeAIService : IResumeAIService
                 return textProperty.GetString()
                        ?? string.Empty;
             }
-
             if (output.TryGetProperty(
                     "content",
                     out var content))
@@ -1212,21 +1250,17 @@ public sealed class ResumeAIService : IResumeAIService
                 return ExtractTextFromContent(content);
             }
         }
-
         return string.Empty;
     }
-
     // =========================================================
     // EXTRACT TEXT FROM CONTENT
     // =========================================================
-
     private static string ExtractTextFromContent(
         JsonElement content)
     {
         // -----------------------------------------------------
         // Content array
         // -----------------------------------------------------
-
         if (content.ValueKind ==
             JsonValueKind.Array)
         {
@@ -1245,7 +1279,6 @@ public sealed class ResumeAIService : IResumeAIService
                         return directText;
                     }
                 }
-
                 // Object
                 if (item.ValueKind ==
                     JsonValueKind.Object)
@@ -1257,7 +1290,6 @@ public sealed class ResumeAIService : IResumeAIService
                     {
                         var type =
                             itemType.GetString();
-
                         if (!string.Equals(
                                 type,
                                 "text",
@@ -1267,7 +1299,6 @@ public sealed class ResumeAIService : IResumeAIService
                             // property exists below.
                         }
                     }
-
                     if (item.TryGetProperty(
                             "text",
                             out var textProperty) &&
@@ -1276,13 +1307,11 @@ public sealed class ResumeAIService : IResumeAIService
                     {
                         var text =
                             textProperty.GetString();
-
                         if (!string.IsNullOrWhiteSpace(text))
                         {
                             return text;
                         }
                     }
-
                     // Some response variants may nest content.
                     if (item.TryGetProperty(
                             "content",
@@ -1291,7 +1320,6 @@ public sealed class ResumeAIService : IResumeAIService
                         var nestedText =
                             ExtractTextFromContent(
                                 nestedContent);
-
                         if (!string.IsNullOrWhiteSpace(
                                 nestedText))
                         {
@@ -1301,11 +1329,9 @@ public sealed class ResumeAIService : IResumeAIService
                 }
             }
         }
-
         // -----------------------------------------------------
         // Content object
         // -----------------------------------------------------
-
         if (content.ValueKind ==
             JsonValueKind.Object)
         {
@@ -1318,7 +1344,6 @@ public sealed class ResumeAIService : IResumeAIService
                 return textProperty.GetString()
                        ?? string.Empty;
             }
-
             if (content.TryGetProperty(
                     "content",
                     out var nestedContent))
@@ -1327,35 +1352,28 @@ public sealed class ResumeAIService : IResumeAIService
                     nestedContent);
             }
         }
-
         // -----------------------------------------------------
         // Content itself is a string
         // -----------------------------------------------------
-
         if (content.ValueKind ==
             JsonValueKind.String)
         {
             return content.GetString()
                    ?? string.Empty;
         }
-
         return string.Empty;
     }
-
     // =========================================================
     // CLEAN JSON RESPONSE
     // =========================================================
-
     private static string CleanJsonResponse(
         string outputText)
     {
         outputText =
             outputText.Trim();
-
         // -----------------------------------------------------
         // Remove markdown code fence
         // -----------------------------------------------------
-
         if (outputText.StartsWith(
                 "```json",
                 StringComparison.OrdinalIgnoreCase))
@@ -1370,7 +1388,6 @@ public sealed class ResumeAIService : IResumeAIService
             outputText =
                 outputText[3..].Trim();
         }
-
         if (outputText.EndsWith(
                 "```",
                 StringComparison.OrdinalIgnoreCase))
@@ -1378,21 +1395,17 @@ public sealed class ResumeAIService : IResumeAIService
             outputText =
                 outputText[..^3].Trim();
         }
-
         // -----------------------------------------------------
         // Remove accidental surrounding whitespace
         // -----------------------------------------------------
-
         outputText =
             outputText.Trim();
 
         return outputText;
     }
-
     // =========================================================
     // GENERAL ANALYSIS SCHEMA
     // =========================================================
-
     private static object BuildGeneralAnalysisSchema()
     {
         return new
@@ -1405,38 +1418,39 @@ public sealed class ResumeAIService : IResumeAIService
                 {
                     type = "string"
                 },
-
                 strengths = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
+                matchedSkills = new
+                {
+                    type = "array",
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
                 missingSkills = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
                 suggestions = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 }
             },
-
             required = new[]
             {
                 "summary",
@@ -1446,11 +1460,9 @@ public sealed class ResumeAIService : IResumeAIService
             }
         };
     }
-
     // =========================================================
     // JOB ANALYSIS SCHEMA
     // =========================================================
-
     private static object BuildJobAnalysisSchema()
     {
         return new
@@ -1463,83 +1475,67 @@ public sealed class ResumeAIService : IResumeAIService
                 {
                     type = "number"
                 },
-
                 skillsMatch = new
                 {
                     type = "number"
                 },
-
                 experienceMatch = new
                 {
                     type = "number"
                 },
-
                 educationMatch = new
                 {
                     type = "number"
                 },
-
                 certificationMatch = new
                 {
                     type = "number"
                 },
-
                 projectMatch = new
                 {
                     type = "number"
                 },
-
                 jobDescriptionMatch = new
                 {
                     type = "number"
                 },
-
                 summary = new
                 {
                     type = "string"
                 },
-
                 strengths = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
                 matchedSkills = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
                 missingSkills = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
                 suggestions = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 }
             },
-
             required = new[]
             {
                 "atsScore",
@@ -1557,103 +1553,93 @@ public sealed class ResumeAIService : IResumeAIService
             }
         };
     }
-
     // =========================================================
     // COMPANY ANALYSIS SCHEMA
     // =========================================================
-
     private static object BuildCompanyAnalysisSchema()
     {
         return new
         {
             type = "object",
-
             properties = new
             {
                 jobMatchScore = new
                 {
                     type = "integer"
                 },
-
                 summary = new
                 {
                     type = "string"
                 },
-
                 strengths = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
+                matchedSkills = new
+                {
+                    type = "array",
+                    items = new
+                    {
+                        type = "string"
+                    }
+                },
                 missingSkills = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
                 suggestions = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 },
-
                 interviewFocus = new
                 {
                     type = "array",
-
                     items = new
                     {
                         type = "string"
                     }
                 }
             },
-
             required = new[]
             {
                 "jobMatchScore",
                 "summary",
                 "strengths",
+                "matchedSkills",
                 "missingSkills",
                 "suggestions",
                 "interviewFocus"
             }
         };
     }
-
     // =========================================================
     // RESPONSE FORMAT
     // =========================================================
-
     private static object BuildJsonResponseFormat(
         object schema)
     {
         return new
         {
             type = "text",
-
             mime_type = "application/json",
-
             schema
         };
     }
-
     // =========================================================
     // NORMALIZE RESUME ANALYSIS
     // =========================================================
-
     private static void NormalizeAnalysis(
         ResumeAIAnalysisDto analysis)
     {
@@ -1661,66 +1647,53 @@ public sealed class ResumeAIService : IResumeAIService
         {
             return;
         }
-
         analysis.ATSScore =
             Math.Clamp(
                 analysis.ATSScore,
                 0,
                 100);
-
         analysis.SkillsMatch =
             Math.Clamp(
                 analysis.SkillsMatch,
                 0,
                 100);
-
         analysis.ExperienceMatch =
             Math.Clamp(
                 analysis.ExperienceMatch,
                 0,
                 100);
-
         analysis.EducationMatch =
             Math.Clamp(
                 analysis.EducationMatch,
                 0,
                 100);
-
         analysis.CertificationMatch =
             Math.Clamp(
                 analysis.CertificationMatch,
                 0,
                 100);
-
         analysis.ProjectMatch =
             Math.Clamp(
                 analysis.ProjectMatch,
                 0,
                 100);
-
         analysis.JobDescriptionMatch =
             Math.Clamp(
                 analysis.JobDescriptionMatch,
                 0,
                 100);
-
         analysis.Strengths ??=
             new List<string>();
-
         analysis.MatchedSkills ??=
             new List<string>();
-
         analysis.MissingSkills ??=
             new List<string>();
-
         analysis.Suggestions ??=
             new List<string>();
     }
-
     // =========================================================
     // NORMALIZE COMPANY ANALYSIS
     // =========================================================
-
     private static void NormalizeCompanyAnalysis(
         CompanyCandidateAIAnalysisDto analysis)
     {
@@ -1728,79 +1701,63 @@ public sealed class ResumeAIService : IResumeAIService
         {
             return;
         }
-
         analysis.JobMatchScore =
             Math.Clamp(
                 analysis.JobMatchScore,
                 0,
                 100);
-
         analysis.Summary ??=
             string.Empty;
-
         analysis.Strengths ??=
             new List<string>();
-
+        analysis.MatchedSkills ??=
+            new List<string>();
         analysis.MissingSkills ??=
             new List<string>();
-
         analysis.Suggestions ??=
             new List<string>();
-
         analysis.InterviewFocus ??=
             new List<string>();
     }
-
     // =========================================================
     // API KEY
     // =========================================================
-
     private string GetApiKey()
     {
         var apiKey =
             _configuration[
                 "GeminiSettings:ApiKey"];
-
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             _logger.LogError(
                 "Gemini API key is not configured.");
-
             throw new InvalidOperationException(
                 "Gemini API key is not configured. " +
                 "Run: dotnet user-secrets set \"GeminiSettings:ApiKey\" \"YOUR_API_KEY\"");
         }
-
         return apiKey.Trim();
     }
-
     // =========================================================
     // MODEL
     // =========================================================
-
     private string GetModel()
     {
         var model =
             _configuration[
                 "GeminiSettings:Model"];
-
         if (string.IsNullOrWhiteSpace(model))
         {
             _logger.LogError(
                 "Gemini model is not configured.");
-
             throw new InvalidOperationException(
                 "Gemini model is not configured. " +
                 "Configure GeminiSettings:Model in appsettings.json or User Secrets.");
         }
-
         return model.Trim();
     }
-
     // =========================================================
     // RESUME VALIDATION
     // =========================================================
-
     private static void ValidateResumeText(
         string resumeText)
     {

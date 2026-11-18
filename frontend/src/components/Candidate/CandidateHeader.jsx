@@ -31,6 +31,15 @@ export default function CandidateHeader({ title, subtitle }) {
     };
   }, []);
 
+  const displayName = profile.name || session?.name || "Candidate";
+  const displayDesignation =
+    profile.professionalHeadline ||
+    profile.currentJobTitle ||
+    session?.professionalHeadline ||
+    session?.designation ||
+    "Candidate";
+  const displayPhoto = profile.photoUrl || session?.photoUrl || "";
+
   return (
     <header className="candidate-shared-header">
       {/* =========================
@@ -58,19 +67,20 @@ export default function CandidateHeader({ title, subtitle }) {
           type="button"
           className="candidate-shared-header-user"
           onClick={() => navigate("/user/profile")}
+          aria-label={`Open profile for ${displayName}`}
         >
           <span>
-            {profile.photoUrl ? (
-              <img src={profile.photoUrl} alt="" />
+            {displayPhoto ? (
+              <img src={displayPhoto} alt={displayName} />
             ) : (
-              profile.name?.slice(0, 1) || session?.name?.slice(0, 1) || "U"
+              displayName.slice(0, 1).toUpperCase()
             )}
           </span>
 
           <div>
-            <strong>{profile.name || session?.name || "Candidate"}</strong>
+            <strong>{displayName}</strong>
 
-            <small>Candidate</small>
+            <small>{displayDesignation}</small>
           </div>
         </button>
       </div>

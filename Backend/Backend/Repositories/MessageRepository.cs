@@ -1,42 +1,49 @@
 ﻿using Backend.Data;
 using Backend.Interfaces.Repositories;
+using Backend.DTOs.Messages;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public class MessageRepository : IMessageRepository
 {
     private readonly ApplicationDbContext _context;
-
     public MessageRepository(ApplicationDbContext context)
     {
         _context = context;
     }
-
-    public async Task<List<Conversation>> GetCompanyConversationsAsync(
-    Guid companyId,
-    CancellationToken cancellationToken)
+    public async Task<List<ConversationSummaryDto>> GetCompanyConversationsAsync(
+        Guid companyId,
+        Guid userId,
+        CancellationToken cancellationToken)
     {
         return await _context.Conversations
             .AsNoTracking()
-            .AsSplitQuery()
             .Where(x => x.CompanyId == companyId)
-            .Include(x => x.Company)
-            .Include(x => x.Candidate)
-            .Include(x => x.Application)
-                .ThenInclude(x => x.Job)
-            .Include(x => x.Messages)
-            .OrderByDescending(x =>
-                x.Messages
+            .OrderByDescending(x => x.Messages
+                .Select(m => (DateTime?)m.CreatedAt)
+                .Max() ?? x.UpdatedAt ?? x.CreatedAt)
+            .Select(x => new ConversationSummaryDto
+            {
+                ConversationId = x.Id,
+                CandidateId = x.CandidateId,
+                CandidateName = x.Candidate.Name,
+                CandidateProfileImage = null,
+                ApplicationId = x.ApplicationId,
+                JobTitle = x.Application.Job.Title,
+                ApplicationStatus = x.Application.Status,
+                LastMessage = x.Messages
                     .OrderByDescending(m => m.CreatedAt)
+                    .Select(m => m.Content)
+                    .FirstOrDefault(),
+                LastMessageAt = x.Messages
                     .Select(m => (DateTime?)m.CreatedAt)
-                    .FirstOrDefault()
-                    ?? x.UpdatedAt
-                    ?? x.CreatedAt)
+                    .Max(),
+                UnreadCount = x.Messages.Count(m =>
+                    m.SenderId != userId && !m.IsRead),
+                IsArchived = x.IsArchived
+            })
             .ToListAsync(cancellationToken);
     }
-
     public async Task<List<Conversation>> GetCandidateConversationsAsync(
     Guid userId,
     CancellationToken cancellationToken = default)
@@ -50,16 +57,9 @@ public class MessageRepository : IMessageRepository
             .Include(x => x.Application)
                 .ThenInclude(x => x.Job)
             .Include(x => x.Messages)
-            .OrderByDescending(x =>
-                x.Messages
-                    .OrderByDescending(m => m.CreatedAt)
-                    .Select(m => (DateTime?)m.CreatedAt)
-                    .FirstOrDefault()
-                    ?? x.UpdatedAt
-                    ?? x.CreatedAt)
+            .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
             .ToListAsync(cancellationToken);
     }
-
     public async Task<Conversation?> GetConversationByIdAsync(
         Guid conversationId,
         CancellationToken cancellationToken)
@@ -73,7 +73,6 @@ public class MessageRepository : IMessageRepository
                 x => x.Id == conversationId,
                 cancellationToken);
     }
-
     public async Task<List<Message>> GetMessagesAsync(
         Guid conversationId,
         CancellationToken cancellationToken)
@@ -85,7 +84,6 @@ public class MessageRepository : IMessageRepository
             .OrderBy(x => x.CreatedAt)
             .ToListAsync(cancellationToken);
     }
-
     public async Task<Conversation?> FindExistingConversationAsync(
         Guid companyId,
         Guid candidateId,
@@ -104,7 +102,6 @@ public class MessageRepository : IMessageRepository
                     x.ApplicationId == applicationId,
                 cancellationToken);
     }
-
     public async Task AddConversationAsync(
         Conversation conversation,
         CancellationToken cancellationToken)
@@ -113,7 +110,6 @@ public class MessageRepository : IMessageRepository
             conversation,
             cancellationToken);
     }
-
     public async Task AddMessageAsync(
         Message message,
         CancellationToken cancellationToken)
@@ -122,7 +118,6 @@ public class MessageRepository : IMessageRepository
             message,
             cancellationToken);
     }
-
     public async Task<int> MarkMessagesAsReadAsync(
         Guid conversationId,
         Guid readerUserId,
@@ -134,16 +129,13 @@ public class MessageRepository : IMessageRepository
                 x.SenderId != readerUserId &&
                 !x.IsRead)
             .ToListAsync(cancellationToken);
-
         foreach (var message in messages)
         {
             message.IsRead = true;
             message.UpdatedAt = DateTime.UtcNow;
         }
-
         return messages.Count;
     }
-
     public async Task<int> GetUnreadCountAsync(
         Guid userId,
         CancellationToken cancellationToken)
@@ -159,7 +151,6 @@ public class MessageRepository : IMessageRepository
                     !x.IsRead,
                 cancellationToken);
     }
-
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken)
     {

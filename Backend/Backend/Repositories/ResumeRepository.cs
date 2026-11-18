@@ -2,23 +2,18 @@
 using Backend.Interfaces.Repositories;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public sealed class ResumeRepository : IResumeRepository
 {
     private readonly ApplicationDbContext _context;
-
     public ResumeRepository(
         ApplicationDbContext context)
     {
         _context = context;
     }
-
     // =====================================================
     // Get Resume By User
     // =====================================================
-
     public async Task<Resume?> GetResumeByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken)
@@ -29,7 +24,6 @@ public sealed class ResumeRepository : IResumeRepository
                 x => x.UserId == userId,
                 cancellationToken);
     }
-
     public async Task<Resume?> GetResumeByIdAsync(
     Guid resumeId,
     CancellationToken cancellationToken)
@@ -39,11 +33,9 @@ public sealed class ResumeRepository : IResumeRepository
                 x => x.Id == resumeId,
                 cancellationToken);
     }
-
     // =====================================================
     // Add Resume
     // =====================================================
-
     public async Task AddResumeAsync(
         Resume resume,
         CancellationToken cancellationToken)
@@ -52,11 +44,9 @@ public sealed class ResumeRepository : IResumeRepository
             resume,
             cancellationToken);
     }
-
     // =====================================================
     // Update Resume
     // =====================================================
-
     public Task UpdateResumeAsync(
         Resume resume,
         CancellationToken cancellationToken)
@@ -65,11 +55,9 @@ public sealed class ResumeRepository : IResumeRepository
 
         return Task.CompletedTask;
     }
-
     // =====================================================
     // Delete Resume
     // =====================================================
-
     public Task DeleteResumeAsync(
         Resume resume,
         CancellationToken cancellationToken)
@@ -78,11 +66,9 @@ public sealed class ResumeRepository : IResumeRepository
 
         return Task.CompletedTask;
     }
-
     // =====================================================
     // Save Changes
     // =====================================================
-
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken)
     {

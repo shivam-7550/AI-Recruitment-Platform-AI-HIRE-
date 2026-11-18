@@ -27,7 +27,7 @@ public interface IResumeService
     // GENERAL ATS ANALYSIS
     // =====================================================
 
-    Task<ResumeATSScoreDto> AnalyzeResumeAsync(
+    Task<ResumeAIAnalysisDto> AnalyzeResumeAsync(
         Guid userId,
         Guid resumeId,
         CancellationToken cancellationToken);

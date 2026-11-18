@@ -201,7 +201,7 @@ export default function CandidateApplication() {
             <h1>My Applications</h1>
 
             <p>Track every opportunity you have applied for.</p>
-          </div> */}
+        </div> */}
 
         {/* <div className="candidate-applications-topbar-actions"> */}
         {/* Notifications */}
@@ -250,26 +250,6 @@ export default function CandidateApplication() {
 
         <section className="candidate-applications-content">
           {/* Page heading */}
-
-          <div className="candidate-applications-heading">
-            <div>
-              <span>Application centre</span>
-
-              <h2>Your career pipeline</h2>
-
-              <p>
-                All applications shown here belong only to your authenticated
-                account.
-              </p>
-            </div>
-
-            <Link
-              to="/user/explore-jobs"
-              className="candidate-applications-browse-link"
-            >
-              Browse more jobs
-            </Link>
-          </div>
 
           {/* =================================================
               METRICS

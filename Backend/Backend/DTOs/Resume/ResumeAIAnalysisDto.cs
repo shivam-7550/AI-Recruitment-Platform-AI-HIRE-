@@ -2,6 +2,8 @@
 
 public sealed class ResumeAIAnalysisDto
 {
+    public string AnalysisMode { get; set; } = "AI";
+
     // ==========================================
     // AI Analysis
     // ==========================================

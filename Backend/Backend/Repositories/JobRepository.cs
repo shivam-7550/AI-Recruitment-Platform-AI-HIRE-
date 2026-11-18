@@ -2,24 +2,18 @@
 using Backend.Interfaces.Repositories;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public sealed class JobRepository : IJobRepository
 {
     private readonly ApplicationDbContext _context;
-
     public JobRepository(
         ApplicationDbContext context)
     {
         _context = context;
     }
-
-
     // =========================================================
     // Get All Jobs
     // =========================================================
-
     public async Task<IEnumerable<Job>> GetAllJobsAsync(
         CancellationToken cancellationToken)
     {
@@ -29,12 +23,9 @@ public sealed class JobRepository : IJobRepository
             .OrderByDescending(job => job.CreatedAt)
             .ToListAsync(cancellationToken);
     }
-
-
     // =========================================================
     // Get Job By Id
     // =========================================================
-
     public async Task<Job?> GetJobByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
@@ -45,12 +36,9 @@ public sealed class JobRepository : IJobRepository
                 job => job.Id == id,
                 cancellationToken);
     }
-
-
     // =========================================================
     // Get Company Specific Job
     // =========================================================
-
     public async Task<Job?> GetCompanyJobAsync(
         Guid companyId,
         Guid jobId,
@@ -64,12 +52,9 @@ public sealed class JobRepository : IJobRepository
                     job.CompanyId == companyId,
                 cancellationToken);
     }
-
-
     // =========================================================
     // Add Job
     // =========================================================
-
     public async Task AddJobAsync(
         Job job,
         CancellationToken cancellationToken)
@@ -78,12 +63,9 @@ public sealed class JobRepository : IJobRepository
             job,
             cancellationToken);
     }
-
-
     // =========================================================
     // Update Job
     // =========================================================
-
     public Task UpdateJobAsync(
         Job job,
         CancellationToken cancellationToken)
@@ -92,12 +74,9 @@ public sealed class JobRepository : IJobRepository
 
         return Task.CompletedTask;
     }
-
-
     // =========================================================
     // Delete Job
     // =========================================================
-
     public Task DeleteJobAsync(
         Job job,
         CancellationToken cancellationToken)
@@ -106,12 +85,9 @@ public sealed class JobRepository : IJobRepository
 
         return Task.CompletedTask;
     }
-
-
     // =========================================================
     // Save Changes
     // =========================================================
-
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken)
     {

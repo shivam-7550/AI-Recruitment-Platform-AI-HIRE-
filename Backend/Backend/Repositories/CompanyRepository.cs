@@ -2,23 +2,15 @@
 using Backend.Interfaces.Repositories;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public sealed class CompanyRepository : ICompanyRepository
 {
     private readonly ApplicationDbContext _context;
-
-
     public CompanyRepository(
         ApplicationDbContext context)
     {
         _context = context;
     }
-
-
-
-
     public async Task<IEnumerable<Company>> GetAllCompaniesAsync(
         CancellationToken cancellationToken)
     {
@@ -27,10 +19,6 @@ public sealed class CompanyRepository : ICompanyRepository
             .OrderBy(c => c.CompanyName)
             .ToListAsync(cancellationToken);
     }
-
-
-
-
     public async Task<Company?> GetCompanyByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
@@ -41,10 +29,6 @@ public sealed class CompanyRepository : ICompanyRepository
                 c => c.Id == id,
                 cancellationToken);
     }
-
-
-
-
     public async Task<Company?> GetCompanyByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken)
@@ -55,10 +39,6 @@ public sealed class CompanyRepository : ICompanyRepository
                 c => c.UserId == userId,
                 cancellationToken);
     }
-
-
-
-
     public async Task<Company?> GetCompanyByEmailAsync(
         string email,
         CancellationToken cancellationToken)
@@ -68,10 +48,6 @@ public sealed class CompanyRepository : ICompanyRepository
                 c => c.Email == email,
                 cancellationToken);
     }
-
-
-
-
     public async Task AddCompanyAsync(
         Company company,
         CancellationToken cancellationToken)
@@ -81,10 +57,6 @@ public sealed class CompanyRepository : ICompanyRepository
                 company,
                 cancellationToken);
     }
-
-
-
-
     public Task UpdateCompanyAsync(
         Company company,
         CancellationToken cancellationToken)
@@ -93,10 +65,6 @@ public sealed class CompanyRepository : ICompanyRepository
 
         return Task.CompletedTask;
     }
-
-
-
-
     public Task DeleteCompanyAsync(
         Company company,
         CancellationToken cancellationToken)
@@ -105,10 +73,6 @@ public sealed class CompanyRepository : ICompanyRepository
 
         return Task.CompletedTask;
     }
-
-
-
-
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken)
     {

@@ -22,6 +22,12 @@ namespace Backend.Middleware
             {
                 await _next(context);
             }
+            catch (OperationCanceledException) when (
+                context.RequestAborted.IsCancellationRequested)
+            {
+                // The client disconnected or canceled the request. There is no
+                // live response to write, and this is not an application error.
+            }
             catch (Exception exception)
             {
                 _logger.LogError(exception, exception.Message);

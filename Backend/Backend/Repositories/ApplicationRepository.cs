@@ -2,23 +2,18 @@
 using Backend.Interfaces.Repositories;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public class ApplicationRepository : IApplicationRepository
 {
     private readonly ApplicationDbContext _dbContext;
-
     public ApplicationRepository(
         ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-
     // ==========================================
     // Add Application
     // ==========================================
-
     public async Task AddApplicationAsync(
         JobApplication application,
         CancellationToken cancellationToken)
@@ -27,11 +22,9 @@ public class ApplicationRepository : IApplicationRepository
             application,
             cancellationToken);
     }
-
     // ==========================================
     // Candidate - Check Existing Application
     // ==========================================
-
     public async Task<JobApplication?> GetApplicationByUserAndJobAsync(
         Guid userId,
         Guid jobId,
@@ -44,11 +37,9 @@ public class ApplicationRepository : IApplicationRepository
                     x.JobId == jobId,
                 cancellationToken);
     }
-
     // ==========================================
     // Candidate - My Applications
     // ==========================================
-
     public async Task<IEnumerable<JobApplication>>
         GetApplicationsByUserAsync(
             Guid userId,
@@ -58,20 +49,14 @@ public class ApplicationRepository : IApplicationRepository
      .AsNoTracking()
      .Include(x => x.Job)
          .ThenInclude(x => x.Company)
-
      .Include(x => x.Resume)
-
      .Where(x => x.UserId == userId)
-
      .OrderByDescending(x => x.AppliedAt)
-
      .ToListAsync(cancellationToken);
     }
-
     // ==========================================
     // Company - Job Applications
     // ==========================================
-
     public async Task<IEnumerable<JobApplication>>
         GetApplicationsByJobAsync(
             Guid companyId,
@@ -82,25 +67,18 @@ public class ApplicationRepository : IApplicationRepository
     .AsNoTracking()
     .Include(x => x.Job)
         .ThenInclude(x => x.Company)
-
     //.Include(x => x.Resume)
-
     .Where(
         x =>
             x.JobId == jobId &&
             x.Job.CompanyId == companyId)
-
     .OrderByDescending(x => x.ATSScore)
-
     .ThenByDescending(x => x.AppliedAt)
-
     .ToListAsync(cancellationToken);
     }
-
     // ==========================================
     // Company - Application By ID
     // ==========================================
-
     public async Task<JobApplication?> GetCompanyApplicationByIdAsync(
         Guid companyId,
         Guid applicationId,
@@ -116,11 +94,9 @@ public class ApplicationRepository : IApplicationRepository
                     x.Job.CompanyId == companyId,
                 cancellationToken);
     }
-
     // ==========================================
     // Save Changes
     // ==========================================
-
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken)
     {

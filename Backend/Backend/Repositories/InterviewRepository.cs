@@ -1,25 +1,19 @@
 ﻿using Backend.Data;
 using Backend.Interfaces.Repositories;
 using Backend.Models;
-
 using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Repositories;
-
 public class InterviewRepository : IInterviewRepository
 {
     private readonly ApplicationDbContext _context;
-
     public InterviewRepository(
         ApplicationDbContext context)
     {
         _context = context;
     }
-
     // ==========================================
     // Create
     // ==========================================
-
     public async Task AddAsync(
         Interview interview,
         CancellationToken cancellationToken)
@@ -28,11 +22,9 @@ public class InterviewRepository : IInterviewRepository
             interview,
             cancellationToken);
     }
-
     // ==========================================
     // Get By Id
     // ==========================================
-
     public async Task<Interview?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
@@ -45,11 +37,9 @@ public class InterviewRepository : IInterviewRepository
                 i => i.Id == id,
                 cancellationToken);
     }
-
     // ==========================================
     // Get By Application Id
     // ==========================================
-
     public async Task<Interview?> GetByApplicationIdAsync(
         Guid applicationId,
         CancellationToken cancellationToken)
@@ -65,11 +55,9 @@ public class InterviewRepository : IInterviewRepository
             .FirstOrDefaultAsync(
                 cancellationToken);
     }
-
     // ==========================================
     // Get By Company Id
     // ==========================================
-
     public async Task<IEnumerable<Interview>>
         GetByCompanyIdAsync(
             Guid companyId,
@@ -87,11 +75,9 @@ public class InterviewRepository : IInterviewRepository
             .ToListAsync(
                 cancellationToken);
     }
-
     // ==========================================
     // Get By Candidate Id
     // ==========================================
-
     public async Task<IEnumerable<Interview>>
         GetByCandidateIdAsync(
             Guid candidateId,
@@ -109,11 +95,9 @@ public class InterviewRepository : IInterviewRepository
             .ToListAsync(
                 cancellationToken);
     }
-
     // ==========================================
     // Exists For Company
     // ==========================================
-
     public async Task<bool> ExistsForCompanyAsync(
         Guid interviewId,
         Guid companyId,
@@ -127,11 +111,9 @@ public class InterviewRepository : IInterviewRepository
                     companyId,
                 cancellationToken);
     }
-
     // ==========================================
     // Exists For Candidate
     // ==========================================
-
     public async Task<bool> ExistsForCandidateAsync(
         Guid interviewId,
         Guid candidateId,
@@ -145,33 +127,27 @@ public class InterviewRepository : IInterviewRepository
                     candidateId,
                 cancellationToken);
     }
-
     // ==========================================
     // Update
     // ==========================================
-
     public void Update(
         Interview interview)
     {
         _context.Interviews.Update(
             interview);
     }
-
     // ==========================================
     // Delete
     // ==========================================
-
     public void Delete(
         Interview interview)
     {
         _context.Interviews.Remove(
             interview);
     }
-
     // ==========================================
     // Save Changes
     // ==========================================
-
     public async Task<bool> SaveChangesAsync(
         CancellationToken cancellationToken)
     {
